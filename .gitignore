@@ -1,3 +1,4 @@
 .env
 mysql/
 mongo/
+BoStarter/.DS_Store
