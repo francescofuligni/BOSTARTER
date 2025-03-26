@@ -1,7 +1,11 @@
 USE bostarter_db;
 
+-- TO CHECK
+
+
 -- Abilita gli eventi
 SET GLOBAL event_scheduler = ON;
+
 
 -- Evento per chiudere i progetti scaduti (eseguito ogni giorno)
 DELIMITER //

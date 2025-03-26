@@ -1,5 +1,8 @@
 USE bostarter_db;
 
+-- TO CHECK
+
+
 -- Procedura per l'autenticazione degli utenti normali
 DELIMITER //
 CREATE PROCEDURE authenticate_user(
@@ -13,6 +16,7 @@ BEGIN
     WHERE email = p_email AND password = p_password;
 END //
 DELIMITER ;
+
 
 -- Procedura per l'autenticazione degli amministratori
 DELIMITER //
@@ -31,6 +35,7 @@ BEGIN
     AND ua.codice_sicurezza = p_security_code;
 END //
 DELIMITER ;
+
 
 -- Procedura per la registrazione di un nuovo utente
 DELIMITER //
@@ -57,6 +62,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di una skill nel curriculum
 DELIMITER //
 CREATE PROCEDURE add_skill(
@@ -70,6 +76,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per visualizzare i progetti disponibili
 DELIMITER //
 CREATE PROCEDURE get_available_projects()
@@ -79,6 +86,7 @@ BEGIN
     WHERE stato = 'APERTO';
 END //
 DELIMITER ;
+
 
 -- Procedura per il finanziamento di un progetto
 DELIMITER //
@@ -94,6 +102,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di un commento
 DELIMITER //
 CREATE PROCEDURE add_comment(
@@ -107,6 +116,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di una candidatura
 DELIMITER //
 CREATE PROCEDURE submit_application(
@@ -118,6 +128,7 @@ BEGIN
     VALUES (p_email_utente, p_id_profilo, 'IN ATTESA');
 END //
 DELIMITER ;
+
 
 -- Procedura per l'inserimento di una nuova competenza (solo admin)
 DELIMITER //
@@ -141,6 +152,7 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
 
 -- Procedura per l'inserimento di un nuovo progetto (solo creatori)
 DELIMITER //
@@ -167,6 +179,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di una reward (solo creatori)
 DELIMITER //
 CREATE PROCEDURE add_reward(
@@ -192,6 +205,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di una risposta ad un commento (solo creatori)
 DELIMITER //
 CREATE PROCEDURE add_comment_response(
@@ -216,6 +230,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 -- Procedura per l'inserimento di un profilo (solo creatori, solo progetti software)
 DELIMITER //
 CREATE PROCEDURE add_profile(
@@ -239,6 +254,7 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
 
 -- Procedura per gestire una candidatura (solo creatori)
 DELIMITER //
