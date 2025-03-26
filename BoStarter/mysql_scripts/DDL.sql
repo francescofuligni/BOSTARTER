@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS COMPETENZA (
 
 CREATE TABLE IF NOT EXISTS UTENTE_CREATORE (
   email_utente VARCHAR(32) PRIMARY KEY REFERENCES UTENTE(email) ,
-  affidabilita INT DEFAULT 0 CHECK (affidabilita >= 0 AND affidabilita <= 5)
+  affidabilita INT DEFAULT 0 CHECK (affidabilita >= 0 AND affidabilita <= 100)     -- valore percentuale % (intero)
+  -- nr_progetti INT DEFAULT 0 CHECK (nr_progetti >= 0)     -- RIDONDANZA CONCETTUALE RIMOSSA
 ) ENGINE = 'InnoDB';
 
 CREATE TABLE IF NOT EXISTS UTENTE_AMMINISTRATORE (
