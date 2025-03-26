@@ -23,8 +23,8 @@ services:
      environment:
        PMA_HOST: mysql
        PMA_PORT: 3306
-       PMA_USER: username
-       PMA_PASSWORD: password
+       PMA_USER: root
+       PMA_PASSWORD: root_password
      ports:
        - "8090:80"
      networks:
