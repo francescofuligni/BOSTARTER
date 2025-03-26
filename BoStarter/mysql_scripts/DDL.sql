@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS FINANZIAMENTO (
     data DATE NOT NULL,
     nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
     email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
-    importo DECIMAL(16,2) NOT NULL,
+    importo DECIMAL(16,2) NOT NULL CHECK (importo > 0),
     codice_reward VARCHAR(32) NOT NULL REFERENCES REWARD(codice),
     PRIMARY KEY (data, nome_progetto, email_utente)
 ) ENGINE = 'InnoDB';
