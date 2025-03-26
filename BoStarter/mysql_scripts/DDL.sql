@@ -25,18 +25,13 @@ CREATE TABLE IF NOT EXISTS UTENTE_AMMINISTRATORE (
   codice_sicurezza CHAR(8) NOT NULL
 );
 
-/*
-    email_utente_creatore è la chiave esterna per la tabella PROGETTO 
-    ma non è UNIQUE perhcè un utente puo' creare piu' progetti.
-*/
-
 CREATE TABLE IF NOT EXISTS PROGETTO (
     nome VARCHAR(32) PRIMARY KEY,
     descrizione VARCHAR(255) NOT NULL,
     budget DECIMAL(16,2) NOT NULL,
     data_inserimento DATE NOT NULL,
     data_limite DATE NOT NULL,
-    stato ENUM ('APERTO', 'CHIUSO') NOT NULL,
+    stato ENUM ('APERTO', 'CHIUSO') DEFAULT 'APERTO',
     tipo ENUM ('SOFTWARE', 'HARDWARE') NOT NULL,
     email_utente_creatore VARCHAR(32) NOT NULL REFERENCES UTENTE_CREATORE(email_utente)
 );
@@ -46,3 +41,73 @@ CREATE TABLE IF NOT EXISTS FOTO (
     nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
     PRIMARY KEY (immagine, nome_progetto)
 );
+
+CREATE TABLE IF NOT EXISTS REWARD (
+    codice VARCHAR(32) PRIMARY KEY,
+    immagine BLOB NOT NULL,
+    descrizione VARCHAR(255) NOT NULL,
+    nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome)
+);
+
+CREATE TABLE IF NOT EXISTS FINANZIAMENTO (
+    data DATE NOT NULL,
+    nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
+    email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
+    importo DECIMAL(16,2) NOT NULL,
+    codice_reward VARCHAR(32) NOT NULL REFERENCES REWARD(codice),
+    PRIMARY KEY (data, nome_progetto, email_utente)
+);
+
+CREATE TABLE IF NOT EXISTS COMPONENTE (
+    nome VARCHAR(32) PRIMARY KEY,
+    descrizione VARCHAR(255) NOT NULL,
+    prezzo DECIMAL(16,2) NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS PROFILO (
+    id AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(32) NOT NULL,
+    nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome)
+);
+
+CREATE TABLE IF NOT EXISTS COMMENTO (
+    id AUTO_INCREMENT PRIMARY KEY,
+    nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
+    email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
+    testo VARCHAR(255) NOT NULL,
+    data DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS SKILL_POSSEDUTA (
+    email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
+    nome_competenza VARCHAR(32) NOT NULL REFERENCES COMPETENZA(nome)
+    livello INT NOT NULL CHECK (livello >= 0 AND livello <= 5)
+    PRIMARY KEY (email_utente, nome_competenza)
+);
+
+CREATE TABLE IF NOT EXISTS SKILL_RICHIESTA (
+    id_profilo INT NOT NULL REFERENCES PROFILO(id),
+    nome_competenza VARCHAR(32) NOT NULL REFERENCES COMPETENZA(nome),
+    livello INT NOT NULL CHECK (livello >= 0 AND livello <= 5),
+    PRIMARY KEY (id_profilo, nome_competenza)
+);
+
+CREATE TABLE IF NOT EXISTS CANDIDATURA (
+    email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
+    id_profilo INT NOT NULL REFERENCES PROFILO(id),
+    stato ENUM ('ACCETTATA', 'IN ATTESA', 'RIFIUTATA') DEFAULT 'IN ATTESA',
+    PRIMARY KEY (email_utente, id_profilo)
+);
+
+CREATE TABLE IF NOT EXISTS RISPOSTA (
+    id_commento INT NOT NULL REFERENCES COMMENTO(id) PRIMARY KEY,
+    testo VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS COMPOSIZIONE (
+    nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
+    nome_componente VARCHAR(32) NOT NULL REFERENCES COMPONENTE(nome),
+    quantita INT NOT NULL CHECK (quantita >= 0),
+    PRIMARY KEY (nome_progetto, nome_componente)
+);
+
