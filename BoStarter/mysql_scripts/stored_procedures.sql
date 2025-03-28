@@ -5,6 +5,8 @@ USE bostarter_db;
 
 
 -- Procedura per l'autenticazione di un utente
+DROP PROCEDURE IF EXISTS autenticazione_utente;
+
 DELIMITER //
 CREATE PROCEDURE autenticazione_utente (
     IN in_email VARCHAR(32),
@@ -21,6 +23,8 @@ DELIMITER ;
 
 -- Procedura per la registrazione di un nuovo utente
 -- TODO (?): registrazione come amministratore --> restituisce in output codice_sicurezza
+DROP PROCEDURE IF EXISTS registrazione_utente;
+
 DELIMITER //
 CREATE PROCEDURE registrazione_utente (
     IN new_email VARCHAR(32),
@@ -45,6 +49,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una skill nel curriculum
+DROP PROCEDURE IF EXISTS aggiungi_skill;
+
 DELIMITER //
 CREATE PROCEDURE aggiungi_skill(
     IN in_email VARCHAR(32),
@@ -59,6 +65,8 @@ DELIMITER ;
 
 
 -- Procedura per visualizzare i progetti disponibili
+DROP PROCEDURE IF EXISTS mostra_progetti_aperti;
+
 DELIMITER //
 CREATE PROCEDURE mostra_progetti_aperti()
 BEGIN
@@ -70,12 +78,14 @@ DELIMITER ;
 
 
 -- Procedura per il finanziamento di un progetto con insertimento reward
+DROP PROCEDURE IF EXISTS finanzia_progetto;
+
 DELIMITER //
 CREATE PROCEDURE finanzia_progetto(
     IN in_email_utente VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
     IN in_importo DECIMAL(16,2),
-    IN in_codice_reward VARCHAR(32),
+    IN in_codice_reward VARCHAR(32)
 )
 BEGIN
     DECLARE is_aperto BOOLEAN;
@@ -94,11 +104,13 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di un commento
+DROP PROCEDURE IF EXISTS inserisci_commento;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_commento(
     IN in_nome_progetto VARCHAR(32),
     IN in_email_utente VARCHAR(32),
-    IN in_testo VARCHAR(255),
+    IN in_testo VARCHAR(255)
 )
 BEGIN
     INSERT INTO COMMENTO (nome_progetto, email_utente, testo, data)
@@ -108,6 +120,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una candidatura
+DROP PROCEDURE IF EXISTS inserisci_candidatura;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_candidatura(
     IN in_email_utente VARCHAR(32),
@@ -126,6 +140,8 @@ DELIMITER ;
 
 
 -- Procedura per l'autenticazione (solo amministratori)
+DROP PROCEDURE IF EXISTS autenticazione_amministratore;
+
 DELIMITER //
 CREATE PROCEDURE autenticazione_amministratore(
     IN in_email VARCHAR(32),
@@ -145,6 +161,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una nuova competenza (solo amministratori)
+DROP PROCEDURE IF EXISTS aggiungi_competenza;
+
 DELIMITER //
 CREATE PROCEDURE aggiungi_competenza(
     IN in_competenza VARCHAR(32),
@@ -173,6 +191,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di un nuovo progetto (solo creatori)
+DROP PROCEDURE IF EXISTS crea_progetto;
+
 DELIMITER //
 CREATE PROCEDURE crea_progetto(
     IN in_nome VARCHAR(32),
@@ -189,7 +209,7 @@ BEGIN
     FROM UTENTE_CREATORE
     WHERE email_utente = in_email_creatore;
     
-    IF is_creatore AND data_limite > CURDATE() THEN
+    IF is_creatore AND in_data_limite > CURDATE() THEN
         INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
         VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'APERTO', in_tipo, in_email_creatore);
     END IF;
@@ -198,6 +218,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una reward (solo creatori)
+DROP PROCEDURE IF EXISTS inserisci_reward;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_reward(
     IN in_codice VARCHAR(32),
@@ -224,6 +246,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una risposta ad un commento (solo creatori)
+DROP PROCEDURE IF EXISTS inserisci_risposta;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_risposta(
     IN in_id_commento INT,
@@ -249,6 +273,8 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di un profilo su un progetto software (solo creatori)
+DROP PROCEDURE IF EXISTS inserisci_profilo;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_profilo(
     IN in_nome VARCHAR(32),
@@ -274,6 +300,8 @@ DELIMITER ;
 
 -- Procedura per l'inserimento di una skill richiesta per un profilo (solo creatori)
 -- TO CHECK: OPERAZIONE NON RICHIESTA NEL FILE MA NECESSARIA PER COME È STRUTTURATO IL PROGETTO
+DROP PROCEDURE IF EXISTS inserisci_skill_richiesta;
+
 DELIMITER //
 CREATE PROCEDURE inserisci_skill_richiesta(
     IN in_id_profilo VARCHAR(32),
@@ -299,6 +327,8 @@ DELIMITER ;
 
 
 -- Procedura per gestire una candidatura (solo creatori)
+DROP PROCEDURE IF EXISTS gestisci_candidatura;
+
 DELIMITER //
 CREATE PROCEDURE gestisci_candidatura(
     IN in_email_candidato VARCHAR(32),
