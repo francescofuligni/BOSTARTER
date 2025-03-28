@@ -100,7 +100,7 @@ DELIMITER ;
 
 
 -- Procedura per la scelta di una reward
--- TODO: da pensare bene
+-- TODO: da pensare bene, ora è dentro la procedura precedente
 
 
 -- Procedura per l'inserimento di un commento
@@ -128,6 +128,9 @@ CREATE PROCEDURE inserisci_candidatura(
     IN in_id_profilo INT
 )
 BEGIN
+
+    -- TODO: CONTROLLARE CHE LE SKILL POSSEDUTE DALL'UTENTE SODDISFINO LE SKILL RICHIESTE DAL PROFILO
+
     INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
     VALUES (in_email_utente, in_id_profilo, 'IN ATTESA');
 END //
@@ -230,14 +233,19 @@ CREATE PROCEDURE inserisci_reward(
 )
 BEGIN
     DECLARE is_creatore_progetto BOOLEAN;
+    DECLARE is_progetto_aperto BOOLEAN;
     
-    -- Verifica che l'utente sia il creatore del progetto
     SELECT COUNT(*) > 0 INTO is_creatore_progetto
     FROM PROGETTO
     WHERE nome = in_nome_progetto
     AND email_utente_creatore = in_email_creatore;
+
+    SELECT COUNT(*) > 0 INTO is_progetto_aperto
+    FROM PROGETTO
+    WHERE nome = in_nome_progetto
+    AND stato = 'APERTO';
     
-    IF is_creatore_progetto THEN
+    IF is_creatore_progetto AND is_progetto_aperto THEN
         INSERT INTO REWARD (codice, immagine, descrizione, nome_progetto)
         VALUES (in_codice, in_immagine, in_descrizione, in_nome_progetto);
     END IF;
