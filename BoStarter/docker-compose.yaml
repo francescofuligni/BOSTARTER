@@ -14,6 +14,7 @@ services:
       - databases
     volumes:
       - ./mysql:/var/lib/mysql
+      - ./mysql_scripts:/docker-entrypoint-initdb.d
 
   phpmyadmin:
      image: phpmyadmin:latest
@@ -48,15 +49,25 @@ services:
     restart: always
     depends_on:
       - mongodb
+
+  apache:
+    image: php:8.2-apache
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/public:/var/www/html
+      - ./src/templates:/var/www/html/templates
+    depends_on:
+      - mysql
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin_username
       ME_CONFIG_MONGODB_ADMINPASSWORD: admin_password
       ME_CONFIG_BASICAUTH: false
-    ports:
-      - "8091:8081"
     networks:
       - databases
+    command: sh -c "docker-php-ext-install mysqli && docker-php-ext-enable mysqli && apache2-foreground"
 
 networks:
   databases:
