@@ -22,7 +22,7 @@ DELIMITER ;
 
 
 -- Procedura per la registrazione di un nuovo utente
--- TODO (?): registrazione come amministratore --> restituisce in output codice_sicurezza
+-- TODO: (?) registrazione come amministratore --> restituisce in output codice_sicurezza
 DROP PROCEDURE IF EXISTS registrazione_utente;
 
 DELIMITER //
@@ -77,30 +77,42 @@ END //
 DELIMITER ;
 
 
--- Procedura per il finanziamento di un progetto con insertimento reward
+-- Procedura per il finanziamento di un progetto
 DROP PROCEDURE IF EXISTS finanzia_progetto;
-
 DELIMITER //
 CREATE PROCEDURE finanzia_progetto(
     IN in_email_utente VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
-    IN in_importo DECIMAL(16,2),
-    IN in_codice_reward VARCHAR(32)
+    IN in_importo DECIMAL(16,2)
 )
 BEGIN
     DECLARE is_aperto BOOLEAN;
     SET is_aperto = (SELECT stato FROM PROGETTO WHERE nome = in_nome_progetto) = 'APERTO';
-    
+
     IF is_aperto THEN
-        INSERT INTO FINANZIAMENTO (data, nome_progetto, email_utente, importo, codice_reward)
-        VALUES (CURDATE(), in_nome_progetto, in_email_utente, in_importo, in_codice_reward);
+        INSERT INTO FINANZIAMENTO (data, nome_progetto, email_utente, importo)
+        VALUES (CURDATE(), in_nome_progetto, in_email_utente, in_importo);
     END IF;
 END //
 DELIMITER ;
 
 
--- Procedura per la scelta di una reward
--- TODO: da pensare bene, ora è dentro la procedura precedente
+-- Procedura per la scelta della reward
+DROP PROCEDURE IF EXISTS scegli_reward;
+DELIMITER //
+CREATE PROCEDURE scegli_reward(
+    IN in_email_utente VARCHAR(32),
+    IN in_nome_progetto VARCHAR(32),
+    IN in_codice_reward VARCHAR(32)
+)
+BEGIN
+    UPDATE FINANZIAMENTO 
+    SET codice_reward = in_codice_reward
+    WHERE email_utente = in_email_utente 
+    AND nome_progetto = in_nome_progetto
+    AND codice_reward IS NULL;
+END //
+DELIMITER ;
 
 
 -- Procedura per l'inserimento di un commento
@@ -125,14 +137,25 @@ DROP PROCEDURE IF EXISTS inserisci_candidatura;
 DELIMITER //
 CREATE PROCEDURE inserisci_candidatura(
     IN in_email_utente VARCHAR(32),
-    IN in_id_profilo INT
+    IN in_id_profilo INT,
+    OUT is_candidato BOOLEAN
 )
 BEGIN
+    SELECT NOT EXISTS (
+        SELECT *
+        FROM SKILL_RICHIESTA sr
+        LEFT JOIN SKILL_POSSEDUTA sp 
+            ON sr.nome_competenza = sp.nome_competenza
+            AND sp.email_utente = in_email_utente
+            AND sp.livello >= sr.livello
+        WHERE sr.id_profilo = in_id_profilo
+        AND sp.email_utente IS NULL
+    ) INTO is_candidato;
 
-    -- TODO: CONTROLLARE CHE LE SKILL POSSEDUTE DALL'UTENTE SODDISFINO LE SKILL RICHIESTE DAL PROFILO
-
-    INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
-    VALUES (in_email_utente, in_id_profilo, 'IN ATTESA');
+    IF is_candidato THEN
+        INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
+        VALUES (in_email_utente, in_id_profilo, 'IN ATTESA');
+    END IF;
 END //
 DELIMITER ;
 
