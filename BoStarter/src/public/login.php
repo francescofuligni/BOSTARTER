@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $checkStmt->close();
             
             if ($procedureExists) {
-                $stmt = $db->prepare("CALL autenticazione_utente(?, ?, ?)");
-                $stmt->bind_param('ssb', $email, $password, $autenticato);
+                $stmt = $db->prepare("CALL autenticazione_utente(?, ?, @autenticato)");
+                $stmt->bind_param('ssb', $email, $password);
                 try {
                     $stmt->execute();
                     $stmt->bind_result($autenticato); // Matches the single OUT parameter of autenticazione_utente procedure
