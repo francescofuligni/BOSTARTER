@@ -56,8 +56,10 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./src/public:/var/www/html
-      - ./src/templates:/var/www/html/templates
+      - ./src/backend:/var/www/html/backend
+      - ./src/frontend/html:/var/www/html
+      - ./src/frontend/style:/var/www/html/style
+      - ./src/frontend/js:/var/www/html/js
     depends_on:
       - mysql
     environment:
@@ -67,7 +69,20 @@ services:
       ME_CONFIG_BASICAUTH: false
     networks:
       - databases
-    command: sh -c "docker-php-ext-install mysqli && docker-php-ext-enable mysqli && apache2-foreground"
+    command: >
+      sh -c "docker-php-ext-install mysqli &&
+             docker-php-ext-enable mysqli &&
+             a2enmod rewrite &&
+             echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
+             echo '<Directory /var/www/html>
+                Options Indexes FollowSymLinks
+                AllowOverride All
+                Require all granted
+             </Directory>' > /etc/apache2/conf-available/custom-permissions.conf &&
+             a2enconf custom-permissions &&
+             chown -R www-data:www-data /var/www/html &&
+             chmod -R 755 /var/www/html &&
+             apache2-foreground"
 
 networks:
   databases:
