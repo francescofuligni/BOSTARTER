@@ -1,0 +1,96 @@
+<?php
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Include registration controller if it exists
+$controllerPath = __DIR__ . '/../controllers/register.php';
+if (file_exists($controllerPath)) {
+    require_once $controllerPath;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - BoStarter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Register for BoStarter</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <div class="alert alert-danger">
+                                <?php 
+                                    echo $_SESSION['error']; 
+                                    unset($_SESSION['error']);
+                                ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <form action="/register" method="post">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="nome">First Name</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="cognome">Last Name</label>
+                                    <input type="text" class="form-control" id="cognome" name="cognome" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="nickname">Nickname</label>
+                                    <input type="text" class="form-control" id="nickname" name="nickname" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="luogo_nascita">Place of Birth</label>
+                                    <input type="text" class="form-control" id="luogo_nascita" name="luogo_nascita" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="anno_nascita">Year of Birth</label>
+                                    <input type="number" class="form-control" id="anno_nascita" name="anno_nascita" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="tipo">Account Type</label>
+                                    <select class="form-control" id="tipo" name="tipo">
+                                        <option value="UTENTE">Regular User</option>
+                                        <option value="CREATORE">Creator</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        </form>
+                        
+                        <div class="mt-3 text-center">
+                            <p>Already have an account? <a href="/login">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
