@@ -4,7 +4,7 @@ USE bostarter_db;
 -- TUTTI GLI UTENTI ------------------------------------------------------------
 
 
--- Procedura per l'autenticazione di un utente
+-- Procedura per l'autenticazione di un utente (utente normale o creatore)
 DROP PROCEDURE IF EXISTS autenticazione_utente;
 
 DELIMITER //
@@ -22,27 +22,29 @@ DELIMITER ;
 
 
 -- Procedura per la registrazione di un nuovo utente
--- TODO: (?) registrazione come amministratore --> restituisce in output codice_sicurezza
 DROP PROCEDURE IF EXISTS registrazione_utente;
 
 DELIMITER //
 CREATE PROCEDURE registrazione_utente (
-    IN new_email VARCHAR(32),
-    IN new_password VARCHAR(32),
-    IN new_nome VARCHAR(32),
-    IN new_cognome VARCHAR(32),
-    IN new_nickname VARCHAR(32),
-    IN new_luogo_nascita VARCHAR(32),
-    IN new_anno_nascita INT,
-    IN is_creatore BOOLEAN
+    IN in_email VARCHAR(32),
+    IN in_password VARCHAR(32),
+    IN in_nome VARCHAR(32),
+    IN in_cognome VARCHAR(32),
+    IN in_nickname VARCHAR(32),
+    IN in_luogo_nascita VARCHAR(32),
+    IN in_anno_nascita INT,
+    IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE')
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)
     VALUES (in_email, in_password, in_nome, in_cognome, in_nickname, in_luogo_nascita, in_anno_nascita);
 
-    IF is_creatore THEN
+    IF tipo = 'CREATORE' THEN
         INSERT INTO UTENTE_CREATORE (email_utente)
         VALUES (in_email);
+    ELSEIF tipo = 'AMMINISTRATORE' THEN
+        INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
+        VALUES (in_email, NULL);
     END IF;
 END //
 DELIMITER ;
@@ -163,6 +165,22 @@ DELIMITER ;
 
 
 -- SOLO AMMINISTRATORI ------------------------------------------------------------
+
+
+-- Procedura per associare un codice sicurezza per un nuovo amministratore
+DROP PROCEDURE IF EXISTS imposta_codice_sicurezza;
+
+DELIMITER //
+CREATE PROCEDURE imposta_codice_sicurezza(
+    IN in_email_amministratore VARCHAR(32),
+    IN in_codice_sicurezza CHAR(8)
+)
+BEGIN
+    UPDATE UTENTE_AMMINISTRATORE
+    SET codice_sicurezza = in_codice_sicurezza
+    WHERE email_utente = in_email_amministratore;
+END //
+DELIMITER ;
 
 
 -- Procedura per l'autenticazione (solo amministratori)
