@@ -1,6 +1,7 @@
+DROP DATABASE IF EXISTS bostarter_db;
+
 CREATE DATABASE IF NOT EXISTS bostarter_db;
 USE bostarter_db;
-
 
 CREATE TABLE IF NOT EXISTS UTENTE (
     email VARCHAR(32) PRIMARY KEY,
