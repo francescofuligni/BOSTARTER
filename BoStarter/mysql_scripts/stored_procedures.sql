@@ -10,7 +10,7 @@ DROP PROCEDURE IF EXISTS autenticazione_utente;
 DELIMITER //
 CREATE PROCEDURE autenticazione_utente (
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(32),
+    IN in_password VARCHAR(255),
     OUT autenticato BOOLEAN
 )
 BEGIN
@@ -27,7 +27,7 @@ DROP PROCEDURE IF EXISTS registrazione_utente;
 DELIMITER //
 CREATE PROCEDURE registrazione_utente (
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(32),
+    IN in_password VARCHAR(255),
     IN in_nome VARCHAR(32),
     IN in_cognome VARCHAR(32),
     IN in_nickname VARCHAR(32),
@@ -189,7 +189,7 @@ DROP PROCEDURE IF EXISTS autenticazione_amministratore;
 DELIMITER //
 CREATE PROCEDURE autenticazione_amministratore(
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(32),
+    IN in_password VARCHAR(255),
     IN in_codice_sicurezza CHAR(8),
     OUT autenticato BOOLEAN
 )

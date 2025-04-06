@@ -1,5 +1,8 @@
+<?php
+require_once __DIR__ . '/components/navbar.php';
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +12,12 @@
 <body>
     <div class="container mt-5">
         <div class="jumbotron">
-            <h1 class="display-4">Welcome to BoStarter!</h1>
-            <p class="lead">A platform for crowdfunding innovative projects.</p>
+            <h1 class="display-4">Benvenuto su BoStarter!</h1>
+            <p class="lead">Una piattaforma per il crowdfunding di progetti innovativi.</p>
             <hr class="my-4">
-            <p>Join our community to discover amazing projects or create your own.</p>
-            <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
-            <a class="btn btn-success btn-lg" href="/register" role="button">Register</a>
+            <p>Unisciti alla nostra community per scoprire progetti straordinari o crearne uno tuo.</p>
+            <a class="btn btn-primary btn-lg" href="/login" role="button">Accedi</a>
+            <a class="btn btn-success btn-lg" href="/register" role="button">Registrati</a>
         </div>
     </div>
 </body>

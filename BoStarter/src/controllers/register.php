@@ -1,20 +1,21 @@
 <?php
-// Start session if not already started
+// Apri la sessione se non è già aperta
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include database and user model if they exist
+// Include il file di configurazione del database e il modello User
 $dbPath = __DIR__ . '/../config/Database.php';
 $userPath = __DIR__ . '/../models/User.php';
 
+// Controlla se i file esistono
 if (file_exists($dbPath) && file_exists($userPath)) {
     require_once $dbPath;
     require_once $userPath;
 
-    // Process registration form
+    // Controlla se il metodo della richiesta è POST (invio del modulo)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Get form data
+        // Ottieni i dati del form html
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
         $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
@@ -24,38 +25,38 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         $annoNascita = isset($_POST['anno_nascita']) ? (int)$_POST['anno_nascita'] : 0;
         $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : 'UTENTE';
         
-        // Validate input
+        // Validazione dell'input
         if (empty($email) || empty($password) || empty($nome) || empty($cognome) || 
             empty($nickname) || empty($luogoNascita) || $annoNascita <= 0) {
-            $_SESSION['error'] = "Please fill in all required fields.";
+            $_SESSION['error'] = "Per favore, compila tutti i campi richiesti.";
             header('Location: /register');
             exit;
         }
+
+        // Hash della password
+        $hashedPassword = hash('sha256', $password);
         
-        // Connect to database
+        // Connessione al db
         $database = new Database();
         $db = $database->getConnection();
         
-        // Create user object
+        // Crea un oggetto User (mi serve così posso usare i metodi del modello e ha già la connessione al db)
         $user = new User($db);
         
-        // Attempt registration
-        $success = $user->register($email, $password, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo);
+        // Prova a registrare l'utente
+        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo);
         
         if ($success) {
-            // Registration successful
-            $_SESSION['success'] = "Registration successful! You can now log in.";
+            $_SESSION['success'] = "Registrazione avvenuta con successo. Ora puoi accedere.";
             header('Location: /login');
             exit;
         } else {
-            // Registration failed
-            $_SESSION['error'] = "Registration failed. Please try again.";
+            $_SESSION['error'] = "Errore durante la registrazione. L'email potrebbe essere già in uso.";
             header('Location: /register');
             exit;
         }
     }
 } else {
-    // If models don't exist yet, just show a message
-    $_SESSION['error'] = "Registration system is still being set up. Please try again later.";
+    $_SESSION['error'] = "Registrazione fallita. Contattare l'amministratore.";
 }
 ?>

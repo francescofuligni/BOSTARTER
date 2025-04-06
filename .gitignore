@@ -2,3 +2,5 @@
 mysql/
 mongo/
 BoStarter/.DS_Store
+.gitignore
+.vscode/

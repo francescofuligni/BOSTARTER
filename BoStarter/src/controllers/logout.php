@@ -1,16 +1,10 @@
 <?php
-// Start session if not already started
+require_once __DIR__ . '/../models/User.php';
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Clear all session variables
-$_SESSION = array();
-
-// Destroy the session
-session_destroy();
-
-// Redirect to home page
-header('Location: /');
-exit;
+$user = new User(null); //Non serve db per cancellare il token
+$user->logout();
 ?>

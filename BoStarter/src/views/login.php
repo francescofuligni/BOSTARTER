@@ -1,10 +1,10 @@
 <?php
-// Start session if not already started
+// Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include login controller if it exists
+// Includi il controller del login se esiste
 $controllerPath = __DIR__ . '/../controllers/login.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
@@ -12,7 +12,7 @@ if (file_exists($controllerPath)) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@ if (file_exists($controllerPath)) {
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="text-center">Login to BoStarter</h3>
+                        <h3 class="text-center">Accedi a BoStarter</h3>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
@@ -55,12 +55,12 @@ if (file_exists($controllerPath)) {
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block">Accedi</button>
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p>Don't have an account? <a href="/register">Register here</a></p>
-                            <p>Are you an administrator? <a href="/admin-login">Admin Login</a></p>
+                            <p>Non hai un account? <a href="/register">Registrati qui</a></p>
+                            <p>Sei un amministratore? <a href="/admin-login">Login Amministratore</a></p>
                         </div>
                     </div>
                 </div>

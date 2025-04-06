@@ -1,10 +1,10 @@
 <?php
-// Start session if not already started
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include registration controller if it exists
+// includi il controller per la registrazione
 $controllerPath = __DIR__ . '/../controllers/register.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
@@ -16,7 +16,7 @@ if (file_exists($controllerPath)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - BoStarter</title>
+    <title>Registrazione - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -25,7 +25,7 @@ if (file_exists($controllerPath)) {
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="text-center">Register for BoStarter</h3>
+                        <h3 class="text-center">Crea il tuo account BoStarter</h3>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
@@ -50,11 +50,11 @@ if (file_exists($controllerPath)) {
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="nome">First Name</label>
+                                    <label for="nome">Nome</label>
                                     <input type="text" class="form-control" id="nome" name="nome" required>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="cognome">Last Name</label>
+                                    <label for="cognome">Cognome</label>
                                     <input type="text" class="form-control" id="cognome" name="cognome" required>
                                 </div>
                             </div>
@@ -64,28 +64,28 @@ if (file_exists($controllerPath)) {
                                     <input type="text" class="form-control" id="nickname" name="nickname" required>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="luogo_nascita">Place of Birth</label>
+                                    <label for="luogo_nascita">Luogo di nascita</label>
                                     <input type="text" class="form-control" id="luogo_nascita" name="luogo_nascita" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="anno_nascita">Year of Birth</label>
-                                    <input type="number" class="form-control" id="anno_nascita" name="anno_nascita" required>
+                                    <label for="anno_nascita">Anno di nascita</label>
+                                    <input type="number" class="form-control" id="anno_nascita" name="anno_nascita" min="1900" required>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="tipo">Account Type</label>
+                                    <label for="tipo">Tipo Utente</label>
                                     <select class="form-control" id="tipo" name="tipo">
-                                        <option value="UTENTE">Regular User</option>
-                                        <option value="CREATORE">Creator</option>
+                                        <option value="UTENTE">Utente</option>
+                                        <option value="CREATORE">Utente creatore</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" class="btn btn-primary btn-block">Registrati</button>
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p>Already have an account? <a href="/login">Login here</a></p>
+                            <p>Hai già un account? <a href="/login">Effettua il login!</a></p>
                         </div>
                     </div>
                 </div>

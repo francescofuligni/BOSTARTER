@@ -1,10 +1,10 @@
 <?php
-// Start session if not already started
+// Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include database and user model if they exist
+// Includi il database e il modello utente se esistono
 $dbPath = __DIR__ . '/../config/Database.php';
 $userPath = __DIR__ . '/../models/User.php';
 
@@ -12,53 +12,59 @@ if (file_exists($dbPath) && file_exists($userPath)) {
     require_once $dbPath;
     require_once $userPath;
 
-    // Process login form
+    // Controlla se il metodo della richiesta è POST (invio del form)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Get form data
+        // Ottieni i dati del form
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
         
-        // Validate input
+        // Valida i dati: verifica che email e password siano forniti
         if (empty($email) || empty($password)) {
-            $_SESSION['error'] = "Please enter both email and password.";
-            header('Location: /login');
+            $_SESSION['error'] = "Inserisci sia email che password.";
+            header('Location: /login'); // Torna alla pagina di login
             exit;
         }
         
-        // Connect to database
+        // Connettiti al database
         $database = new Database();
         $db = $database->getConnection();
         
-        // Create user object
+        // Crea un oggetto utente
         $user = new User($db);
         
-        // Attempt login
-        $userData = $user->login($email, $password);
+        // Hash della password
+        $hashedPassword = hash('sha256', $password);
+
+        // Prova a effettuare il login con email e password forniti
+        $userData = $user->login($email, $hashedPassword);
         
         if ($userData) {
-            // Login successful
+
+            $token = bin2hex(random_bytes(32)); // Token per manteneere la sessione
+
+            // Salva i dettagli dell'utente e il token nella sessione
             $_SESSION['user_id'] = $userData['email'];
             $_SESSION['user_name'] = $userData['nome'] . ' ' . $userData['cognome'];
             $_SESSION['user_nickname'] = $userData['nickname'];
-            
-            // Check user type
-            if ($user->isCreator($email)) {
-                $_SESSION['user_type'] = 'creator';
+            $_SESSION['user_type'] = $user->isCreator($email) ? 'creator' : 'user';
+            $_SESSION['auth_token'] = $token;
+            $_SESSION['token_expiration'] = time() + (60 * 60); // Token valido per 60 minuti 
+
+            // Reindirizza in base al tipo di utente
+            if ($_SESSION['user_type'] == 'creator') {
                 header('Location: /creator-dashboard');
             } else {
-                $_SESSION['user_type'] = 'user';
                 header('Location: /dashboard');
             }
             exit;
         } else {
-            // Login failed
-            $_SESSION['error'] = "Invalid email or password.";
+            $_SESSION['error'] = "Email o password non validi.";
             header('Location: /login');
             exit;
         }
     }
 } else {
-    // If models don't exist yet, just show a message
-    $_SESSION['error'] = "Login system is still being set up. Please try again later.";
+    // Se i file non esistono, mostra un messaggio di errore
+    $_SESSION['error'] = "Il sistema di login non è ancora configurato. Contattare l'amministratore.";
 }
 ?>

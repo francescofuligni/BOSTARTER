@@ -1,25 +1,25 @@
 <?php
-// Start session if not already started
+// Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is already logged in as admin
+// Controlla se l'utente è già loggato come amministratore
 if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
     header('Location: /admin-dashboard');
     exit;
 }
 
-// Include admin login controller
+// Includi il controller per il login amministratore
 require_once __DIR__ . '/../controllers/admin-login.php';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - BoStarter</title>
+    <title>Login Amministratore - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -28,7 +28,7 @@ require_once __DIR__ . '/../controllers/admin-login.php';
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="text-center">Admin Login</h3>
+                        <h3 class="text-center">Login Amministratore</h3>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
@@ -43,21 +43,21 @@ require_once __DIR__ . '/../controllers/admin-login.php';
                         <form action="/admin-login" method="post">
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
                             <div class="form-group">
-                                <label for="security_code">Security Code</label>
+                                <label for="security_code">Codice di Sicurezza</label>
                                 <input type="password" class="form-control" id="security_code" name="security_code" required>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block">Accedi</button>
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p><a href="/login">Back to User Login</a></p>
+                            <p><a href="/login">Torna al Login Utente</a></p>
                         </div>
                     </div>
                 </div>

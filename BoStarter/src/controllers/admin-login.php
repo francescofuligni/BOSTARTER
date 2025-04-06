@@ -1,45 +1,43 @@
 <?php
-// Start session if not already started
+// Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include database and user model
+// Includi il database e il modello utente
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 
-// Process admin login form
+// Gestisci il form di login amministratore
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
+// Ottieni i dati dal form
+    // Ottieni i dati dal form
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
     $securityCode = isset($_POST['security_code']) ? trim($_POST['security_code']) : '';
     
-    // Validate input
+    // Valida i dati
     if (empty($email) || empty($password) || empty($securityCode)) {
-        $_SESSION['error'] = "Please enter email, password, and security code.";
+        $_SESSION['error'] = "Inserisci email, password e codice di sicurezza.";
         header('Location: /admin-login');
         exit;
     }
     
-    // Connect to database
+    // Connettiti al database
     $database = new Database();
     $db = $database->getConnection();
     
-    // Create user object
+    // Crea un oggetto utente
     $user = new User($db);
     
-    // Attempt admin login
+    // Prova a effettuare il login come amministratore
     $isAdmin = $user->adminLogin($email, $password, $securityCode);
     
     if ($isAdmin) {
-        // Get user details
-        $stmt = $db->prepare("SELECT * FROM UTENTE WHERE email = :email");
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Ottieni i dettagli dell'utente
+        $userData = $user->getDataByEmail($email);
         
-        // Login successful
+
         $_SESSION['user_id'] = $userData['email'];
         $_SESSION['user_name'] = $userData['nome'] . ' ' . $userData['cognome'];
         $_SESSION['user_nickname'] = $userData['nickname'];
@@ -48,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /admin-dashboard');
         exit;
     } else {
-        // Login failed
-        $_SESSION['error'] = "Invalid email, password, or security code.";
+
+        $_SESSION['error'] = "Email, password o codice di sicurezza non validi.";
         header('Location: /admin-login');
         exit;
     }
