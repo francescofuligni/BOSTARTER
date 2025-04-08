@@ -43,8 +43,8 @@ BEGIN
         INSERT INTO UTENTE_CREATORE (email_utente)
         VALUES (in_email);
     ELSEIF tipo = 'AMMINISTRATORE' THEN
-        INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
-        VALUES (in_email, NULL);
+        INSERT INTO UTENTE_AMMINISTRATORE (email_utente)
+        VALUES (in_email);
     END IF;
 END //
 DELIMITER ;
@@ -167,7 +167,7 @@ DELIMITER ;
 -- SOLO AMMINISTRATORI ------------------------------------------------------------
 
 
--- Procedura per associare un codice sicurezza per un nuovo amministratore
+-- Procedura per associare un codice sicurezza (solo amministratori)
 DROP PROCEDURE IF EXISTS imposta_codice_sicurezza;
 
 DELIMITER //
@@ -348,7 +348,6 @@ DELIMITER ;
 
 
 -- Procedura per l'inserimento di una skill richiesta per un profilo (solo creatori)
--- TO CHECK: OPERAZIONE NON RICHIESTA NEL FILE MA NECESSARIA PER COME È STRUTTURATO IL PROGETTO
 DROP PROCEDURE IF EXISTS inserisci_skill_richiesta;
 
 DELIMITER //
