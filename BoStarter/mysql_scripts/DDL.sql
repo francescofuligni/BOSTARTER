@@ -5,7 +5,7 @@ USE bostarter_db;
 
 CREATE TABLE IF NOT EXISTS UTENTE (
     email VARCHAR(32) PRIMARY KEY,
-    password VARCHAR(32) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     nome VARCHAR(32) NOT NULL,
     cognome VARCHAR(32) NOT NULL,
     nickname VARCHAR(32) UNIQUE NOT NULL,
