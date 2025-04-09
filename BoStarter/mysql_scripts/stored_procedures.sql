@@ -34,6 +34,7 @@ CREATE PROCEDURE registrazione_utente (
     IN in_luogo_nascita VARCHAR(32),
     IN in_anno_nascita INT,
     IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE')
+    IN in_codice_sicurezza CHAR(8) DEFAULT NULL
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)
@@ -43,8 +44,8 @@ BEGIN
         INSERT INTO UTENTE_CREATORE (email_utente)
         VALUES (in_email);
     ELSEIF tipo = 'AMMINISTRATORE' THEN
-        INSERT INTO UTENTE_AMMINISTRATORE (email_utente)
-        VALUES (in_email);
+        INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
+        VALUES (in_email, in_codice_sicurezza);
     END IF;
 END //
 DELIMITER ;
@@ -165,22 +166,6 @@ DELIMITER ;
 
 
 -- SOLO AMMINISTRATORI ------------------------------------------------------------
-
-
--- Procedura per associare un codice sicurezza (solo amministratori)
-DROP PROCEDURE IF EXISTS imposta_codice_sicurezza;
-
-DELIMITER //
-CREATE PROCEDURE imposta_codice_sicurezza(
-    IN in_email_amministratore VARCHAR(32),
-    IN in_codice_sicurezza CHAR(8)
-)
-BEGIN
-    UPDATE UTENTE_AMMINISTRATORE
-    SET codice_sicurezza = in_codice_sicurezza
-    WHERE email_utente = in_email_amministratore;
-END //
-DELIMITER ;
 
 
 -- Procedura per l'autenticazione (solo amministratori)
