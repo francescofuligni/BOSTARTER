@@ -43,8 +43,11 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         // Crea un oggetto User (mi serve così posso usare i metodi del modello e ha già la connessione al db)
         $user = new User($db);
         
+        // Se il codice di sicurezza è definito, lo ottiene
+        $codiceSicurezza = $_POST['codice_sicurezza'] ?? '';
+
         // Prova a registrare l'utente
-        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo);
+        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $codiceSicurezza);
         
         if ($success) {
             $_SESSION['success'] = "Registrazione avvenuta con successo. Ora puoi accedere.";
@@ -57,6 +60,6 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         }
     }
 } else {
-    $_SESSION['error'] = "Registrazione fallita. Contattare l'amministratore.";
+    $_SESSION['error'] = "Registrazione fallita.";
 }
 ?>

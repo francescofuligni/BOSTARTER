@@ -77,7 +77,7 @@ class User {
     public function adminLogin($email, $password, $securityCode) {
         try {
             
-            // chiama la stored procedure per autenticare l'amministratore
+            // Chiama la stored procedure per autenticare l'amministratore
             $stmt = $this->conn->prepare("CALL autenticazione_amministratore(:email, :password, :security_code, @autenticato)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $password);
@@ -107,6 +107,7 @@ class User {
             $stmt->bindParam(':luogo_nascita', $luogoNascita);
             $stmt->bindParam(':anno_nascita', $annoNascita);
             $stmt->bindParam(':tipo', $tipo);
+            $stmt->bindParam(':codice_sicurezza', $codiceSicurezza);
             
             return $stmt->execute();
         } catch (PDOException $e) {
