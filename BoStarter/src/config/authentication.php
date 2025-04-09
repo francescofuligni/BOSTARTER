@@ -1,7 +1,5 @@
 <?php
 
-
-
 class Authentication
 {
     public function validateAuthToken()

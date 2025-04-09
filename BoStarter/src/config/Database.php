@@ -1,5 +1,5 @@
 <?php
-// da cambiare con dati presi da .env (anche nel docker file dobbiamo nasconderli per sicurezza)
+// TODO: da cambiare con dati presi da .env (anche nel docker file dobbiamo nasconderli per sicurezza)
 class Database {
     private $host = 'mysql';
     private $db_name = 'bostarter_db';
