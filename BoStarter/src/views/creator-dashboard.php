@@ -5,8 +5,8 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // includdi il controller e il path per autenticarla (è una rotta protetta)
-$controllerPath = __DIR__ . '/../controllers/creator-dashboard.php';
-$authPath = __DIR__ . '/../config/authentication.php';
+$controllerPath = __DIR__ . '/../controllers/CreatorDashboardController.php';
+$authPath = __DIR__ . '/../config/Authentication.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 

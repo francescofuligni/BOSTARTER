@@ -11,7 +11,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
 }
 
 // Includi il controller per il login amministratore
-require_once __DIR__ . '/../controllers/admin-login.php';
+require_once __DIR__ . '/../controllers/AdminLoginController.php';
 ?>
 
 <!DOCTYPE html>

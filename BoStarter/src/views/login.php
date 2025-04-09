@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Includi il controller del login se esiste
-$controllerPath = __DIR__ . '/../controllers/login.php';
+$controllerPath = __DIR__ . '/../controllers/LoginController.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 }
