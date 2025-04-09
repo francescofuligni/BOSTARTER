@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // includi il controller per la registrazione
-$controllerPath = __DIR__ . '/../controllers/register.php';
+$controllerPath = __DIR__ . '/../controllers/RegisterController.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 }
