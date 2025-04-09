@@ -33,8 +33,8 @@ CREATE PROCEDURE registrazione_utente (
     IN in_nickname VARCHAR(32),
     IN in_luogo_nascita VARCHAR(32),
     IN in_anno_nascita INT,
-    IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE')
-    IN in_codice_sicurezza CHAR(8) DEFAULT NULL
+    IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE'),
+    IN in_codice_sicurezza CHAR(8)
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)

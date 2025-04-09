@@ -41,9 +41,9 @@ if (file_exists($controllerPath)) {
                         <form action="/register" method="post">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="tipo">Tipo Utente</label>
+                                    <label for="tipo">Tipologia utente</label>
                                     <select class="form-control" id="tipo" name="tipo" required>
-                                        <option value="UTENTE">Utente</option>
+                                        <option value="UTENTE">Standard</option>
                                         <option value="CREATORE">Creatore</option>
                                         <option value="AMMINISTRATORE">Amministratore</option>
                                     </select>

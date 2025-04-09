@@ -95,12 +95,12 @@ class User {
     }
 
     // Funzione per la registrazione dell'utente
-    public function register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo) {
+    public function register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $codiceSicurezza) {
         try {
             // Chiama la stored procedure per registrare l'utente
-            $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo)");
+            $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $hashedPassword); // Usa la password hashata
+            $stmt->bindParam(':password', $hashedPassword);
             $stmt->bindParam(':nome', $nome);
             $stmt->bindParam(':cognome', $cognome);
             $stmt->bindParam(':nickname', $nickname);
