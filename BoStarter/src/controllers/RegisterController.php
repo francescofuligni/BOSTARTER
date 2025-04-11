@@ -35,7 +35,7 @@ if (file_exists($dbPath) && file_exists($userPath)) {
 
         // Hash della password
         $hashedPassword = hash('sha256', $password);
-        
+    
         // Connessione al db
         $database = new Database();
         $db = $database->getConnection();
@@ -44,10 +44,17 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         $user = new User($db);
         
         // Se il codice di sicurezza è definito, lo ottiene
-        $codiceSicurezza = $_POST['codice_sicurezza'] ?? '';
+        $codiceSicurezza = $_POST['codice_sicurezza'] ?? "";
 
-        // Prova a registrare l'utente
-        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $codiceSicurezza);
+        // Se il codice di sicurezza non è vuoto, lo hash
+        if (!$codiceSicurezza == "") {
+            $hashedCodiceSicurezza = hash('sha256', $codiceSicurezza);
+        } else {
+            $hashedCodiceSicurezza = "";
+        }
+
+
+        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $hashedCodiceSicurezza);
         
         if ($success) {
             $_SESSION['success'] = "Registrazione avvenuta con successo. Ora puoi accedere.";

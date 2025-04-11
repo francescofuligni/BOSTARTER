@@ -115,3 +115,18 @@ BEGIN
 END //
 DELIMITER ;
 */
+
+
+-- Trigger per aggiornare somma_raccolta quando viene inserito un finanziamento --
+DROP TRIGGER IF EXISTS aggiorna_somma_raccolta;
+DELIMITER //
+CREATE TRIGGER aggiorna_somma_raccolta
+AFTER INSERT ON FINANZIAMENTO
+FOR EACH ROW
+BEGIN
+    UPDATE PROGETTO
+    SET somma_raccolta = somma_raccolta + NEW.importo
+    WHERE nome = NEW.nome_progetto;
+END //
+DELIMITER ;
+
