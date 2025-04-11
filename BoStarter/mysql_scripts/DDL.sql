@@ -5,7 +5,7 @@ USE bostarter_db;
 
 CREATE TABLE IF NOT EXISTS UTENTE (
     email VARCHAR(32) PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
+    password CHAR(64) NOT NULL,
     nome VARCHAR(32) NOT NULL,
     cognome VARCHAR(32) NOT NULL,
     nickname VARCHAR(32) UNIQUE NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS UTENTE_CREATORE (
 
 CREATE TABLE IF NOT EXISTS UTENTE_AMMINISTRATORE (
   email_utente VARCHAR(32) PRIMARY KEY REFERENCES UTENTE(email) ,
-  codice_sicurezza CHAR(8) UNIQUE NOT NULL
+  codice_sicurezza CHAR(64) UNIQUE NOT NULL
 ) ENGINE = 'InnoDB';
 
 
@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS PROGETTO (
     data_limite DATE NOT NULL,
     stato ENUM ('APERTO', 'CHIUSO') DEFAULT 'APERTO',
     tipo ENUM ('SOFTWARE', 'HARDWARE') NOT NULL,
-    email_utente_creatore VARCHAR(32) NOT NULL REFERENCES UTENTE_CREATORE(email_utente)
+    email_utente_creatore VARCHAR(32) NOT NULL REFERENCES UTENTE_CREATORE(email_utente),
+    somma_raccolta DECIMAL(16,2) DEFAULT 0
 ) ENGINE = 'InnoDB';
 
 

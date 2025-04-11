@@ -30,8 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Crea un oggetto utente
     $user = new User($db);
     
+
+    // Hash della password e security code
+    $hashedPassword = hash('sha256', $password);
+    $hashedSecurityCode = hash('sha256', $securityCode);
+
+
+
     // Prova a effettuare il login come amministratore
-    $isAdmin = $user->adminLogin($email, $password, $securityCode);
+    $isAdmin = $user->adminLogin($email, $hashedPassword, $hashedSecurityCode);
     
     if ($isAdmin) {
         // Ottieni i dettagli dell'utente

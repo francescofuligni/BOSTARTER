@@ -74,14 +74,14 @@ class User {
     }
     
     // Funzione per il login dell'amministratore
-    public function adminLogin($email, $password, $securityCode) {
+    public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
             
             // Chiama la stored procedure per autenticare l'amministratore
             $stmt = $this->conn->prepare("CALL autenticazione_amministratore(:email, :password, :security_code, @autenticato)");
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $password);
-            $stmt->bindParam(':security_code', $securityCode);
+            $stmt->bindParam(':password', $hashedPassword);
+            $stmt->bindParam(':security_code', $hashedSecurityCode);
             $stmt->execute();
             
             
@@ -95,7 +95,7 @@ class User {
     }
 
     // Funzione per la registrazione dell'utente
-    public function register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $codiceSicurezza) {
+    public function register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $hashedSecurityCode) {
         try {
             // Chiama la stored procedure per registrare l'utente
             $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
@@ -107,7 +107,7 @@ class User {
             $stmt->bindParam(':luogo_nascita', $luogoNascita);
             $stmt->bindParam(':anno_nascita', $annoNascita);
             $stmt->bindParam(':tipo', $tipo);
-            $stmt->bindParam(':codice_sicurezza', $codiceSicurezza);
+            $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
             
             return $stmt->execute();
         } catch (PDOException $e) {

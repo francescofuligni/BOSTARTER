@@ -4,3 +4,5 @@ mongo/
 BoStarter/.DS_Store
 .gitignore
 .vscode/
+.DS_Store
+BoStarter/.DS_Store

@@ -30,7 +30,7 @@ if (file_exists($controllerPath)) {
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-danger">
+                            <div class="alert alert-error">
                                 <?php 
                                     echo $_SESSION['error']; 
                                     unset($_SESSION['error']);
@@ -41,8 +41,8 @@ if (file_exists($controllerPath)) {
                         <form action="/register" method="post">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="tipo">Tipologia utente</label>
-                                    <select class="form-control" id="tipo" name="tipo" required>
+                                    <label for="type">Tipologia utente</label>
+                                    <select class="form-control" id="type" name="type" required>
                                         <option value="UTENTE">Standard</option>
                                         <option value="CREATORE">Creatore</option>
                                         <option value="AMMINISTRATORE">Amministratore</option>
@@ -65,31 +65,31 @@ if (file_exists($controllerPath)) {
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="nome">Nome</label>
-                                    <input type="text" class="form-control" id="nome" name="nome" required>
+                                    <label for="name">Nome</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="cognome">Cognome</label>
-                                    <input type="text" class="form-control" id="cognome" name="cognome" required>
+                                    <label for="last_name">Cognome</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="anno_nascita">Anno di nascita</label>
-                                    <input type="number" class="form-control" id="anno_nascita" name="anno_nascita" min="1900" required>
+                                    <label for="birth_year">Anno di nascita</label>
+                                    <select class="form-control" id="birth_year" name="birth_year" required></select>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="luogo_nascita">Luogo di nascita</label>
-                                    <input type="text" class="form-control" id="luogo_nascita" name="luogo_nascita" required>
+                                    <label for="birth_place">Luogo di nascita</label>
+                                    <input type="text" class="form-control" id="birth_place" name="birth_place" required>
                                 </div>
                             </div>
-                            <div class="form-row d-none" id="codice-container">
+                            <div class="form-row d-none" id="security_code_container">
                                 <div class="form-group col-md-8">
-                                    <label for="codice_sicurezza">Codice di sicurezza</label>
-                                    <input type="text" class="form-control" id="codice_sicurezza" name="codice_sicurezza" readonly>
+                                    <label for="security_code">Codice di sicurezza</label>
+                                    <input type="text" class="form-control" id="security_code" name="security_code" readonly>
                                 </div>
                                 <div class="form-group col-md-4 d-flex align-items-end">
-                                    <button class="btn btn-secondary w-100" type="button" onclick="generaCodice()">Genera</button>
+                                    <button class="btn btn-secondary w-100" type="button" onclick="generateCode()">Genera</button>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Registrati</button>

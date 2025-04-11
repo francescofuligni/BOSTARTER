@@ -10,7 +10,7 @@ DROP PROCEDURE IF EXISTS autenticazione_utente;
 DELIMITER //
 CREATE PROCEDURE autenticazione_utente (
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(255),
+    IN in_password CHAR(64),
     OUT autenticato BOOLEAN
 )
 BEGIN
@@ -27,14 +27,14 @@ DROP PROCEDURE IF EXISTS registrazione_utente;
 DELIMITER //
 CREATE PROCEDURE registrazione_utente (
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(255),
+    IN in_password CHAR(64),
     IN in_nome VARCHAR(32),
     IN in_cognome VARCHAR(32),
     IN in_nickname VARCHAR(32),
     IN in_luogo_nascita VARCHAR(32),
     IN in_anno_nascita INT,
     IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE'),
-    IN in_codice_sicurezza CHAR(8)
+    IN in_codice_sicurezza CHAR(64)
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)
@@ -174,8 +174,8 @@ DROP PROCEDURE IF EXISTS autenticazione_amministratore;
 DELIMITER //
 CREATE PROCEDURE autenticazione_amministratore(
     IN in_email VARCHAR(32),
-    IN in_password VARCHAR(255),
-    IN in_codice_sicurezza CHAR(8),
+    IN in_password CHAR(64),
+    IN in_codice_sicurezza CHAR(64),
     OUT autenticato BOOLEAN
 )
 BEGIN
@@ -195,16 +195,16 @@ DROP PROCEDURE IF EXISTS aggiungi_competenza;
 DELIMITER //
 CREATE PROCEDURE aggiungi_competenza(
     IN in_competenza VARCHAR(32),
-    IN in_admin_email VARCHAR(32),
-    IN in_admin_security_code CHAR(8)
+    IN in_email VARCHAR(32),
+    IN in_codice_sicurezza CHAR(64)
 )
 BEGIN
     DECLARE is_amministratore BOOLEAN;
     
     SELECT COUNT(*) > 0 INTO is_amministratore
     FROM UTENTE_AMMINISTRATORE
-    WHERE email_utente = in_admin_email
-    AND codice_sicurezza = in_admin_security_code;
+    WHERE email_utente = in_email
+    AND codice_sicurezza = in_codice_sicurezza;
     
     IF is_amministratore THEN
         INSERT INTO COMPETENZA (nome)

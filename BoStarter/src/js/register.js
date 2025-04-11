@@ -1,22 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const tipoSelect = document.getElementById('tipo');
-    const codiceContainer = document.getElementById('codice-container');
-    const codiceInput = document.getElementById('codice_sicurezza');
+    // Gestione del tipo di utente
+    const typeSelect = document.getElementById('type');
+    const secCodeContainer = document.getElementById('security_code_container');
+    const secCode = document.getElementById('security_code');
 
-    tipoSelect.addEventListener('change', function () {
+    typeSelect.addEventListener('change', function () {
         if (this.value === 'AMMINISTRATORE') {
-            codiceContainer.classList.remove('d-none');
+            secCodeContainer.classList.remove('d-none');
         } else {
-            codiceContainer.classList.add('d-none');
-            codiceInput.value = '';
+            secCodeContainer.classList.add('d-none');
+            secCode.value = '';
         }
     });
+
+    // Popolamento della select per l'anno di nascita
+    const birthYearSelect = document.getElementById('birth_year');
+    const currentYear = new Date().getFullYear();
+
+    for (let year = currentYear; year >= (currentYear - 125); year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        birthYearSelect.appendChild(option);
+    }
 });
 
-async function generaCodice() {
+async function generateCode() {
     const data = new TextEncoder().encode(Date.now().toString() + Math.random());
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    document.getElementById('codice_sicurezza').value = hashHex.substring(0, 8).toUpperCase();
+    document.getElementById('security_code').value = hashHex.substring(0, 8).toUpperCase();
 }

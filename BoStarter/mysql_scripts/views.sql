@@ -44,4 +44,34 @@ DROP VIEW IF EXISTS progetti;
 
 CREATE VIEW progetti AS
 SELECT *
-FROM PROGETTO
+FROM PROGETTO;
+
+
+
+---
+
+DROP VIEW IF EXISTS progetti_con_foto;
+CREATE VIEW progetti_con_foto AS
+WITH prima_foto AS (
+    SELECT f.immagine, f.nome_progetto
+    FROM FOTO f
+    WHERE f.id = (
+        SELECT MIN(f2.id)
+        FROM FOTO f2
+        WHERE f2.nome_progetto = f.nome_progetto
+    )
+)
+SELECT 
+    p.*,
+    pf.immagine
+FROM PROGETTO p
+LEFT JOIN prima_foto pf  -- Changed from INNER JOIN to LEFT JOIN
+    ON p.nome = pf.nome_progetto;
+
+
+-- Vista per tutti i progetti aperti --
+DROP VIEW IF EXISTS progetti_aperti;
+CREATE VIEW progetti_aperti AS
+SELECT p.nome, p.descrizione, p.budget, p.tipo, p.email_utente_creatore, p.immagine 
+FROM progetti_con_foto p
+WHERE p.stato = 'APERTO';
