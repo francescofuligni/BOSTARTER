@@ -18,17 +18,19 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         // Ottieni i dati del form html
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-        $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
-        $cognome = isset($_POST['cognome']) ? trim($_POST['cognome']) : '';
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $lastName = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
         $nickname = isset($_POST['nickname']) ? trim($_POST['nickname']) : '';
-        $luogoNascita = isset($_POST['luogo_nascita']) ? trim($_POST['luogo_nascita']) : '';
-        $annoNascita = isset($_POST['anno_nascita']) ? (int)$_POST['anno_nascita'] : 0;
-        $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : 'UTENTE';
+        $brithPlace = isset($_POST['birth_place']) ? trim($_POST['birth_place']) : '';
+        $birthYear = isset($_POST['birth_year']) ? (int)$_POST['birth_year'] : 0;
+        $type = isset($_POST['type']) ? trim($_POST['type']) : '';
+        $securityCode = isset($_POST['security_code']) ? trim($_POST['security_code']) : '';
         
         // Validazione dell'input
-        if (empty($email) || empty($password) || empty($nome) || empty($cognome) || 
-            empty($nickname) || empty($luogoNascita) || $annoNascita <= 0) {
-            $_SESSION['error'] = "Per favore, compila tutti i campi richiesti.";
+        if (empty($email) || empty($password) || empty($name) || empty($lastName) || 
+            empty($nickname) || empty($brithPlace) || ($birthYear < 1900 || $birthYear > date('Y')) || 
+            ($type == 'AMMINISTRATORE' && empty($securityCode))) {
+            $_SESSION['error'] = 'Errore nella compilazione dei campi.';
             header('Location: /register');
             exit;
         }
@@ -42,31 +44,27 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         
         // Crea un oggetto User (mi serve così posso usare i metodi del modello e ha già la connessione al db)
         $user = new User($db);
-        
-        // Se il codice di sicurezza è definito, lo ottiene
-        $codiceSicurezza = $_POST['codice_sicurezza'] ?? "";
 
         // Se il codice di sicurezza non è vuoto, lo hash
-        if (!$codiceSicurezza == "") {
-            $hashedCodiceSicurezza = hash('sha256', $codiceSicurezza);
-        } else {
-            $hashedCodiceSicurezza = "";
+        $hashedSecurityCode = '';
+        if (!$codiceSicurezza == '') {
+            $hashedSecurityCode = hash('sha256', $securityCode);
         }
 
 
-        $success = $user->register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $hashedCodiceSicurezza);
+        $success = $user->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
         
         if ($success) {
-            $_SESSION['success'] = "Registrazione avvenuta con successo. Ora puoi accedere.";
+            $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';
             header('Location: /login');
             exit;
         } else {
-            $_SESSION['error'] = "Errore durante la registrazione. L'email potrebbe essere già in uso.";
+            $_SESSION['error'] = 'Errore durante la registrazione. L\'email potrebbe essere già in uso.';
             header('Location: /register');
             exit;
         }
     }
 } else {
-    $_SESSION['error'] = "Registrazione fallita.";
+    $_SESSION['error'] = 'Registrazione fallita.';
 }
 ?>
