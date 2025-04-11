@@ -28,8 +28,7 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         
         // Validazione dell'input
         if (empty($email) || empty($password) || empty($name) || empty($lastName) || 
-            empty($nickname) || empty($brithPlace) || ($birthYear < 1900 || $birthYear > date('Y')) || 
-            ($type == 'AMMINISTRATORE' && empty($securityCode))) {
+            empty($nickname) || empty($brithPlace) || ($type == 'AMMINISTRATORE' && empty($securityCode))) {
             $_SESSION['error'] = 'Errore nella compilazione dei campi.';
             header('Location: /register');
             exit;
@@ -50,7 +49,6 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         if (!$codiceSicurezza == '') {
             $hashedSecurityCode = hash('sha256', $securityCode);
         }
-
 
         $success = $user->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
         
