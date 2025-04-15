@@ -12,17 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
             secCode.value = '';
         }
     });
-
-    // Popolamento della select per l'anno di nascita
-    const birthYearSelect = document.getElementById('birth_year');
-    const currentYear = new Date().getFullYear();
-
-    for (let year = currentYear; year >= (currentYear - 125); year--) {
-        const option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        birthYearSelect.appendChild(option);
-    }
 });
 
 async function generateCode() {

@@ -76,7 +76,14 @@ if (file_exists($controllerPath)) {
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="birth_year">Anno di nascita</label>
-                                    <select class="form-control" id="birth_year" name="birth_year" required></select>
+                                    <select class="form-control" id="birth-year" name="birth_year" required>
+                                        <?php
+                                        $currentYear = date("Y");
+                                        for ($year = $currentYear; $year >= $currentYear - 125; $year--) {
+                                            echo "<option value=\"$year\">$year</option>";
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="birth_place">Luogo di nascita</label>
