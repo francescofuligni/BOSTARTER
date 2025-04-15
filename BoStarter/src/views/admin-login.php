@@ -11,14 +11,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
 
 require_once __DIR__ . '/components/navbar.php';
 require_once __DIR__ . '/../controllers/AdminLoginController.php';
-
-// Gestione dell'errore
-$error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
-if ($error) {
-    unset($_SESSION['error']);
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="it">
@@ -37,12 +30,15 @@ if ($error) {
                         <h3 class="text-center">Accesso Amministratore</h3>
                     </div>
                     <div class="card-body">
-                        <?php if ($error): ?>
+                        <?php if (isset($_SESSION['error'])): ?>
                             <div class="alert alert-danger">
-                                <?php echo $error; ?>
+                                <?php 
+                                    echo $_SESSION['error']; 
+                                    unset($_SESSION['error']);
+                                ?>
                             </div>
                         <?php endif; ?>
-
+                        
                         <form action="/admin-login" method="post">
                             <div class="form-group">
                                 <label for="email">Email</label>
@@ -58,7 +54,7 @@ if ($error) {
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Accedi</button>
                         </form>
-
+                        
                         <div class="mt-3 text-center">
                             <p><a href="/login">Accedi come utente</a></p>
                         </div>

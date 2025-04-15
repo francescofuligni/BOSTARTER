@@ -4,19 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 $currentPath = $_SERVER['REQUEST_URI'];
-$isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '/admin-login') !== false || strpos($currentPath, '/register') !== false;
-
-if (isset($_SESSION['user_id'])) {
-    if ($_SESSION['user_type'] === 'creator') {
-        $dashboardLink = '/creator-dashboard';
-    } elseif ($_SESSION['user_type'] === 'admin') {
-        $dashboardLink = '/amdin-dashboard';
-    } else {
-        $dashboardLink = '/dashboard';
-    }
-}
 ?>
-
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -25,10 +13,22 @@ if (isset($_SESSION['user_id'])) {
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+            <?php
+                $isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '/admin-login') !== false || strpos($currentPath, '/register') !== false;
+            ?>
             <?php if (!$isAuthPage): ?>
                 <ul class="navbar-nav ml-auto">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <li class="nav-item">
+                            <?php
+                                if ($_SESSION['user_type'] === 'creator') {
+                                    $dashboardLink = '/creator-dashboard';
+                                } elseif ($_SESSION['user_type'] === 'admin') {
+                                    $dashboardLink = '/dashboard';  // TODO: DA CAMBIARE CON admin-dashboard
+                                } else {
+                                    $dashboardLink = '/dashboard';
+                                }
+                            ?>
                             <a class="nav-link" href="<?= $dashboardLink ?>">Dashboard</a>
                         </li>
                         <li class="nav-item">

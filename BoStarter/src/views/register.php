@@ -9,16 +9,11 @@ if (file_exists($controllerPath)) {
     require_once $controllerPath;
 }
 
-// Gestione messaggi di errore
-$error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
-if ($error) {
-    unset($_SESSION['error']);
-}
+require_once __DIR__ . '/components/navbar.php';
 ?>
 
-
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,12 +30,15 @@ if ($error) {
                         <h3 class="text-center">Crea il tuo account BoStarter</h3>
                     </div>
                     <div class="card-body">
-                        <?php if ($error): ?>
-                            <div class="alert alert-danger">
-                                <?php echo $error; ?>
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <div class="alert alert-error">
+                                <?php 
+                                    echo $_SESSION['error']; 
+                                    unset($_SESSION['error']);
+                                ?>
                             </div>
                         <?php endif; ?>
-
+                        
                         <form action="/register" method="post">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -104,7 +102,7 @@ if ($error) {
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Registrati</button>
                         </form>
-
+                        
                         <div class="mt-3 text-center">
                             <p>Hai già un account? <a href="/login">Effettua il login!</a></p>
                         </div>

@@ -14,6 +14,6 @@ class CreatorDashboardController {
      * @return void
      */
     public function handle() {
-        // TODO
+        // Logica della dashboard del creatore da implementare
     }
 }
