@@ -1,4 +1,5 @@
 <?php
+// Inizia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,10 +14,13 @@ if (file_exists($authPath)) {
 $auth = new Authentication();
 $auth->validateAuthToken();
 
-// Se non è autenticato la navbar non si carica nemmeno
+// Includi la navbar solo se autenticato
 require_once __DIR__ . '/components/navbar.php';
+
+// Include il controller per la dashboard
 require_once __DIR__ . '/../controllers/DashboardController.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">
@@ -37,14 +41,14 @@ require_once __DIR__ . '/../controllers/DashboardController.php';
         <h2 class="mb-4">Progetti aperti</h2>
         
         <div class="row">
-            <?php if (empty($activeProjects)): ?>
+            <?php if (empty($openProjects)): ?>
                 <div class="col-12">
                     <div class="alert alert-info">
                         Non ci sono progetti attivi al momento.
                     </div>
                 </div>
             <?php else: ?>
-                <?php foreach ($activeProjects as $project): ?>
+                <?php foreach ($openProjects as $project): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100 shadow-sm border-0">
                             <?php if (!empty($project['immagine'])): ?>

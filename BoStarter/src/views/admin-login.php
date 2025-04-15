@@ -1,16 +1,24 @@
 <?php
+// Avvia la sessione se non è già avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Controlla se l'utente è già loggato come amministratore
+// Verifica se l'utente è già loggato come amministratore
 if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
     header('Location: /admin-dashboard');
     exit;
 }
 
+// Include la navbar e il controller per il login amministratore
 require_once __DIR__ . '/components/navbar.php';
 require_once __DIR__ . '/../controllers/AdminLoginController.php';
+
+// Gestione dei messaggi di errore
+$error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
+if ($error) {
+    unset($_SESSION['error']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,12 +38,9 @@ require_once __DIR__ . '/../controllers/AdminLoginController.php';
                         <h3 class="text-center">Accesso Amministratore</h3>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($_SESSION['error'])): ?>
+                        <?php if ($error): ?>
                             <div class="alert alert-danger">
-                                <?php 
-                                    echo $_SESSION['error']; 
-                                    unset($_SESSION['error']);
-                                ?>
+                                <?php echo $error; ?>
                             </div>
                         <?php endif; ?>
                         

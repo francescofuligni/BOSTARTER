@@ -15,7 +15,7 @@ class DashboardController {
      * Ottiene tutti i progetti aperti dal database
      * @return array Array dei progetti aperti
      */
-    public function getActiveProjects() {
+    public function getOpenProjects() {
         try {
             $stmt = $this->db->prepare("SELECT * FROM progetti_aperti");
             $stmt->execute();
@@ -32,5 +32,5 @@ class DashboardController {
 
 // Istanziamo il controller per utilizzarlo nella vista
 $dashboardController = new DashboardController();
-$activeProjects = $dashboardController->getActiveProjects();
+$openProjects = $dashboardController->getActiveProjects();
 ?>

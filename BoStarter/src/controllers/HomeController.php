@@ -32,5 +32,5 @@ class HomeController {
 
 // Istanziamo il controller per utilizzarlo nella vista
 $homeController = new HomeController();
-$activeProjects = $homeController->getProjectsPreview();
+$projects = $homeController->getProjectsPreview();
 ?>

@@ -1,9 +1,25 @@
 <?php
+// Inizializzazione sessione
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// Determina il percorso corrente
 $currentPath = $_SERVER['REQUEST_URI'];
+
+// Controlla se la pagina corrente è una pagina di login o registrazione
+$isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '/admin-login') !== false || strpos($currentPath, '/register') !== false;
+
+// Determina il link della dashboard in base al tipo di utente
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['user_type'] === 'creator') {
+        $dashboardLink = '/creator-dashboard';
+    } elseif ($_SESSION['user_type'] === 'admin') {
+        $dashboardLink = '/dashboard';  // TODO: DA CAMBIARE CON admin-dashboard
+    } else {
+        $dashboardLink = '/dashboard';
+    }
+}
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -13,22 +29,10 @@ $currentPath = $_SERVER['REQUEST_URI'];
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <?php
-                $isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '/admin-login') !== false || strpos($currentPath, '/register') !== false;
-            ?>
             <?php if (!$isAuthPage): ?>
                 <ul class="navbar-nav ml-auto">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <li class="nav-item">
-                            <?php
-                                if ($_SESSION['user_type'] === 'creator') {
-                                    $dashboardLink = '/creator-dashboard';
-                                } elseif ($_SESSION['user_type'] === 'admin') {
-                                    $dashboardLink = '/dashboard';  // TODO: DA CAMBIARE CON admin-dashboard
-                                } else {
-                                    $dashboardLink = '/dashboard';
-                                }
-                            ?>
                             <a class="nav-link" href="<?= $dashboardLink ?>">Dashboard</a>
                         </li>
                         <li class="nav-item">

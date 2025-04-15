@@ -1,19 +1,28 @@
 <?php
+// Inizia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Includi il controller per la registrazione
+// Includi il controller per la registrazione se esiste
 $controllerPath = __DIR__ . '/../controllers/RegisterController.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 }
 
+// Includi la navbar
 require_once __DIR__ . '/components/navbar.php';
+
+// Gestione degli errori
+$error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
+if ($error) {
+    unset($_SESSION['error']);
+}
 ?>
 
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,12 +39,9 @@ require_once __DIR__ . '/components/navbar.php';
                         <h3 class="text-center">Crea il tuo account BoStarter</h3>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-error">
-                                <?php 
-                                    echo $_SESSION['error']; 
-                                    unset($_SESSION['error']);
-                                ?>
+                        <?php if ($error): ?>
+                            <div class="alert alert-danger">
+                                <?php echo $error; ?>
                             </div>
                         <?php endif; ?>
                         
