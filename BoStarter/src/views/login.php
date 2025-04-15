@@ -60,7 +60,7 @@ if (file_exists($controllerPath)) {
                         
                         <div class="mt-3 text-center">
                             <p>Non hai un account? <a href="/register">Registrati qui</a></p>
-                            <p>Sei un amministratore? <a href="/admin-login">Login Amministratore</a></p>
+                            <p>Sei un amministratore? <a href="/admin-login">Login amministratore</a></p>
                         </div>
                     </div>
                 </div>
