@@ -28,7 +28,7 @@ require_once __DIR__ . '/../controllers/AdminLoginController.php';
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="text-center">Login Amministratore</h3>
+                        <h3 class="text-center">Accesso Amministratore</h3>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
@@ -57,7 +57,7 @@ require_once __DIR__ . '/../controllers/AdminLoginController.php';
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p><a href="/login">Vai al login utente</a></p>
+                            <p><a href="/login">Accedi come utente</a></p>
                         </div>
                     </div>
                 </div>

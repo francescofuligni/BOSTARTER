@@ -37,7 +37,7 @@ require_once __DIR__ . '/components/navbar.php';
             <hr class="my-4">
         </div>
         
-        <h2 class="mb-4">Progetti Attivi</h2>
+        <h2 class="mb-4">Progetti aperti</h2>
         
         <div class="row">
             <?php if (empty($activeProjects)): ?>
@@ -49,31 +49,25 @@ require_once __DIR__ . '/components/navbar.php';
             <?php else: ?>
                 <?php foreach ($activeProjects as $project): ?>
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 shadow-sm border-0">
                             <?php if (!empty($project['immagine'])): ?>
                                 <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>" 
                                      class="card-img-top" alt="<?php echo htmlspecialchars($project['nome']); ?>" 
-                                     style="height: 200px; object-fit: cover;">
+                                     style="height: 150px; object-fit: cover;">
                             <?php else: ?>
-                                <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" 
-                                     style="height: 200px;">
-                                    <span>Nessuna immagine</span>
+                                <div class="card-img-top bg-light text-muted d-flex align-items-center justify-content-center" 
+                                     style="height: 150px;">
+                                    <small>Nessuna immagine</small>
                                 </div>
                             <?php endif; ?>
-                            
+
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?php echo htmlspecialchars($project['nome']); ?></h5>
-                                <p class="card-text">
-                                    <?php echo nl2br(htmlspecialchars(substr($project['descrizione'], 0, 150))); ?>
-                                    <?php echo (strlen($project['descrizione']) > 150) ? '...' : ''; ?>
+                                <h5 class="card-title mb-2"><?php echo htmlspecialchars($project['nome']); ?></h5>
+                                <p class="card-text mb-3 small text-muted">
+                                    <?php echo nl2br(htmlspecialchars(substr($project['descrizione'], 0, 100))); ?>
+                                    <?php echo (strlen($project['descrizione']) > 100) ? '...' : ''; ?>
                                 </p>
-                                <div class="mt-auto">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="badge badge-primary"><?php echo htmlspecialchars($project['tipo']); ?></span>
-                                        <span class="badge badge-success">€ <?php echo number_format($project['budget'], 2, ',', '.'); ?></span>
-                                    </div>
-                                    <a href="/project-details?name=<?php echo urlencode($project['nome']); ?>" class="btn btn-primary btn-block">Visualizza Progetto</a>
-                                </div>
+                                <a href="/project-details?name=<?php echo urlencode($project['nome']); ?>" class="btn btn-outline-primary btn-sm mt-auto">Visualizza</a>
                             </div>
                         </div>
                     </div>

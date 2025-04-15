@@ -36,12 +36,13 @@ require_once __DIR__ . '/components/navbar.php';
             <h1 class="display-4">Benvenuto nella tua Dashboard, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
             <p class="lead">Qui puoi gestire i tuoi progetti e monitorare le tue campagne di crowdfunding.</p>
             <hr class="my-4">
-            <p>Utilizza il menu per navigare tra le diverse sezioni.</p>
-            <a class="btn btn-primary btn-lg" href="/logout" role="button">Esci</a>
+            <p>DASHBOARD CREATORE IN MANUTENZIONE.</p>
         </div>
 
-        <!-- Aggiungi qui il contenuto specifico della dashboard del creatore -->   
+        <!-- Forse, più che mostrare i progetti aperti, metterei un filtro (aperti/chiusi/tutti) -->   
 
+        <!-- Aggiungi qui il contenuto specifico della dashboard del creatore: BOTTONE CREA PROGETTO -->   
+        <!-- Analogamente per la dashboard dell'amministratore: BOTTONE MODIFICA COMPETENZE -->
        
     </div>
 </body>
