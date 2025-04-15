@@ -14,10 +14,11 @@ if (session_status() == PHP_SESSION_NONE) {
             <ul class="navbar-nav ml-auto">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/creator-dashboard">Dashboard</a>
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                        <!-- AGGIORNARE: REINDIRIZZARE ALLA DASHBOARD CORRETTA (UTENTE/CREATOR/ADMIN) -->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/logout">Logout</a>
+                        <a class="nav-link" href="/logout">Esci</a>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
