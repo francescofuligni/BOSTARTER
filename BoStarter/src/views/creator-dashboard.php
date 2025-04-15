@@ -1,26 +1,23 @@
 <?php
-// Start session if not already started
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// includdi il controller e il path per autenticarla (è una rotta protetta)
+// Includi il controller e il path per autenticarla (è una rotta protetta)
 $controllerPath = __DIR__ . '/../controllers/CreatorDashboardController.php';
 $authPath = __DIR__ . '/../config/Authentication.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
-
 }
 if (file_exists($authPath)) {
     require_once $authPath;
 }
 $auth = new Authentication();
 $auth->validateAuthToken();
-// la metto sotto perchè se non è autenticata non la faccio nemmeno caricare
+
 require_once __DIR__ . '/components/navbar.php';
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

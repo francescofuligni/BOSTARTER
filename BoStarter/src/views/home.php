@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/components/navbar.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>

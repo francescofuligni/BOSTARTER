@@ -1,5 +1,4 @@
 <?php
-// Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,11 +13,9 @@ if (file_exists($authPath)) {
 $auth = new Authentication();
 $auth->validateAuthToken();
 
-// Includi il controller
-require_once __DIR__ . '/../controllers/DashboardController.php';
-
-// Includi la navbar
+// Se non è autenticato la navbar non si carica nemmeno
 require_once __DIR__ . '/components/navbar.php';
+require_once __DIR__ . '/../controllers/DashboardController.php';
 ?>
 
 <!DOCTYPE html>
