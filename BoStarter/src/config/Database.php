@@ -7,6 +7,12 @@ class Database {
     private $password = 'root_password';
     private $conn;
 
+    /**
+     * Restituisce una connessione al database tramite PDO.
+     * In caso di errore durante la connessione, stampa un messaggio di errore.
+     *
+     * @return PDO|null Oggetto PDO se la connessione ha successo, null altrimenti
+     */
     public function getConnection() {
         $this->conn = null;
 
@@ -21,4 +27,3 @@ class Database {
         return $this->conn;
     }
 }
-?>

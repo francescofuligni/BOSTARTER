@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * Classe responsabile della gestione dell'autenticazione tramite token di sessione.
+ */
 class Authentication
 {
-    public function validateAuthToken()
+    /**
+     * Valida il token di autenticazione presente nella sessione.
+     * Verifica l'esistenza e la validità temporale del token e lo confronta con il valore atteso.
+     * Reindirizza alla pagina di login in caso di token assente o non valido.
+     *
+     * @return bool True se il token è valido, false altrimenti
+     */
+    public function validateAuthToken($authToken)
     {
         // Avvia la sessione se non è già stata avviata
         if (session_status() == PHP_SESSION_NONE) {

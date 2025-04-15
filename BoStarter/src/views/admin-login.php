@@ -57,7 +57,7 @@ require_once __DIR__ . '/../controllers/AdminLoginController.php';
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p><a href="/login">Torna al Login Utente</a></p>
+                            <p><a href="/login">Vai al login utente</a></p>
                         </div>
                     </div>
                 </div>

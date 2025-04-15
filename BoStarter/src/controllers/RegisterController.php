@@ -4,17 +4,23 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include il file di configurazione del database e il modello User
-$dbPath = __DIR__ . '/../config/Database.php';
-$userPath = __DIR__ . '/../models/User.php';
+class RegisterController {
+    private $db;
+    private $user;
 
-// Controlla se i file esistono
-if (file_exists($dbPath) && file_exists($userPath)) {
-    require_once $dbPath;
-    require_once $userPath;
+    public function __construct() {
+        $database = new Database();
+        $this->db = $database->getConnection();
+        $this->user = new User($this->db);
+    }
 
-    // Controlla se il metodo della richiesta è POST (invio del modulo)
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    /**
+     * Gestisce la richiesta POST per la registrazione di un utente.
+     * Valida i dati, esegue l'hashing e chiama il metodo register del modello.
+     *
+     * @return void
+     */
+    public function handlePostRequest() {
         // Ottieni i dati del form html
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
@@ -36,21 +42,14 @@ if (file_exists($dbPath) && file_exists($userPath)) {
 
         // Hash della password
         $hashedPassword = hash('sha256', $password);
-    
-        // Connessione al db
-        $database = new Database();
-        $db = $database->getConnection();
         
-        // Crea un oggetto User (mi serve così posso usare i metodi del modello e ha già la connessione al db)
-        $user = new User($db);
-
         // Se il codice di sicurezza non è vuoto, lo hash
         $hashedSecurityCode = '';
-        if (!$codiceSicurezza == '') {
+        if (!$securityCode == '') {
             $hashedSecurityCode = hash('sha256', $securityCode);
         }
 
-        $success = $user->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
+        $success = $this->user->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
         
         if ($success) {
             $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';
@@ -61,6 +60,19 @@ if (file_exists($dbPath) && file_exists($userPath)) {
             header('Location: /register');
             exit;
         }
+    }
+}
+
+$dbPath = __DIR__ . '/../config/Database.php';
+$userPath = __DIR__ . '/../models/User.php';
+
+if (file_exists($dbPath) && file_exists($userPath)) {
+    require_once $dbPath;
+    require_once $userPath;
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $controller = new RegisterController();
+        $controller->handlePostRequest();
     }
 } else {
     $_SESSION['error'] = 'Registrazione fallita.';

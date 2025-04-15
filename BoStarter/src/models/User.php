@@ -1,5 +1,5 @@
 <?php
-// creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ecc
+// Creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ecc
 class User {
     private $conn;
 
@@ -7,18 +7,21 @@ class User {
         $this->conn = $db;
     }
 
+    /**
+     * Effettua il login dell'utente.
+     * Chiama una stored procedure che verifica l'autenticazione.
+     * 
+     * @param string $email Email dell'utente
+     * @param string $hashedPassword Password già hashata
+     * @return array|false Dati dell'utente se autenticato, false altrimenti
+     */
     public function login($email, $hashedPassword) {
         try {
-            // Chiamo la stored procedure per autenticare l'utente
-            // La stored procedure restituisce un parametro di output @autenticato
-            // che indica se l'autenticazione è andata a buon fine
-            // stmt sta per statement perchè è una query 
             $stmt = $this->conn->prepare("CALL autenticazione_utente(:email, :password, @autenticato)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->execute();
             
-            // Restituisco il valore del parametro di output
             $result = $this->conn->query("SELECT @autenticato as autenticato")->fetch(PDO::FETCH_ASSOC);
             
             if ($result['autenticato']) {
@@ -32,7 +35,13 @@ class User {
             return false;
         }
     }
-    // Funzione per ottenere i dati dell'utente
+    
+    /**
+     * Recupera i dati dell'utente dal database.
+     * 
+     * @param string $email Email dell'utente
+     * @return array|false Dati dell'utente o false in caso di errore
+     */
     public function getUserData($email) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM UTENTE WHERE email = :email");
@@ -45,7 +54,13 @@ class User {
             return false;
         }
     }
-    // Funzione per controllare se l'utente è un creatore 
+    
+    /**
+     * Verifica se l'utente è un creatore.
+     * 
+     * @param string $email Email dell'utente
+     * @return bool True se è un creatore, false altrimenti
+     */
     public function isCreator($email) {
         try {
             $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_CREATORE WHERE email_utente = :email");
@@ -59,7 +74,12 @@ class User {
         }
     }
 
-    // Funzione per controllare se l'utente è un admin
+    /**
+     * Verifica se l'utente è un amministratore.
+     * 
+     * @param string $email Email dell'utente
+     * @return bool True se è un admin, false altrimenti
+     */
     public function isAdmin($email) {
         try {
             $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_AMMINISTRATORE WHERE email_utente = :email");
@@ -73,17 +93,22 @@ class User {
         }
     }
     
-    // Funzione per il login dell'amministratore
+    /**
+     * Effettua il login dell'amministratore.
+     * Chiama una stored procedure per autenticare l'amministratore.
+     * 
+     * @param string $email Email dell'amministratore
+     * @param string $hashedPassword Password già hashata
+     * @param string $hashedSecurityCode Codice di sicurezza hashato
+     * @return bool True se autenticato, false altrimenti
+     */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
-            
-            // Chiama la stored procedure per autenticare l'amministratore
             $stmt = $this->conn->prepare("CALL autenticazione_amministratore(:email, :password, :security_code, @autenticato)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->bindParam(':security_code', $hashedSecurityCode);
             $stmt->execute();
-            
             
             $result = $this->conn->query("SELECT @autenticato as autenticato")->fetch(PDO::FETCH_ASSOC);
             
@@ -94,10 +119,23 @@ class User {
         }
     }
 
-    // Funzione per la registrazione dell'utente
+    /**
+     * Registra un nuovo utente nel sistema.
+     * Chiama una stored procedure che salva i dati nel database.
+     * 
+     * @param string $email Email dell'utente
+     * @param string $hashedPassword Password già hashata
+     * @param string $name Nome dell'utente
+     * @param string $lastName Cognome dell'utente
+     * @param string $nickname Nickname scelto
+     * @param string $birthPlace Luogo di nascita
+     * @param int $birthYear Anno di nascita
+     * @param string $type Tipo di utente (es. standard, admin, creatore)
+     * @param string $hashedSecurityCode Codice di sicurezza hashato
+     * @return bool True se la registrazione è andata a buon fine, false altrimenti
+     */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
-            // Chiama la stored procedure per registrare l'utente
             $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
@@ -116,29 +154,28 @@ class User {
         }
     }
 
+    /**
+     * Effettua il logout dell'utente.
+     * Distrugge la sessione e reindirizza alla home.
+     * 
+     * @return void
+     */
     public function logout() {
-        // Distruggi la sessione per effettuare il logout
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         
-
-        // RIMOZIONE PER ESSERE SICURI MAGARI POI LO TOGLIAMO
         if (isset($_SESSION['auth_token'])) {
             unset($_SESSION['auth_token']);
         }
         if (isset($_SESSION['token_expiration'])) {
             unset($_SESSION['token_expiration']);
         }
-        // Distruggi tutte le variabili di sessione
         $_SESSION = array();
         
-        // Distruggi la sessione
         session_destroy();
         
-        // Reindirizza alla pagina di login o alla home page
         header("Location: /home");
         exit();
     }
 }
-?>
