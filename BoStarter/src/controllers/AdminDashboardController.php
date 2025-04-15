@@ -1,6 +1,6 @@
 <?php
 
-class CreatorDashboardController {
+class AdminDashboardController {
     private $db;
 
     public function __construct() {
@@ -9,7 +9,7 @@ class CreatorDashboardController {
     }
 
     /**
-     * Metodo principale per gestire la logica della dashboard del creatore.
+     * Metodo principale per gestire la logica della dashboard dell'amministratore.
      *
      * @return void
      */

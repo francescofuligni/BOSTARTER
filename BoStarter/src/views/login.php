@@ -10,7 +10,15 @@ if (file_exists($controllerPath)) {
 }
 
 require_once __DIR__ . '/components/navbar.php';
+
+// Gestione dei messaggi di errore e successo
+$error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
+$success = isset($_SESSION['success']) ? $_SESSION['success'] : null;
+
+if ($error) unset($_SESSION['error']);
+if ($success) unset($_SESSION['success']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">
@@ -29,21 +37,15 @@ require_once __DIR__ . '/components/navbar.php';
                         <h3 class="text-center">Accedi a BoStarter</h3>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($_SESSION['error'])): ?>
+                        <?php if ($error): ?>
                             <div class="alert alert-danger">
-                                <?php 
-                                    echo $_SESSION['error']; 
-                                    unset($_SESSION['error']);
-                                ?>
+                                <?php echo $error; ?>
                             </div>
                         <?php endif; ?>
                         
-                        <?php if (isset($_SESSION['success'])): ?>
+                        <?php if ($success): ?>
                             <div class="alert alert-success">
-                                <?php 
-                                    echo $_SESSION['success']; 
-                                    unset($_SESSION['success']);
-                                ?>
+                                <?php echo $success; ?>
                             </div>
                         <?php endif; ?>
                         

@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Inclusione del controller e del path di autenticazione (è una rotta protetta)
-$controllerPath = __DIR__ . '/../controllers/CreatorDashboardController.php';
+$controllerPath = __DIR__ . '/../controllers/AdminDashboardController.php';
 $authPath = __DIR__ . '/../config/Authentication.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
@@ -37,7 +37,7 @@ require_once __DIR__ . '/components/navbar.php';
             <p>DASHBOARD CREATORE IN MANUTENZIONE.</p>
         </div>
 
-        <!-- Aggiungi qui il contenuto specifico della dashboard del creatore: BOTTONE CREA PROGETTO -->   
+        <!-- Analogamente per la dashboard dell'amministratore: BOTTONE MODIFICA COMPETENZE -->
         <!-- FORSE UNA SOLA VISTA IN CUI IL BOTTONE CAMBIA A SECONDA DELL'UTENTE? (riuso codice, così tanto codice uguale) -->
         
     </div>

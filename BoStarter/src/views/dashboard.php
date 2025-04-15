@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include il file di autenticazione
+// Inclusione del path di autenticazione
 $authPath = __DIR__ . '/../config/Authentication.php';
 if (file_exists($authPath)) {
     require_once $authPath;
@@ -13,10 +13,14 @@ if (file_exists($authPath)) {
 $auth = new Authentication();
 $auth->validateAuthToken();
 
-// Se non è autenticato la navbar non si carica nemmeno
+// Include la navbar
 require_once __DIR__ . '/components/navbar.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
+
+// Recupera i progetti attivi
+$activeProjects = getActiveProjects();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">
