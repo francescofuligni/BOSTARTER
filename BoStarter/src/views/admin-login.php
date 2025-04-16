@@ -26,7 +26,7 @@ require_once __DIR__ . '/components/navbar.php';
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="text-center">Login Amministratore</h3>
+                        <h3 class="text-center">Accesso Amministratore</h3>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
@@ -55,7 +55,7 @@ require_once __DIR__ . '/components/navbar.php';
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p><a href="/login">Torna al Login Utente</a></p>
+                            <p><a href="/login">Vai all'accesso utente</a></p>
                         </div>
                     </div>
                 </div>
