@@ -1,30 +1,32 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Project.php';
 
-// Connessione al database
 $database = new Database();
 $db = $database->getConnection();
+$user = new User($db);
+$projectModel = new Project($db);
 
-/**
- * Ottiene tutti i progetti aperti dal database tramite la view progetti_aperti
- * @param PDO $db
- * @return array
- */
-function getActiveProjects($db) {
-    try {
-        $stmt = $db->prepare("SELECT * FROM progetti_aperti");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        echo "<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>";
-        return [];
+// Gestione inserimento commento direttamente qui
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
+    $nomeProgetto = $_POST['nome_progetto'];
+    $testoCommento = trim($_POST['testo_commento']);
+    $emailUtente = $_SESSION['user_id'] ?? '';
+
+    if ($nomeProgetto && $testoCommento && $emailUtente) {
+        if ($user->addComment($nomeProgetto, $emailUtente, $testoCommento)) {
+            $_SESSION['success'] = "Commento aggiunto con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'inserimento del commento.";
+        }
+    } else {
+        $_SESSION['error'] = "Compila tutti i campi per inserire un commento.";
     }
+    header('Location: /dashboard');
+    exit;
 }
 
-// Recupera i progetti attivi
-$activeProjects = getActiveProjects($db);
-
-// Crea l'oggetto User per la view
-$user = new User($db);
+// Recupera i progetti attivi tramite il model Project
+$activeProjects = $projectModel->getActiveProjects();
 ?>

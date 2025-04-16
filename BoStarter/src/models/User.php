@@ -158,5 +158,20 @@ class User {
             return false;
         }
     }
+
+    /**
+     * Aggiungi un commento a un progetto
+     */
+    public function addComment($nomeProgetto, $emailUtente, $testoCommento) {
+        try {
+            $stmt = $this->conn->prepare("CALL inserisci_commento(:nome_progetto, :email_utente, :testo)");
+            $stmt->bindParam(':nome_progetto', $nomeProgetto);
+            $stmt->bindParam(':email_utente', $emailUtente);
+            $stmt->bindParam(':testo', $testoCommento);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
 ?>

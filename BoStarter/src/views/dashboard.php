@@ -87,8 +87,56 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
                             <p><strong>Budget:</strong> € <?php echo number_format($project['budget'], 2, ',', '.'); ?></p>
                             <p><strong>Tipo:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
                             <p><strong>Email creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
-                            <?php if (!empty($project['immagine'])): ?>
-                                <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>" class="img-fluid" alt="Immagine progetto">
+
+                            <!-- Gallery delle foto (via stored procedure) -->
+                            <div class="mb-3">
+                                <strong>Galleria foto:</strong>
+                                <div class="d-flex flex-wrap">
+                                    <?php
+                                    $photos = $projectModel->getProjectPhotos($project['nome']);
+                                    if ($photos) {
+                                        foreach ($photos as $img) {
+                                            echo '<img src="data:image/jpeg;base64,' . base64_encode($img) . '" class="img-thumbnail m-1" style="max-width:120px;max-height:120px;" alt="Foto progetto">';
+                                        }
+                                    } else {
+                                        echo '<span class="text-muted">Nessuna foto disponibile.</span>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+
+                            <!-- Lista commenti (via stored procedure) -->
+                            <div class="mb-3">
+                                <strong>Commenti:</strong>
+                                <ul class="list-group">
+                                    <?php
+                                    $comments = $projectModel->getProjectComments($project['nome']);
+                                    if ($comments) {
+                                        foreach ($comments as $comment) {
+                                            echo '<li class="list-group-item"><strong>' . htmlspecialchars($comment['nickname']) . ':</strong> ' . htmlspecialchars($comment['testo']) . '<br><small class="text-muted">' . htmlspecialchars($comment['data']) . '</small></li>';
+                                        }
+                                    } else {
+                                        echo '<li class="list-group-item text-muted">Nessun commento.</li>';
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+
+                            <!-- Form per aggiungere un commento (solo utenti normali) -->
+                            <?php
+                            if (
+                                isset($_SESSION['user_id']) &&
+                                !$user->isCreator($_SESSION['user_id']) &&
+                                !$user->isAdmin($_SESSION['user_id'])
+                            ): ?>
+                            <form action="/dashboard" method="post" class="mb-2">
+                                <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
+                                <div class="form-group">
+                                    <label for="testo_commento_<?php echo md5($project['nome']); ?>">Lascia un commento:</label>
+                                    <textarea class="form-control" id="testo_commento_<?php echo md5($project['nome']); ?>" name="testo_commento" rows="2" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Invia commento</button>
+                            </form>
                             <?php endif; ?>
                           </div>
                           <div class="modal-footer">
