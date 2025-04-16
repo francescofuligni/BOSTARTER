@@ -2,7 +2,7 @@
 // inizia la sessione
 session_start();
 
-// definisco le rotte
+// definisco le rotte (solo verso le view)
 $routes = [
     '/' => 'views/home.php',
     '/login' => 'views/login.php',
@@ -10,9 +10,7 @@ $routes = [
     '/register' => 'views/register.php',
     '/logout' => 'controllers/LogoutController.php',
     '/dashboard' => 'views/dashboard.php',
-    '/admin-dashboard' => 'views/admin-dashboard.php',
-    '/creator-dashboard' => 'views/creator-dashboard.php',
-
+    '/create-project' => 'views/create-project.php', // ora punta alla view
 ];
 
 // Prende l'URI richiesta

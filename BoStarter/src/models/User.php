@@ -95,18 +95,18 @@ class User {
     }
 
     // Funzione per la registrazione dell'utente
-    public function register($email, $hashedPassword, $nome, $cognome, $nickname, $luogoNascita, $annoNascita, $tipo, $hashedSecurityCode) {
+    public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
             // Chiama la stored procedure per registrare l'utente
             $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':cognome', $cognome);
+            $stmt->bindParam(':nome', $name);
+            $stmt->bindParam(':cognome', $lastName);
             $stmt->bindParam(':nickname', $nickname);
-            $stmt->bindParam(':luogo_nascita', $luogoNascita);
-            $stmt->bindParam(':anno_nascita', $annoNascita);
-            $stmt->bindParam(':tipo', $tipo);
+            $stmt->bindParam(':luogo_nascita', $birthPlace);
+            $stmt->bindParam(':anno_nascita', $birthYear);
+            $stmt->bindParam(':tipo', $type);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
             
             return $stmt->execute();
@@ -139,6 +139,24 @@ class User {
         // Reindirizza alla pagina di login o alla home page
         header("Location: /home");
         exit();
+    }
+
+    /**
+     * Crea un nuovo progetto (solo per creatori)
+     */
+    public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore) {
+        try {
+            $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
+            $stmt->bindParam(':nome', $nome);
+            $stmt->bindParam(':descrizione', $descrizione);
+            $stmt->bindParam(':budget', $budget);
+            $stmt->bindParam(':data_limite', $data_limite);
+            $stmt->bindParam(':tipo', $tipo);
+            $stmt->bindParam(':email_creatore', $email_creatore);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 }
 ?>

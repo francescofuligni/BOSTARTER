@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($isAdmin) {
         // Ottieni i dettagli dell'utente
-        $userData = $user->getDataByEmail($email);
+        $userData = $user->getUserData($email);
         
 
         $_SESSION['user_id'] = $userData['email'];
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_nickname'] = $userData['nickname'];
         $_SESSION['user_type'] = 'admin';
         
-        header('Location: /admin-dashboard');
+        header('Location: /dashboard');
         exit;
     } else {
 
