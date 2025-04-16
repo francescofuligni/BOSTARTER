@@ -72,7 +72,7 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
                         </div>
                     </div>
 
-                    <!-- Modal per i dettagli del progetto -->
+                    <!-- Modale per i dettagli del progetto -->
                     <div class="modal fade" id="projectModal<?php echo md5($project['nome']); ?>" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel<?php echo md5($project['nome']); ?>" aria-hidden="true">
                       <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
