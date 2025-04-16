@@ -1,15 +1,8 @@
 <?php
 // Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+if (session_status() == PHP_SESSION_NONE) session_start();
 
-// Includi il controller del login se esiste
-$controllerPath = __DIR__ . '/../controllers/LoginController.php';
-if (file_exists($controllerPath)) {
-    require_once $controllerPath;
-}
-
+require_once __DIR__ . '/../controllers/LoginController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
 

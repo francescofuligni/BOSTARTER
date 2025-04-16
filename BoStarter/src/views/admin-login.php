@@ -1,8 +1,6 @@
 <?php
 // Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+if (session_status() == PHP_SESSION_NONE) session_start();
 
 // Controlla se l'utente è già loggato come amministratore
 if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
@@ -10,7 +8,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
     exit;
 }
 
-// Includi il controller per il login amministratore
 require_once __DIR__ . '/../controllers/AdminLoginController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
