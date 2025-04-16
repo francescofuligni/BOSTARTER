@@ -140,5 +140,23 @@ class User {
         header("Location: /home");
         exit();
     }
+
+    /**
+     * Crea un nuovo progetto (solo per creatori)
+     */
+    public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore) {
+        try {
+            $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
+            $stmt->bindParam(':nome', $nome);
+            $stmt->bindParam(':descrizione', $descrizione);
+            $stmt->bindParam(':budget', $budget);
+            $stmt->bindParam(':data_limite', $data_limite);
+            $stmt->bindParam(':tipo', $tipo);
+            $stmt->bindParam(':email_creatore', $email_creatore);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
 ?>

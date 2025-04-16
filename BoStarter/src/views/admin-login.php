@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Controlla se l'utente è già loggato come amministratore
 if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
-    header('Location: /admin-dashboard');
+    header('Location: /dashboard');
     exit;
 }
 

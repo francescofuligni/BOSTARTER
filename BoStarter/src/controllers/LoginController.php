@@ -31,6 +31,13 @@ if (file_exists($dbPath) && file_exists($userPath)) {
         
         // Crea un oggetto utente
         $user = new User($db);
+
+        // Verifica se l'utente è un amministratore
+        if ($user->isAdmin($email)) {
+            $_SESSION['error'] = "Gli amministratori devono usare il login amministratore.";
+            header('Location: /login');
+            exit;
+        }
         
         // Hash della password
         $hashedPassword = hash('sha256', $password);
@@ -50,12 +57,9 @@ if (file_exists($dbPath) && file_exists($userPath)) {
             $_SESSION['auth_token'] = $token;
             $_SESSION['token_expiration'] = time() + (60 * 60); // Token valido per 60 minuti 
 
-            // Reindirizza in base al tipo di utente
-            if ($_SESSION['user_type'] == 'creator') {
-                header('Location: /creator-dashboard');
-            } else {
-                header('Location: /dashboard');
-            }
+        
+            header('Location: /dashboard');
+            
             exit;
         } else {
             $_SESSION['error'] = "Email o password non validi.";

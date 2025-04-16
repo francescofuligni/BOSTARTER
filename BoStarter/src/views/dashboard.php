@@ -4,21 +4,14 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include il file di autenticazione
-$authPath = __DIR__ . '/../config/Authentication.php';
-if (file_exists($authPath)) {
-    require_once $authPath;
-}
-
-// Verifica l'autenticazione
-$auth = new Authentication();
-$auth->validateAuthToken();
-
 // Includi il controller
-require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/DashboardController.php'; // qui vengono creati $db e $user
 
 // Includi la navbar
 require_once __DIR__ . '/components/navbar.php';
+
+// Usa direttamente $user e $_SESSION['user_id']
+$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +29,13 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti aperti e inizia a finanziare quelli che ti interessano.</p>
             <hr class="my-4">
         </div>
-        
+
+        <?php if ($isCreator): ?>
+            <div class="mb-4">
+                <a href="/create-project" class="btn btn-success">Crea nuovo progetto</a>
+            </div>
+        <?php endif; ?>
+
         <h2 class="mb-4">Progetti Attivi</h2>
         
         <div class="row">
@@ -64,18 +63,44 @@ require_once __DIR__ . '/components/navbar.php';
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><?php echo htmlspecialchars($project['nome']); ?></h5>
                                 <p class="card-text">
-                                    <?php echo nl2br(htmlspecialchars(substr($project['descrizione'], 0, 150))); ?>
-                                    <?php echo (strlen($project['descrizione']) > 150) ? '...' : ''; ?>
+                                    <?php echo nl2br(htmlspecialchars(substr($project['descrizione'], 0, 100))); ?>
+                                    <?php echo (strlen($project['descrizione']) > 100) ? '...' : ''; ?>
                                 </p>
                                 <div class="mt-auto">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="badge badge-primary"><?php echo htmlspecialchars($project['tipo']); ?></span>
-                                        <span class="badge badge-success">€ <?php echo number_format($project['budget'], 2, ',', '.'); ?></span>
-                                    </div>
-                                    <a href="/project-details?name=<?php echo urlencode($project['nome']); ?>" class="btn btn-primary btn-block">Visualizza Progetto</a>
+                                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#projectModal<?php echo md5($project['nome']); ?>">
+                                        Dettagli
+                                    </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Modal per i dettagli del progetto -->
+                    <div class="modal fade" id="projectModal<?php echo md5($project['nome']); ?>" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel<?php echo md5($project['nome']); ?>" aria-hidden="true">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="projectModalLabel<?php echo md5($project['nome']); ?>">
+                                <?php echo htmlspecialchars($project['nome']); ?>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p><strong>Descrizione:</strong> <?php echo nl2br(htmlspecialchars($project['descrizione'])); ?></p>
+                            <p><strong>Budget:</strong> € <?php echo number_format($project['budget'], 2, ',', '.'); ?></p>
+                            <p><strong>Tipo:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
+                            <p><strong>Email creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
+                            <?php if (!empty($project['immagine'])): ?>
+                                <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>" class="img-fluid" alt="Immagine progetto">
+                            <?php endif; ?>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>

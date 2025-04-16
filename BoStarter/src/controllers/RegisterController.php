@@ -46,7 +46,7 @@ if (file_exists($dbPath) && file_exists($userPath)) {
 
         // Se il codice di sicurezza non è vuoto, lo hash
         $hashedSecurityCode = '';
-        if (!$codiceSicurezza == '') {
+        if (!empty($securityCode)) {
             $hashedSecurityCode = hash('sha256', $securityCode);
         }
 
