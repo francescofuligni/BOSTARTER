@@ -1,13 +1,10 @@
 <?php
-// Start session if not already started
+// Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Includi il controller
 require_once __DIR__ . '/../controllers/DashboardController.php'; // qui vengono creati $db e $user
-
-// Includi la navbar
 require_once __DIR__ . '/components/navbar.php';
 
 // Usa direttamente $user e $_SESSION['user_id']

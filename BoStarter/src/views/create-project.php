@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id']) || !$user || !$user->isCreator($_SESSION['user_
     header('Location: /dashboard');
     exit;
 }
+
+require_once __DIR__ . '/components/navbar.php';
 ?>
 
 <!DOCTYPE html>

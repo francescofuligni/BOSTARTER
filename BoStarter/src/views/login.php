@@ -9,6 +9,8 @@ $controllerPath = __DIR__ . '/../controllers/LoginController.php';
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 }
+
+require_once __DIR__ . '/components/navbar.php';
 ?>
 
 <!DOCTYPE html>
