@@ -54,8 +54,8 @@ require_once __DIR__ . '/components/navbar.php';
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p>Non hai un account? <a href="/register">Registrati qui</a></p>
-                            <p>Sei un amministratore? <a href="/admin-login">Login amministratore</a></p>
+                            <p>Non hai ancora un account? <a href="/register">Registrati qui</a></p>
+                            <p>Sei un amministratore? <a href="/admin-login">Accedi come amministratore</a></p>
                         </div>
                     </div>
                 </div>

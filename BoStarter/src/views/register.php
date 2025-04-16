@@ -36,7 +36,7 @@ require_once __DIR__ . '/components/navbar.php';
                         <form action="/register" method="post">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="type">Tipologia utente</label>
+                                    <label for="type">Tipologia Utente</label>
                                     <select class="form-control" id="type" name="type" required>
                                         <option value="UTENTE">Standard</option>
                                         <option value="CREATORE">Creatore</option>
@@ -70,17 +70,17 @@ require_once __DIR__ . '/components/navbar.php';
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="birth_year">Anno di nascita</label>
+                                    <label for="birth_year">Anno di Nascita</label>
                                     <select class="form-control" id="birth_year" name="birth_year" required></select>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="birth_place">Luogo di nascita</label>
+                                    <label for="birth_place">Luogo di Nascita</label>
                                     <input type="text" class="form-control" id="birth_place" name="birth_place" required>
                                 </div>
                             </div>
                             <div class="form-row d-none" id="security_code_container">
                                 <div class="form-group col-md-8">
-                                    <label for="security_code">Codice di sicurezza</label>
+                                    <label for="security_code">Codice di Sicurezza</label>
                                     <input type="text" class="form-control" id="security_code" name="security_code" readonly>
                                 </div>
                                 <div class="form-group col-md-4 d-flex align-items-end">
@@ -91,7 +91,7 @@ require_once __DIR__ . '/components/navbar.php';
                         </form>
                         
                         <div class="mt-3 text-center">
-                            <p>Hai già un account? <a href="/login">Effettua il login!</a></p>
+                            <p>Hai già un account? <a href="/login">Effettua l'accesso!</a></p>
                         </div>
                     </div>
                 </div>
