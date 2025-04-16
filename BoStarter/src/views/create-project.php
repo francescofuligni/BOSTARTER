@@ -1,7 +1,5 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../controllers/CreateProjectController.php';
 
 // Solo i creatori possono accedere
 $user = isset($db) ? new User($db) : (isset($user) ? $user : null);
@@ -9,6 +7,10 @@ if (!isset($_SESSION['user_id']) || !$user || !$user->isCreator($_SESSION['user_
     header('Location: /dashboard');
     exit;
 }
+
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../controllers/CreateProjectController.php';
+require_once __DIR__ . '/components/navbar.php';
 ?>
 
 <!DOCTYPE html>

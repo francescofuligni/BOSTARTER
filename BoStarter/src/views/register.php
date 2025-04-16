@@ -1,14 +1,9 @@
 <?php
+// Avvia la sessione se non è già stata avviata
+if (session_status() == PHP_SESSION_NONE) session_start();
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// includi il controller per la registrazione
-$controllerPath = __DIR__ . '/../controllers/RegisterController.php';
-if (file_exists($controllerPath)) {
-    require_once $controllerPath;
-}
+require_once __DIR__ . '/../controllers/RegisterController.php';
+require_once __DIR__ . '/components/navbar.php';
 ?>
 
 <!DOCTYPE html>
