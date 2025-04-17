@@ -387,26 +387,3 @@ BEGIN
 END //
 DELIMITER ;
 
-
--- Procedura per ottenere la foto di un progetto
-DROP PROCEDURE IF EXISTS get_foto_progetto;
-DELIMITER //
-CREATE PROCEDURE get_foto_progetto(IN in_nome_progetto VARCHAR(32))
-BEGIN
-    SELECT immagine FROM FOTO WHERE nome_progetto = in_nome_progetto;
-END //
-DELIMITER ;
-
-
--- Procedura per ottenere i commenti di un progetto
-DROP PROCEDURE IF EXISTS get_commenti_progetto;
-DELIMITER //
-CREATE PROCEDURE get_commenti_progetto(IN in_nome_progetto VARCHAR(32))
-BEGIN
-    SELECT c.testo, u.nickname, c.data
-    FROM COMMENTO c
-    JOIN UTENTE u ON c.email_utente = u.email
-    WHERE c.nome_progetto = in_nome_progetto
-    ORDER BY c.data DESC;
-END //
-DELIMITER ;

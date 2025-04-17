@@ -122,13 +122,8 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
                                 </ul>
                             </div>
 
-                            <!-- Form per aggiungere un commento (solo utenti normali) -->
-                            <?php
-                            if (
-                                isset($_SESSION['user_id']) &&
-                                !$user->isCreator($_SESSION['user_id']) &&
-                                !$user->isAdmin($_SESSION['user_id'])
-                            ): ?>
+                            <!-- Form per aggiungere un commento -->
+                            <?php if (isset($_SESSION['user_id'])): ?>
                             <form action="/dashboard" method="post" class="mb-2">
                                 <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
                                 <div class="form-group">

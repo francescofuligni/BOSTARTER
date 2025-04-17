@@ -12,3 +12,4 @@ $router->post('/login', 'controllers/LoginController.php');
 $router->post('/admin-login', 'controllers/AdminLoginController.php');
 $router->post('/register', 'controllers/RegisterController.php');
 $router->post('/dashboard', 'controllers/DashboardController.php');
+$router->post('/create-project', 'controllers/CreateProjectController.php');

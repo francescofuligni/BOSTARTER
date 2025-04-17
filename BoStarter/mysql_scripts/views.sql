@@ -75,3 +75,25 @@ CREATE VIEW progetti_aperti AS
 SELECT p.nome, p.descrizione, p.budget, p.tipo, p.email_utente_creatore, p.immagine 
 FROM progetti_con_foto p
 WHERE p.stato = 'APERTO';
+
+
+-- Vista per tutte le foto di ogni progetto
+DROP VIEW IF EXISTS foto_progetto;
+
+CREATE VIEW foto_progetto AS
+SELECT nome_progetto, immagine
+FROM FOTO;
+
+
+-- Vista per tutti i commenti di ogni progetto (con nickname)
+DROP VIEW IF EXISTS commenti_progetto;
+
+CREATE VIEW commenti_progetto AS
+SELECT 
+    c.nome_progetto,
+    c.testo,
+    u.nickname,
+    c.data
+FROM COMMENTO c
+JOIN UTENTE u ON c.email_utente = u.email
+ORDER BY c.data DESC;

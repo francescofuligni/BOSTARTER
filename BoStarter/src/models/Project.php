@@ -17,29 +17,25 @@ class Project {
         }
     }
 
-    // Ottieni tutte le foto di un progetto tramite stored procedure
+    // Ottieni tutte le foto di un progetto tramite query
     public function getProjectPhotos($nomeProgetto) {
         try {
-            $stmt = $this->conn->prepare("CALL get_foto_progetto(:nome_progetto)");
+            $stmt = $this->conn->prepare("SELECT immagine FROM foto_progetto WHERE nome_progetto = :nome_progetto");
             $stmt->bindParam(':nome_progetto', $nomeProgetto);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            $stmt->closeCursor(); // <-- fondamentale per liberare il cursore!
-            return $result;
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
             return [];
         }
     }
 
-    // Ottieni tutti i commenti di un progetto tramite stored procedure
+    // Ottieni tutti i commenti di un progetto tramite query
     public function getProjectComments($nomeProgetto) {
         try {
-            $stmt = $this->conn->prepare("CALL get_commenti_progetto(:nome_progetto)");
+            $stmt = $this->conn->prepare("SELECT testo, nickname, data FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
             $stmt->bindParam(':nome_progetto', $nomeProgetto);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $stmt->closeCursor();
-            return $result;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
         }
