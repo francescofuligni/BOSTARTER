@@ -40,5 +40,16 @@ class Project {
             return [];
         }
     }
+
+    public function getProjectsByCreator($email) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM progetti WHERE creatore = :email");
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }
 ?>
