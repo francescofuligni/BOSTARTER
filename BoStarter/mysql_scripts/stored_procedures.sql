@@ -82,6 +82,7 @@ DELIMITER ;
 
 -- Procedura per il finanziamento di un progetto
 DROP PROCEDURE IF EXISTS finanzia_progetto;
+
 DELIMITER //
 CREATE PROCEDURE finanzia_progetto(
     IN in_email_utente VARCHAR(32),
@@ -102,6 +103,7 @@ DELIMITER ;
 
 -- Procedura per la scelta della reward
 DROP PROCEDURE IF EXISTS scegli_reward;
+
 DELIMITER //
 CREATE PROCEDURE scegli_reward(
     IN in_email_utente VARCHAR(32),
@@ -241,6 +243,37 @@ BEGIN
     IF is_creatore AND in_data_limite > CURDATE() THEN
         INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
         VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'APERTO', in_tipo, in_email_creatore);
+    END IF;
+END //
+DELIMITER ;
+
+
+-- Procedura per l'inserimento di una foto per un progetto (solo creatori)
+DROP PROCEDURE IF EXISTS inserisci_foto;
+
+DELIMITER //
+CREATE PROCEDURE inserisci_foto(
+    IN in_immagine LONGBLOB,
+    IN in_nome_progetto VARCHAR(32),
+    IN in_email_creatore VARCHAR(32)
+)
+BEGIN
+    DECLARE is_creatore_progetto BOOLEAN;
+    DECLARE is_progetto_aperto BOOLEAN;
+    
+    SELECT COUNT(*) > 0 INTO is_creatore_progetto
+    FROM PROGETTO
+    WHERE nome = in_nome_progetto
+    AND email_utente_creatore = in_email_creatore;
+
+    SELECT COUNT(*) > 0 INTO is_progetto_aperto
+    FROM PROGETTO
+    WHERE nome = in_nome_progetto
+    AND stato = 'APERTO';
+
+    IF is_creatore_progetto AND is_progetto_aperto THEN
+        INSERT INTO FOTO (immagine, nome_progetto)
+        VALUES (in_immagine, in_nome_progetto);
     END IF;
 END //
 DELIMITER ;

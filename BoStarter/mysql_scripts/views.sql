@@ -39,14 +39,6 @@ ORDER BY tot_finanziamenti DESC
 LIMIT 3;
 
 
--- Vista per tutti i progetti
-DROP VIEW IF EXISTS progetti;
-
-CREATE VIEW progetti AS
-SELECT *
-FROM PROGETTO;
-
-
 -- Vista per tutti i progetti con la prima foto associata
 DROP VIEW IF EXISTS progetti_con_foto;
 

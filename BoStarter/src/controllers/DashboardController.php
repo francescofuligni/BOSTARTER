@@ -2,11 +2,13 @@
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
+require_once __DIR__ . '/../models/Competences.php';
 
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
 $projectModel = new Project($db);
+$competencesModel = new Competences($db);
 
 // Gestione inserimento commento direttamente qui
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
@@ -28,5 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_PO
 }
 
 // Recupera i progetti attivi tramite il model Project
-$activeProjects = $projectModel->getActiveProjects();
+$openProjects = $projectModel->getOpenProjects();
+
 ?>

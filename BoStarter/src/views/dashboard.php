@@ -7,6 +7,7 @@ require_once __DIR__ . '/components/navbar.php';
 
 // Usa direttamente $user e $_SESSION['user_id']
 $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
+$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +25,14 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
             <p class="lead">Scopri i progetti aperti e inizia a finanziare quelli che ti interessano.</p>
         </div>
 
+        <?php if ($isAdmin): ?>
+            <div class="mb-4">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
+                    Lista Competenze
+                </button>
+            </div>
+        <?php endif; ?>
+
         <?php if ($isCreator): ?>
             <h2 class="mb-4">I tuoi progetti</h2>
             <div class="row mb-5">
@@ -37,7 +46,6 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
                 </div>
 
                 <?php
-                $userProjects = $projectModel->getProjectsByCreator($_SESSION['user_id']);
                 if ($userProjects) {
                     foreach ($userProjects as $project): ?>
                         <div class="col-md-4 mb-4">
@@ -74,16 +82,15 @@ $isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id'
         <?php endif; ?>
 
         <h2 class="mb-4">Progetti aperti</h2>
-        
         <div class="row">
-            <?php if (empty($activeProjects)): ?>
+            <?php if (empty($openProjects)): ?>
                 <div class="col-12">
                     <div class="alert alert-info">
                         Non ci sono progetti aperti al momento.
                     </div>
                 </div>
             <?php else: ?>
-                <?php foreach ($activeProjects as $project): ?>
+                <?php foreach ($openProjects as $project): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <?php if (!empty($project['immagine'])): ?>

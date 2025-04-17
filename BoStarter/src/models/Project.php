@@ -7,7 +7,7 @@ class Project {
     }
 
     // Ottieni tutti i progetti attivi tramite la view
-    public function getActiveProjects() {
+    public function getOpenProjects() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_aperti");
             $stmt->execute();
@@ -41,15 +41,21 @@ class Project {
         }
     }
 
+    // Ottieni tutti i progetti creati da un utente tramite query
     public function getProjectsByCreator($email) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM progetti WHERE creatore = :email");
+            $stmt = $this->conn->prepare("SELECT * FROM PROGETTO WHERE creatore = :email");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
         }
+    }
+
+    // Aggiungi un nuovo progetto
+    public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore, $foto) {
+        // foto è un'array di longblob --> iterare sulle foto richiamando la stored procedure inserisci_foto
     }
 }
 ?>
