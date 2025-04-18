@@ -50,11 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
 }
 
 // Recupera i progetti attivi tramite il model Project
-<<<<<<< Updated upstream
-$openProjects = $projectModel->getOpenProjects();
-
-=======
-$activeProjects = $projectModel->getActiveProjects();
+$activeProjects = $projectModel->getOpenProjects();
 $allProjects = $projectModel->getAllProjectsWithPhoto();
->>>>>>> Stashed changes
 ?>
