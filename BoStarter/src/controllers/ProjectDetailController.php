@@ -76,17 +76,24 @@ function handleFundProject($db) {
     $nomeProgetto = $_POST['nome_progetto'] ?? '';
     $importo = floatval($_POST['importo'] ?? 0);
     $emailUtente = $_SESSION['user_id'] ?? '';
+    $codiceReward = $_POST['codice_reward'] ?? '';
 
     // Get the PDO connection from the Database object
     $pdo = $db instanceof Database ? $db->getConnection() : $db;
 
-    if ($nomeProgetto && $importo > 0 && $emailUtente) {
+    if ($nomeProgetto && $importo > 0 && $emailUtente && $codiceReward) {
         try {
             $stmt = $pdo->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
             $stmt->bindParam(':email_utente', $emailUtente);
             $stmt->bindParam(':nome_progetto', $nomeProgetto);
             $stmt->bindParam(':importo', $importo);
             if ($stmt->execute()) {
+                // Associa la reward al finanziamento appena inserito
+                $stmt2 = $pdo->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
+                $stmt2->bindParam(':email_utente', $emailUtente);
+                $stmt2->bindParam(':nome_progetto', $nomeProgetto);
+                $stmt2->bindParam(':codice_reward', $codiceReward);
+                $stmt2->execute();
                 $_SESSION['success'] = "Finanziamento effettuato con successo!";
             } else {
                 $_SESSION['error'] = "Errore nell'inserimento del finanziamento.";
@@ -110,20 +117,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
         handleAddReply($user);
     }
-    if (isset($_POST['nome_progetto'], $_POST['importo'])) {
+    if (isset($_POST['nome_progetto'], $_POST['importo'], $_POST['codice_reward'])) {
         handleFundProject($db);
     }
 }
 
 // GET: recupera i dati per la view
-$project = null;
-$photos = [];
-$comments = [];
-$hasFundedToday = false;
 if (isset($_GET['nome'])) {
     [$project, $photos, $comments] = getProjectDetailData($projectModel, $_GET['nome']);
     if (isset($_SESSION['user_id']) && isset($project['nome'])) {
         $hasFundedToday = $projectModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
+    }
+    $rewards = [];
+    if ($project && isset($project['nome'])) {
+        $rewards = $projectModel->getRewardsForProject($project['nome']);
     }
 }
 ?>

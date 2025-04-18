@@ -61,9 +61,37 @@ require_once __DIR__ . '/components/navbar.php';
             <label for="immagini">Foto progetto (puoi caricare più immagini)</label>
             <input type="file" class="form-control-file" id="immagini" name="immagini[]" accept="image/*" multiple required>
         </div>
+
+        <div id="rewards-section">
+            <label><strong>Reward</strong></label>
+            <div class="reward-group border rounded p-2 mb-2">
+                <div class="form-group">
+                    <label for="reward_codice[]">Codice reward</label>
+                    <input type="text" class="form-control" name="reward_codice[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="reward_descrizione[]">Descrizione reward</label>
+                    <input type="text" class="form-control" name="reward_descrizione[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="reward_immagine[]">Immagine reward</label>
+                    <input type="file" class="form-control-file" name="reward_immagine[]" accept="image/*" required>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary mb-3" onclick="addReward()">Aggiungi reward</button>
+
         <button type="submit" class="btn btn-primary">Crea progetto</button>
         <a href="/dashboard" class="btn btn-secondary">Annulla</a>
     </form>
 </div>
+<script>
+function addReward() {
+    const section = document.getElementById('rewards-section');
+    const group = section.querySelector('.reward-group').cloneNode(true);
+    group.querySelectorAll('input').forEach(input => input.value = '');
+    section.appendChild(group);
+}
+</script>
 </body>
 </html>

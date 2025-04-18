@@ -68,9 +68,9 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                                         <?php echo (strlen($project['descrizione']) > 100) ? '...' : ''; ?>
                                     </p>
                                     <div class="mt-auto">
-                                        <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#projectModal<?php echo md5($project['nome']); ?>">
+                                        <a href="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" class="btn btn-primary btn-block">
                                             Dettagli
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -155,6 +155,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                 ?>
             </div>
         </div>
+        </script>
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>

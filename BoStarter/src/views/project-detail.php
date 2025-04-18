@@ -57,6 +57,45 @@ require_once __DIR__ . '/components/navbar.php';
                             <label for="importo">Importo (€):</label>
                             <input type="number" min="1" step="0.05" class="form-control" name="importo" id="importo" required <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
                         </div>
+                        <?php if (!empty($rewards)): ?>
+                        <div class="form-group">
+                            <label for="codice_reward">Scegli una reward</label>
+                            <select class="form-control" name="codice_reward" id="codice_reward" required onchange="showRewardImage()">
+                                <option value="">Seleziona...</option>
+                                <?php foreach ($rewards as $idx => $reward): ?>
+                                    <option 
+                                        value="<?php echo htmlspecialchars($reward['codice']); ?>"
+                                        data-img="<?php echo 'data:image/jpeg;base64,' . base64_encode($reward['immagine']); ?>"
+                                        data-desc="<?php echo htmlspecialchars($reward['descrizione']); ?>"
+                                    >
+                                        <?php echo htmlspecialchars($reward['descrizione']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div id="reward-image-preview" class="mb-3" style="display:none;">
+                            <img id="reward-img" src="" alt="Reward" class="img-thumbnail" style="max-width:150px;max-height:150px;">
+                            <div id="reward-desc" class="mt-2"></div>
+                        </div>
+                        <script>
+                        function showRewardImage() {
+                            var select = document.getElementById('codice_reward');
+                            var idx = select.selectedIndex;
+                            var option = select.options[idx];
+                            var img = option.getAttribute('data-img');
+                            var desc = option.getAttribute('data-desc');
+                            if (img && select.value) {
+                                document.getElementById('reward-img').src = img;
+                                document.getElementById('reward-desc').innerText = desc;
+                                document.getElementById('reward-image-preview').style.display = 'block';
+                            } else {
+                                document.getElementById('reward-image-preview').style.display = 'none';
+                            }
+                        }
+                        </script>
+                        <?php else: ?>
+                            <div class="alert alert-warning">Nessuna reward disponibile per questo progetto.</div>
+                        <?php endif; ?>
                         <button type="submit" class="btn btn-success btn-block" <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
                             <?php echo $hasFundedToday ? 'Hai già finanziato oggi' : 'Finanzia'; ?>
                         </button>
