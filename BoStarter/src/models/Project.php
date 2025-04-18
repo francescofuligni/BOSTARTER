@@ -58,7 +58,7 @@ class Project {
      */
     public function hasFundedToday($nomeProgetto, $emailUtente) {
         try {
-            $stmt = $this->conn->prepare(
+            $stmt = $this->conn->prepare(   // NB: Non va fatto con una stored procedure?
                 "SELECT COUNT(*) FROM FINANZIAMENTO 
                  WHERE nome_progetto = :nome_progetto 
                  AND email_utente = :email_utente 
@@ -73,22 +73,11 @@ class Project {
         }
     }
 
-    // Ottieni tutti i progetti
-    public function getAllProjects() {
-        try {
-            $stmt = $this->conn->prepare("SELECT * FROM progetti");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
-
     /**
      * Ottieni tutti i progetti con la prima foto associata
      * @return array
      */
-    public function getAllProjectsWithPhoto() {
+    public function getAllProjects() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto");
             $stmt->execute();
@@ -97,16 +86,16 @@ class Project {
             return [];
         }
     }
-
+    
     /**
      * Ottieni tutti i progetti creati da un utente
      * @param string $emailUtente
      * @return array
      */
-    public function getProjectsByUser($emailUtente) {
+    public function getUserProjects($emailUtente) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente_creatore = :email");
-            $stmt->bindParam(':email', $emailUtente);
+            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente = :email_utente");
+            $stmt->bindParam(':email_utente', $emailUtente);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

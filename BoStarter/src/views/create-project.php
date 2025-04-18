@@ -23,6 +23,7 @@ require_once __DIR__ . '/components/navbar.php';
     <meta charset="UTF-8">
     <title>Crea nuovo progetto</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="/js/create-project.js"></script>
 </head>
 <body>
 <div class="container mt-5">
@@ -85,13 +86,5 @@ require_once __DIR__ . '/components/navbar.php';
         <a href="/dashboard" class="btn btn-secondary">Annulla</a>
     </form>
 </div>
-<script>
-function addReward() {
-    const section = document.getElementById('rewards-section');
-    const group = section.querySelector('.reward-group').cloneNode(true);
-    group.querySelectorAll('input').forEach(input => input.value = '');
-    section.appendChild(group);
-}
-</script>
 </body>
 </html>

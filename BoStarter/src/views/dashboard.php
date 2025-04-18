@@ -17,6 +17,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style/dashboard.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -38,9 +39,10 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
             <div class="row mb-5">
                 <!-- Card per creare un nuovo progetto -->
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 text-center border-success" style="cursor: pointer;" onclick="window.location.href='/create-project'">
+                    <div class="card h-100 text-center bg-success text-white border-success project-card" 
+                         onclick="window.location.href='/create-project'">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                            <h5 class="card-title text-success">+ Crea un progetto</h5>
+                            <h5 class="card-title text-white">Crea un progetto</h5>
                         </div>
                     </div>
                 </div>
@@ -49,7 +51,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                 if ($userProjects) {
                     foreach ($userProjects as $project): ?>
                         <div class="col-md-4 mb-4">
-                            <div class="card h-100">
+                            <div class="card h-100 project-card">
                                 <?php if (!empty($project['immagine'])): ?>
                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>"
                                         class="card-img-top" alt="<?php echo htmlspecialchars($project['nome']); ?>"
@@ -92,7 +94,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
             <?php else: ?>
                 <?php foreach ($openProjects as $project): ?>
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 project-card">
                             <?php if (!empty($project['immagine'])): ?>
                                 <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>" 
                                      class="card-img-top" alt="<?php echo htmlspecialchars($project['nome']); ?>" 
@@ -129,7 +131,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                 if ($allProjects) {
                     foreach ($allProjects as $project) {
                         echo '<div class="col-md-4 mb-4">';
-                        echo '<div class="card h-100">';
+                        echo '<div class="card h-100 project-card">';
                         // Mostra la prima foto se presente
                         if (!empty($project['immagine'])) {
                             echo '<img src="data:image/jpeg;base64,' . base64_encode($project['immagine']) . '" class="card-img-top" alt="' . htmlspecialchars($project['nome']) . '" style="height: 200px; object-fit: cover;">';
