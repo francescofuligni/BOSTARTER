@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
 }
 
 // Recupera i progetti attivi tramite il model Project
-$activeProjects = $projectModel->getOpenProjects();
-$allProjects = $projectModel->getAllProjectsWithPhoto();
+$openProjects = $projectModel->getOpenProjects();
+$allProjects = $projectModel->getAllProjects();
+$userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
 ?>
