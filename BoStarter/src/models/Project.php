@@ -6,7 +6,10 @@ class Project {
         $this->conn = $db;
     }
 
-    // Ottieni tutti i progetti attivi tramite la view
+    /**
+     * Ottieni tutti i progetti aperti dalla vista dedicata
+     * @return array
+     */
     public function getOpenProjects() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_aperti");
@@ -17,7 +20,11 @@ class Project {
         }
     }
 
-    // Ottieni tutte le foto di un progetto tramite query
+    /**
+     * Ottieni tutte le immagini associate a un progetto
+     * @param string $nomeProgetto
+     * @return array
+     */
     public function getProjectPhotos($nomeProgetto) {
         try {
             $stmt = $this->conn->prepare("SELECT immagine FROM foto_progetto WHERE nome_progetto = :nome_progetto");
@@ -29,7 +36,11 @@ class Project {
         }
     }
 
-    // Ottieni tutti i commenti di un progetto tramite query
+    /**
+     * Ottieni tutti i commenti relativi a un progetto
+     * @param string $nomeProgetto
+     * @return array
+     */
     public function getProjectComments($nomeProgetto) {
         try {
             $stmt = $this->conn->prepare("SELECT id, testo, nickname, data, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
@@ -41,7 +52,11 @@ class Project {
         }
     }
 
-    // Ottieni i dettagli di un progetto dalla view progetti_con_foto
+    /**
+     * Ottieni i dettagli di un progetto dalla vista progetti_con_foto
+     * @param string $nomeProgetto
+     * @return array|null
+     */
     public function getProjectDetail($nomeProgetto) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE nome = :nome");
@@ -54,11 +69,14 @@ class Project {
     }
 
     /**
-     * Verifica se l'utente ha già finanziato questo progetto oggi
+     * Verifica se l'utente ha già finanziato il progetto nella data odierna
+     * @param string $nomeProgetto
+     * @param string $emailUtente
+     * @return bool
      */
     public function hasFundedToday($nomeProgetto, $emailUtente) {
         try {
-            $stmt = $this->conn->prepare(   // NB: Non va fatto con una stored procedure?
+            $stmt = $this->conn->prepare(   // FORSE MEGLIO FATTO CON UNA STORED PROCEDURE?
                 "SELECT COUNT(*) FROM FINANZIAMENTO 
                  WHERE nome_progetto = :nome_progetto 
                  AND email_utente = :email_utente 
@@ -104,7 +122,7 @@ class Project {
     }
 
     /**
-     * Get all rewards for a project
+     * Ottieni tutte le ricompense associate a un progetto
      * @param string $nomeProgetto
      * @return array
      */
@@ -119,4 +137,3 @@ class Project {
         }
     }
 }
-?>
