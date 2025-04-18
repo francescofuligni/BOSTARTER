@@ -42,7 +42,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                     <div class="card h-100 text-center bg-success text-white border-success project-card" 
                          onclick="window.location.href='/create-project'">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                            <h5 class="card-title text-white">+ Crea un progetto</h5>
+                            <h5 class="card-title text-white">Crea un progetto</h5>
                         </div>
                     </div>
                 </div>
