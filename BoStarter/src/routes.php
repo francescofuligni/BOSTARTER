@@ -7,9 +7,11 @@ $router->get('/register', 'views/register.php');
 $router->get('/dashboard', 'views/dashboard.php');
 $router->get('/create-project', 'views/create-project.php');
 $router->get('/logout', 'controllers/LogoutController.php');
+$router->get('/project-detail', 'views/project-detail.php');
 
 $router->post('/login', 'controllers/LoginController.php');
 $router->post('/admin-login', 'controllers/AdminLoginController.php');
 $router->post('/register', 'controllers/RegisterController.php');
 $router->post('/dashboard', 'controllers/DashboardController.php');
 $router->post('/create-project', 'controllers/CreateProjectController.php');
+$router->post('/project-detail', 'controllers/ProjectDetailController.php');
