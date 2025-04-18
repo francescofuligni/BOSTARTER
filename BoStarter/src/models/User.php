@@ -189,5 +189,22 @@ class User {
         }
     }
 
+    /**
+     * Aggiungi una reward a un progetto (solo creatori)
+     */
+    public function addRewardToProject($codice, $imgData, $descrizione, $nomeProgetto, $emailCreatore) {
+        try {
+            $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
+            $stmt->bindParam(':codice', $codice);
+            $stmt->bindParam(':immagine', $imgData, PDO::PARAM_LOB);
+            $stmt->bindParam(':descrizione', $descrizione);
+            $stmt->bindParam(':nome_progetto', $nomeProgetto);
+            $stmt->bindParam(':email_creatore', $emailCreatore);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
 }
 ?>

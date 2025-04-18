@@ -40,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $success = $user->createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore);
 
     if ($success) {
+        error_log("Progetto creato: $nome da $email_creatore");
+
         // Gestisci upload immagini
         error_log(print_r($_FILES, true));
         if (!empty($_FILES['immagini']['name'][0])) {
@@ -54,6 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+
+        // Gestione rewards
+        if (!empty($_POST['reward_codice'])) {
+            foreach ($_POST['reward_codice'] as $idx => $codice) {
+                $descrizione = $_POST['reward_descrizione'][$idx] ?? '';
+                $imgTmp = $_FILES['reward_immagine']['tmp_name'][$idx] ?? '';
+                if ($codice && $descrizione && $imgTmp && is_uploaded_file($imgTmp)) {
+                    $imgData = file_get_contents($imgTmp);
+                    $ok = $user->addRewardToProject($codice, $imgData, $descrizione, $nome, $email_creatore);
+                    error_log("Reward $codice inserita per progetto $nome: " . ($ok ? "OK" : "FALLITO"));
+                } else {
+                    error_log("Reward non valida: codice=$codice, descrizione=$descrizione, imgTmp=$imgTmp");
+                }
+            }
+        }
+
         $_SESSION['success'] = "Progetto creato con successo!";
         header('Location: /dashboard');
         exit;
@@ -63,6 +81,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-
 
 ?>

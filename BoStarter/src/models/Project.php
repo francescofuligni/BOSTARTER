@@ -41,10 +41,10 @@ class Project {
         }
     }
 
-    // Ottieni i dettagli di un progetto tramite query
+    // Ottieni i dettagli di un progetto dalla view progetti_con_foto
     public function getProjectDetail($nomeProgetto) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM progetti WHERE nome = :nome");
+            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE nome = :nome");
             $stmt->bindParam(':nome', $nomeProgetto);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -86,11 +86,32 @@ class Project {
             return [];
         }
     }
-
+    
+    /**
+     * Ottieni tutti i progetti creati da un utente
+     * @param string $emailUtente
+     * @return array
+     */
     public function getUserProjects($emailUtente) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente = :email_utente");
             $stmt->bindParam(':email_utente', $emailUtente);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get all rewards for a project
+     * @param string $nomeProgetto
+     * @return array
+     */
+    public function getRewardsForProject($nomeProgetto) {
+        try {
+            $stmt = $this->conn->prepare("SELECT codice, descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
+            $stmt->bindParam(':nome', $nomeProgetto);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
