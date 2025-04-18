@@ -32,7 +32,7 @@ class Project {
     // Ottieni tutti i commenti di un progetto tramite query
     public function getProjectComments($nomeProgetto) {
         try {
-            $stmt = $this->conn->prepare("SELECT testo, nickname, data FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
+            $stmt = $this->conn->prepare("SELECT id, testo, nickname, data, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
             $stmt->bindParam(':nome_progetto', $nomeProgetto);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -41,11 +41,42 @@ class Project {
         }
     }
 
-    // Ottieni tutti i progetti creati da un utente tramite query
-    public function getProjectsByCreator($email) {
+    // Ottieni i dettagli di un progetto tramite query
+    public function getProjectDetail($nomeProgetto) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM PROGETTO WHERE creatore = :email");
-            $stmt->bindParam(':email', $email);
+            $stmt = $this->conn->prepare("SELECT * FROM progetti WHERE nome = :nome");
+            $stmt->bindParam(':nome', $nomeProgetto);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Verifica se l'utente ha già finanziato questo progetto oggi
+     */
+    public function hasFundedToday($nomeProgetto, $emailUtente) {
+        try {
+            $stmt = $this->conn->prepare(
+                "SELECT COUNT(*) FROM FINANZIAMENTO 
+                 WHERE nome_progetto = :nome_progetto 
+                 AND email_utente = :email_utente 
+                 AND data = CURDATE()"
+            );
+            $stmt->bindParam(':nome_progetto', $nomeProgetto);
+            $stmt->bindParam(':email_utente', $emailUtente);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Ottieni tutti i progetti
+    public function getAllProjects() {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM progetti");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -53,9 +84,18 @@ class Project {
         }
     }
 
-    // Aggiungi un nuovo progetto
-    public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore, $foto) {
-        // foto è un'array di longblob --> iterare sulle foto richiamando la stored procedure inserisci_foto
+    /**
+     * Ottieni tutti i progetti con la prima foto associata
+     * @return array
+     */
+    public function getAllProjectsWithPhoto() {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
     }
 }
 ?>

@@ -173,5 +173,21 @@ class User {
             return false;
         }
     }
+
+    /**
+     * Aggiungi una risposta a un commento
+     */
+    public function addReply($idCommento, $testoRisposta, $emailCreatore) {
+        try {
+            $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
+            $stmt->bindParam(':id_commento', $idCommento);
+            $stmt->bindParam(':testo', $testoRisposta);
+            $stmt->bindParam(':email_creatore', $emailCreatore);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
 }
 ?>

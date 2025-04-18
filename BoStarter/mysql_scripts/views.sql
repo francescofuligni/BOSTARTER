@@ -82,10 +82,15 @@ DROP VIEW IF EXISTS commenti_progetto;
 
 CREATE VIEW commenti_progetto AS
 SELECT 
+    c.id,
     c.nome_progetto,
     c.testo,
     u.nickname,
-    c.data
+    c.data,
+    r.testo AS risposta
 FROM COMMENTO c
 JOIN UTENTE u ON c.email_utente = u.email
+LEFT JOIN RISPOSTA r ON c.id = r.id_commento
 ORDER BY c.data DESC;
+
+
