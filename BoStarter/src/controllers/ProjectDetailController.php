@@ -76,6 +76,7 @@ function handleFundProject($db) {
     $nomeProgetto = $_POST['nome_progetto'] ?? '';
     $importo = floatval($_POST['importo'] ?? 0);
     $emailUtente = $_SESSION['user_id'] ?? '';
+    $codiceReward = $_POST['codice_reward'] ?? '';
 
     // Get the PDO connection from the Database object
     $pdo = $db instanceof Database ? $db->getConnection() : $db;
