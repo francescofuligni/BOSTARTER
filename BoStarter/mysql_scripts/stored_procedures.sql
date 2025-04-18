@@ -285,7 +285,7 @@ DROP PROCEDURE IF EXISTS inserisci_reward;
 DELIMITER //
 CREATE PROCEDURE inserisci_reward(
     IN in_codice VARCHAR(32),
-    IN in_immagine BLOB,
+    IN in_immagine LONGBLOB,
     IN in_descrizione VARCHAR(255),
     IN in_nome_progetto VARCHAR(32),
     IN in_email_creatore VARCHAR(32)
