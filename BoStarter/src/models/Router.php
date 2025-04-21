@@ -3,14 +3,30 @@
 class Router {
     protected $routes = [];
 
+    /**
+     * Registra una route per richieste HTTP GET
+     * @param string $uri
+     * @param string $file
+     */
     public function get($uri, $file) {
         $this->add('GET', $uri, $file);
     }
 
+    /**
+     * Registra una route per richieste HTTP POST
+     * @param string $uri
+     * @param string $file
+     */
     public function post($uri, $file) {
         $this->add('POST', $uri, $file);
     }
 
+    /**
+     * Aggiunge una nuova route all'elenco
+     * @param string $method Metodo HTTP (GET o POST)
+     * @param string $uri
+     * @param string $file
+     */
     protected function add($method, $uri, $file) {
         $this->routes[] = [
             'method' => strtoupper($method),
@@ -19,6 +35,11 @@ class Router {
         ];
     }
 
+    /**
+     * Risolve la route corrispondente alla richiesta attuale
+     * @param string $requestUri
+     * @param string $requestMethod
+     */
     public function resolve($requestUri, $requestMethod) {
         $uri = parse_url($requestUri, PHP_URL_PATH);
 

@@ -22,33 +22,33 @@ if (!$user->isCreator($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
-    $descrizione = isset($_POST['descrizione']) ? trim($_POST['descrizione']) : '';
+    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
     $budget = isset($_POST['budget']) ? floatval($_POST['budget']) : 0;
-    $data_limite = isset($_POST['data_limite']) ? $_POST['data_limite'] : '';
-    $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : '';
-    $email_creatore = $_SESSION['user_id'];
+    $deadline = isset($_POST['deadline']) ? $_POST['deadline'] : '';
+    $type = isset($_POST['type']) ? trim($_POST['type']) : '';
+    $creatorEmail = $_SESSION['user_id'];
 
     // Validazione base
-    if (empty($nome) || empty($descrizione) || $budget <= 0 || empty($data_limite) || empty($tipo)) {
+    if (empty($name) || empty($description) || $budget <= 0 || empty($deadline) || empty($type)) {
         $_SESSION['error'] = "Compila tutti i campi obbligatori.";
         header('Location: /create-project');
         exit;
     }
 
     // Crea il progetto tramite stored procedure (usa la funzione del modello User)
-    $success = $user->createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore);
+    $creationSuccess = $user->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
 
-    if ($success) {
-        error_log("Progetto creato: $nome da $email_creatore");
+    if ($creationSuccess) {
+        error_log("Progetto creato: $name da $creatorEmail");
 
         // Gestisci upload immagini
         error_log(print_r($_FILES, true));
         if (!empty($_FILES['immagini']['name'][0])) {
             foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
                 if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
-                    $imgData = file_get_contents($tmpName);
-                    if (!$photoModel->addPhotoToProject($nome, $imgData)) {
+                    $imageData = file_get_contents($tmpName);
+                    if (!$photoModel->addPhotoToProject($name, $imageData)) {
                         error_log("Errore salvataggio immagine $idx");
                     }
                 } else {
@@ -58,16 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Gestione rewards
-        if (!empty($_POST['reward_codice'])) {
-            foreach ($_POST['reward_codice'] as $idx => $codice) {
-                $descrizione = $_POST['reward_descrizione'][$idx] ?? '';
-                $imgTmp = $_FILES['reward_immagine']['tmp_name'][$idx] ?? '';
-                if ($codice && $descrizione && $imgTmp && is_uploaded_file($imgTmp)) {
-                    $imgData = file_get_contents($imgTmp);
-                    $ok = $user->addRewardToProject($codice, $imgData, $descrizione, $nome, $email_creatore);
-                    error_log("Reward $codice inserita per progetto $nome: " . ($ok ? "OK" : "FALLITO"));
+        if (!empty($_POST['reward_code'])) {
+            foreach ($_POST['reward_code'] as $idx => $code) {
+                $description = $_POST['reward_description'][$idx] ?? '';
+                $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
+                if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
+                    $imageData = file_get_contents($imageTmp);
+                    $rewardSuccess = $user->addRewardToProject($code, $imageData, $description, $name, $creatorEmail);
+                    error_log("Reward $code inserita per progetto $name: " . ($rewardSuccess ? "OK" : "FALLITO"));
                 } else {
-                    error_log("Reward non valida: codice=$codice, descrizione=$descrizione, imgTmp=$imgTmp");
+                    error_log("Reward non valida: codice=$code, descrizione=$description, imgTmp=$imageTmp");
                 }
             }
         }

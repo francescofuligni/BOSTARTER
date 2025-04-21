@@ -7,6 +7,12 @@ class User {
         $this->conn = $db;
     }
 
+    /**
+     * Effettua il login dell'utente chiamando la stored procedure dedicata
+     * @param string $email
+     * @param string $hashedPassword
+     * @return array|false
+     */
     public function login($email, $hashedPassword) {
         try {
             // Chiamo la stored procedure per autenticare l'utente
@@ -32,7 +38,12 @@ class User {
             return false;
         }
     }
-    // Funzione per ottenere i dati dell'utente
+    
+    /**
+     * Restituisce i dati dell'utente a partire dalla sua email
+     * @param string $email
+     * @return array|false
+     */
     public function getUserData($email) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM UTENTE WHERE email = :email");
@@ -45,7 +56,12 @@ class User {
             return false;
         }
     }
-    // Funzione per controllare se l'utente è un creatore 
+    
+    /**
+     * Verifica se l'utente è un creatore
+     * @param string $email
+     * @return bool
+     */
     public function isCreator($email) {
         try {
             $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_CREATORE WHERE email_utente = :email");
@@ -59,7 +75,11 @@ class User {
         }
     }
 
-    // Funzione per controllare se l'utente è un admin
+    /**
+     * Verifica se l'utente è un amministratore
+     * @param string $email
+     * @return bool
+     */
     public function isAdmin($email) {
         try {
             $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_AMMINISTRATORE WHERE email_utente = :email");
@@ -73,7 +93,13 @@ class User {
         }
     }
     
-    // Funzione per il login dell'amministratore
+    /**
+     * Effettua il login di un amministratore tramite stored procedure
+     * @param string $email
+     * @param string $hashedPassword
+     * @param string $hashedSecurityCode
+     * @return bool
+     */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
             
@@ -94,7 +120,19 @@ class User {
         }
     }
 
-    // Funzione per la registrazione dell'utente
+    /**
+     * Registra un nuovo utente nel sistema tramite stored procedure
+     * @param string $email
+     * @param string $hashedPassword
+     * @param string $name
+     * @param string $lastName
+     * @param string $nickname
+     * @param string $birthPlace
+     * @param string $birthYear
+     * @param string $type
+     * @param string $hashedSecurityCode
+     * @return bool
+     */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
             // Chiama la stored procedure per registrare l'utente
@@ -116,6 +154,9 @@ class User {
         }
     }
 
+    /**
+     * Effettua il logout dell'utente terminando la sessione
+     */
     public function logout() {
         // Distruggi la sessione per effettuare il logout
         if (session_status() == PHP_SESSION_NONE) {
@@ -143,6 +184,13 @@ class User {
 
     /**
      * Crea un nuovo progetto (solo per creatori)
+     * @param string $nome
+     * @param string $descrizione
+     * @param float $budget
+     * @param string $data_limite
+     * @param string $tipo
+     * @param string $email_creatore
+     * @return bool
      */
     public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore) {
         try {
@@ -160,7 +208,11 @@ class User {
     }
 
     /**
-     * Aggiungi un commento a un progetto
+     * Aggiunge un commento a un progetto
+     * @param string $nomeProgetto
+     * @param string $emailUtente
+     * @param string $testoCommento
+     * @return bool
      */
     public function addComment($nomeProgetto, $emailUtente, $testoCommento) {
         try {
@@ -175,7 +227,11 @@ class User {
     }
 
     /**
-     * Aggiungi una risposta a un commento
+     * Aggiunge una risposta a un commento
+     * @param int $idCommento
+     * @param string $testoRisposta
+     * @param string $emailCreatore
+     * @return bool
      */
     public function addReply($idCommento, $testoRisposta, $emailCreatore) {
         try {
@@ -190,7 +246,13 @@ class User {
     }
 
     /**
-     * Aggiungi una reward a un progetto (solo creatori)
+     * Aggiunge una ricompensa a un progetto (solo per creatori)
+     * @param string $codice
+     * @param string $imgData Dati binari dell'immagine
+     * @param string $descrizione
+     * @param string $nomeProgetto
+     * @param string $emailCreatore
+     * @return bool
      */
     public function addRewardToProject($codice, $imgData, $descrizione, $nomeProgetto, $emailCreatore) {
         try {
@@ -205,6 +267,4 @@ class User {
             return false;
         }
     }
-
 }
-?>

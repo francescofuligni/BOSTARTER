@@ -36,24 +36,24 @@ require_once __DIR__ . '/components/navbar.php';
     <?php endif; ?>
     <form action="/create-project" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="nome">Nome progetto</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
+            <label for="name">Nome progetto</label>
+            <input type="text" class="form-control" id="name" name="name" required>
         </div>
         <div class="form-group">
-            <label for="descrizione">Descrizione</label>
-            <textarea class="form-control" id="descrizione" name="descrizione" rows="4" required></textarea>
+            <label for="description">Descrizione</label>
+            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
         </div>
         <div class="form-group">
             <label for="budget">Budget (€)</label>
             <input type="number" class="form-control" id="budget" name="budget" min="1" step="0.01" required>
         </div>
         <div class="form-group">
-            <label for="data_limite">Data limite</label>
-            <input type="date" class="form-control" id="data_limite" name="data_limite" required>
+            <label for="deadline">Data limite</label>
+            <input type="date" class="form-control" id="deadline" name="deadline" required>
         </div>
         <div class="form-group">
-            <label for="tipo">Tipo</label>
-            <select class="form-control" id="tipo" name="tipo" required>
+            <label for="type">Tipo</label>
+            <select class="form-control" id="type" name="type" required>
                 <option value="HARDWARE">Hardware</option>
                 <option value="SOFTWARE">Software</option>
             </select>
@@ -67,20 +67,20 @@ require_once __DIR__ . '/components/navbar.php';
             <label><strong>Reward</strong></label>
             <div class="reward-group border rounded p-2 mb-2">
                 <div class="form-group">
-                    <label for="reward_codice[]">Codice reward</label>
-                    <input type="text" class="form-control" name="reward_codice[]" required>
+                    <label for="reward_code[]">Codice reward</label>
+                    <input type="text" class="form-control" name="reward_code[]" required>
                 </div>
                 <div class="form-group">
-                    <label for="reward_descrizione[]">Descrizione reward</label>
-                    <input type="text" class="form-control" name="reward_descrizione[]" required>
+                    <label for="reward_description[]">Descrizione reward</label>
+                    <input type="text" class="form-control" name="reward_description[]" required>
                 </div>
                 <div class="form-group">
-                    <label for="reward_immagine[]">Immagine reward</label>
-                    <input type="file" class="form-control-file" name="reward_immagine[]" accept="image/*" required>
+                    <label for="reward_image[]">Immagine reward</label>
+                    <input type="file" class="form-control-file" name="reward_image[]" accept="image/*" required>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary mb-3" onclick="addReward()">Aggiungi reward</button>
+        <button type="button" class="btn btn-secondary mb-3" onclick="insertReward()">Aggiungi reward</button>
 
         <button type="submit" class="btn btn-primary">Crea progetto</button>
         <a href="/dashboard" class="btn btn-secondary">Annulla</a>

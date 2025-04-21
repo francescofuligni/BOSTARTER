@@ -1,9 +1,16 @@
 <?php
 class Photo {
     private $conn;
+    
     public function __construct($db) {
         $this->conn = $db;
     }
+    /**
+     * Aggiunge una nuova immagine a un progetto
+     * @param string $nome_progetto
+     * @param string $imgData
+     * @return bool
+     */
     public function addPhotoToProject($nome_progetto, $imgData) {
         try {
             $stmt = $this->conn->prepare("INSERT INTO FOTO (nome_progetto, immagine) VALUES (:nome_progetto, :immagine)");
@@ -16,4 +23,3 @@ class Photo {
         }
     }
 }
-?>
