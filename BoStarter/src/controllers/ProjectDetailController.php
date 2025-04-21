@@ -15,13 +15,13 @@ $projectModel = new Project($db);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
-        $result = $projectModel->addComment($user);
+        $projectModel->addComment($user);
     }
     if (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
-        $result = $projectModel->addReply($user);
+        $projectModel->addReply($user);
     }
     if (isset($_POST['nome_progetto'], $_POST['importo'], $_POST['codice_reward'])) {
-        $result = $projectModel->fundProject($db);
+        $projectModel->fundProject($db);
     }
 }
 
