@@ -18,6 +18,8 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
     <title>Dashboard - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/style/dashboard.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/js/dashboard.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -83,7 +85,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
         <div class="mt-5">
         <h3>Vedi i progetti</h3>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterProjects()">
+            <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
             <label class="form-check-label" for="filterOpenProjects">
                 Visualizza solo i progetti aperti
             </label>
@@ -120,17 +122,5 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
         </div>
         </script>
     </div>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-    function filterProjects() {
-        const checkbox = document.getElementById('filterOpenProjects');
-        const cards = document.querySelectorAll('.project-card');
-        cards.forEach(card => {
-            const badge = card.querySelector('.badge');
-            const isOpen = badge && badge.textContent.trim().toLowerCase() === 'aperto';
-            card.closest('.col-md-4').style.display = (checkbox.checked && !isOpen) ? 'none' : '';
-        });
-    }
-    </script>
 </body>
 </html>
