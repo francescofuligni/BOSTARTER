@@ -43,6 +43,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 
             <h3>I tuoi progetti</h3>
             <div class="row mb-5">
+
                 <?php
                 if ($userProjects) {
                     foreach ($userProjects as $project): ?>
@@ -80,7 +81,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
         <?php endif; ?>
 
         <div class="mt-5">
-        <h3>Tutti i progetti</h3>
+        <h3>Vedi i progetti</h3>
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterProjects()">
             <label class="form-check-label" for="filterOpenProjects">
@@ -92,7 +93,7 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                 if ($allProjects) {
                     foreach ($allProjects as $project) {
                         echo '<div class="col-md-4 mb-4">';
-                        echo '<div class="card h-100 project-card">';
+                        echo '<div class="card h-100 project-card" style="cursor: pointer;" onclick="window.location.href=\'/project-detail?nome=' . urlencode($project['nome']) . '\'">';
                         // Mostra la prima foto se presente
                         if (!empty($project['immagine'])) {
                             echo '<img src="data:image/jpeg;base64,' . base64_encode($project['immagine']) . '" class="card-img-top" alt="' . htmlspecialchars($project['nome']) . '" style="height: 200px; object-fit: cover;">';
@@ -107,7 +108,6 @@ $isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
                         echo '<span class="badge badge-'.($project['stato'] === 'APERTO' ? 'success' : 'secondary').'" style="font-size:1rem;">';
                         echo ucfirst(strtolower($project['stato']));
                         echo '</span>';
-                        echo '<a href="/project-detail?nome=' . urlencode($project['nome']) . '" class="btn btn-primary btn-sm float-right">Dettagli</a>';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';

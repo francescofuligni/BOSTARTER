@@ -25,10 +25,10 @@ class Project {
      * @param string $nomeProgetto
      * @return array
      */
-    public function getProjectPhotos($nomeProgetto) {
+    public function getProjectPhotos($projectName) {
         try {
             $stmt = $this->conn->prepare("SELECT immagine FROM foto_progetto WHERE nome_progetto = :nome_progetto");
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
+            $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
@@ -41,10 +41,10 @@ class Project {
      * @param string $nomeProgetto
      * @return array
      */
-    public function getProjectComments($nomeProgetto) {
+    public function getProjectComments($projectName) {
         try {
             $stmt = $this->conn->prepare("SELECT id, testo, nickname, data, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
+            $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -57,10 +57,10 @@ class Project {
      * @param string $nomeProgetto
      * @return array|null
      */
-    public function getProjectDetail($nomeProgetto) {
+    public function getProjectDetail($projectName) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE nome = :nome");
-            $stmt->bindParam(':nome', $nomeProgetto);
+            $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -74,7 +74,7 @@ class Project {
      * @param string $emailUtente
      * @return bool
      */
-    public function hasFundedToday($nomeProgetto, $emailUtente) {
+    public function hasFundedToday($projectName, $userEmail) {
         try {
             $stmt = $this->conn->prepare(   // FORSE MEGLIO FATTO CON UNA STORED PROCEDURE?
                 "SELECT COUNT(*) FROM FINANZIAMENTO 
@@ -82,8 +82,8 @@ class Project {
                  AND email_utente = :email_utente 
                  AND data = CURDATE()"
             );
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
-            $stmt->bindParam(':email_utente', $emailUtente);
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_utente', $userEmail);
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
@@ -110,10 +110,10 @@ class Project {
      * @param string $emailUtente
      * @return array
      */
-    public function getUserProjects($emailUtente) {
+    public function getUserProjects($userEmail) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente = :email_utente");
-            $stmt->bindParam(':email_utente', $emailUtente);
+            $stmt->bindParam(':email_utente', $userEmail);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -126,10 +126,10 @@ class Project {
      * @param string $nomeProgetto
      * @return array
      */
-    public function getRewardsForProject($nomeProgetto) {
+    public function getRewardsForProject($projectName) {
         try {
             $stmt = $this->conn->prepare("SELECT codice, descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
-            $stmt->bindParam(':nome', $nomeProgetto);
+            $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -137,3 +137,4 @@ class Project {
         }
     }
 }
+?>
