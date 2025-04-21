@@ -1,14 +1,8 @@
 <?php
-// Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) session_start();
-
 require_once __DIR__ . '/../controllers/DashboardController.php'; // qui vengono creati $db e $user
 require_once __DIR__ . '/components/navbar.php';
-
-// Usa direttamente $user e $_SESSION['user_id']
-$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
-$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">

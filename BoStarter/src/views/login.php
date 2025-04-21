@@ -1,10 +1,8 @@
 <?php
-// Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) session_start();
-
 require_once __DIR__ . '/../controllers/LoginController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">

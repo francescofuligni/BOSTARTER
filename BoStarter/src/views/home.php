@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/components/navbar.php';
 ?>
+
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -15,7 +17,7 @@ require_once __DIR__ . '/components/navbar.php';
             <h1 class="display-4">Benvenuto su BoStarter!</h1>
             <p class="lead">Una piattaforma per il crowdfunding di progetti innovativi.</p>
             
-            <!-- AGGIUNGERE PREVIEW PROGETTI -->
+            <!-- AGGIUNGERE PREVIEW PROGETTI: usare view top 3 progetti in scadenza -->
         
         </div>
     </div>

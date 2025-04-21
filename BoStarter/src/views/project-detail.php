@@ -1,8 +1,8 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../controllers/ProjectDetailController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">

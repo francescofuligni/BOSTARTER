@@ -1,8 +1,15 @@
 <?php
+// Avvia la sessione se non è già stata avviata
+if (session_status() == PHP_SESSION_NONE) session_start();
+
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
 require_once __DIR__ . '/../models/Competence.php';
+
+// Usa direttamente $user e $_SESSION['user_id']
+$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
+$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 
 $database = new Database();
 $db = $database->getConnection();

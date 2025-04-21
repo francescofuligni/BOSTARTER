@@ -1,13 +1,12 @@
 <?php
 // Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) session_start();
-
 // Determina il percorso corrente
 $currentPath = $_SERVER['REQUEST_URI'];
-
 // Controlla se la pagina corrente è una pagina di login o registrazione
 $isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '/admin-login') !== false || strpos($currentPath, '/register') !== false;
 ?>
+
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">

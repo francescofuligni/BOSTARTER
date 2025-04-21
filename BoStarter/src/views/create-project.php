@@ -1,21 +1,8 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) session_start();
-
-require_once __DIR__ . '/../config/Database.php';
-require_once __DIR__ . '/../models/User.php';
-
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-
-if (!isset($_SESSION['user_id']) || !$user->isCreator($_SESSION['user_id'])) {
-    header('Location: /dashboard');
-    exit;
-}
-
 require_once __DIR__ . '/../controllers/CreateProjectController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">

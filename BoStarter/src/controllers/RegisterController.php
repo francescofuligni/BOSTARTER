@@ -1,16 +1,10 @@
 <?php
-// Apri la sessione se non è già aperta
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Include il file di configurazione del database e il modello User
-$dbPath = __DIR__ . '/../config/Database.php';
-$userPath = __DIR__ . '/../models/User.php';
+// Avvia la sessione se non è già stata avviata
+if (session_status() == PHP_SESSION_NONE) session_start();
 
 // Controlla se i file esistono
-require_once $dbPath;
-require_once $userPath;
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/User.php';
 
 // Controlla se il metodo della richiesta è POST (invio del modulo)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
