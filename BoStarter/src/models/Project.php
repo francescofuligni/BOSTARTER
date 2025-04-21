@@ -150,7 +150,6 @@ class Project {
             return [];
         }
     }
-
     
     /**
      * Effettua il finanziamento di un progetto e associa una ricompensa
