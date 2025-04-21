@@ -193,15 +193,15 @@ class User {
      * @param string $creatorEmail
      * @return bool
      */
-    public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore) {
+    public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
         try {
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':descrizione', $descrizione);
+            $stmt->bindParam(':nome', $name);
+            $stmt->bindParam(':descrizione', $desc);
             $stmt->bindParam(':budget', $budget);
-            $stmt->bindParam(':data_limite', $data_limite);
-            $stmt->bindParam(':tipo', $tipo);
-            $stmt->bindParam(':email_creatore', $email_creatore);
+            $stmt->bindParam(':data_limite', $maxDate);
+            $stmt->bindParam(':tipo', $type);
+            $stmt->bindParam(':email_creatore', $creatorEmail);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
@@ -215,12 +215,12 @@ class User {
      * @param string $text
      * @return bool
      */
-    public function addComment($nomeProgetto, $emailUtente, $testoCommento) {
+    public function addComment($projectName, $userEmail, $text) {
         try {
             $stmt = $this->conn->prepare("CALL inserisci_commento(:nome_progetto, :email_utente, :testo)");
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
-            $stmt->bindParam(':email_utente', $emailUtente);
-            $stmt->bindParam(':testo', $testoCommento);
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->bindParam(':testo', $text);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
@@ -234,12 +234,12 @@ class User {
      * @param string $creatorEmail
      * @return bool
      */
-    public function addReply($idCommento, $testoRisposta, $emailCreatore) {
+    public function addReply($commentId, $text, $creatorEmail) {
         try {
             $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
-            $stmt->bindParam(':id_commento', $idCommento);
-            $stmt->bindParam(':testo', $testoRisposta);
-            $stmt->bindParam(':email_creatore', $emailCreatore);
+            $stmt->bindParam(':id_commento', $commentId);
+            $stmt->bindParam(':testo', $text);
+            $stmt->bindParam(':email_creatore', $creatorEmail);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
@@ -255,14 +255,14 @@ class User {
      * @param string $creatorEmail
      * @return bool
      */
-    public function addRewardToProject($codice, $imgData, $descrizione, $nomeProgetto, $emailCreatore) {
+    public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
         try {
             $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
-            $stmt->bindParam(':codice', $codice);
-            $stmt->bindParam(':immagine', $imgData, PDO::PARAM_LOB);
-            $stmt->bindParam(':descrizione', $descrizione);
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
-            $stmt->bindParam(':email_creatore', $emailCreatore);
+            $stmt->bindParam(':codice', $code);
+            $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
+            $stmt->bindParam(':descrizione', $desc);
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_creatore', $creatorEmail);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
