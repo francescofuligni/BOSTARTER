@@ -1,5 +1,6 @@
 <?php
-// creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ecc
+// Creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ...
+
 class User {
     private $conn;
 
@@ -184,12 +185,12 @@ class User {
 
     /**
      * Crea un nuovo progetto (solo per creatori)
-     * @param string $nome
-     * @param string $descrizione
+     * @param string $name
+     * @param string $desc
      * @param float $budget
-     * @param string $data_limite
-     * @param string $tipo
-     * @param string $email_creatore
+     * @param string $maxDate
+     * @param string $type
+     * @param string $creatorEmail
      * @return bool
      */
     public function createProject($nome, $descrizione, $budget, $data_limite, $tipo, $email_creatore) {
@@ -209,9 +210,9 @@ class User {
 
     /**
      * Aggiunge un commento a un progetto
-     * @param string $nomeProgetto
-     * @param string $emailUtente
-     * @param string $testoCommento
+     * @param string $projectName
+     * @param string $userEmail
+     * @param string $text
      * @return bool
      */
     public function addComment($nomeProgetto, $emailUtente, $testoCommento) {
@@ -228,9 +229,9 @@ class User {
 
     /**
      * Aggiunge una risposta a un commento
-     * @param int $idCommento
-     * @param string $testoRisposta
-     * @param string $emailCreatore
+     * @param int $commentId
+     * @param string $text
+     * @param string $creatorEmail
      * @return bool
      */
     public function addReply($idCommento, $testoRisposta, $emailCreatore) {
@@ -247,11 +248,11 @@ class User {
 
     /**
      * Aggiunge una ricompensa a un progetto (solo per creatori)
-     * @param string $codice
-     * @param string $imgData Dati binari dell'immagine
-     * @param string $descrizione
-     * @param string $nomeProgetto
-     * @param string $emailCreatore
+     * @param string $code
+     * @param string $image
+     * @param string $desc
+     * @param string $projectName
+     * @param string $creatorEmail
      * @return bool
      */
     public function addRewardToProject($codice, $imgData, $descrizione, $nomeProgetto, $emailCreatore) {

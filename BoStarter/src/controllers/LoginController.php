@@ -56,7 +56,6 @@ if (file_exists($dbPath) && file_exists($userPath)) {
             $_SESSION['user_type'] = $user->isCreator($email) ? 'creator' : 'user';
             $_SESSION['auth_token'] = $token;
             $_SESSION['token_expiration'] = time() + (60 * 60); // Token valido per 60 minuti 
-
         
             header('Location: /dashboard');
             
@@ -67,8 +66,5 @@ if (file_exists($dbPath) && file_exists($userPath)) {
             exit;
         }
     }
-} else {
-    // Se i file non esistono, mostra un messaggio di errore
-    $_SESSION['error'] = "Il sistema di login non è ancora configurato. Contattare l'amministratore.";
 }
 ?>

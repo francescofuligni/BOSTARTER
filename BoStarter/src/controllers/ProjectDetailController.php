@@ -13,13 +13,13 @@ $projectModel = new Project($db);
 /**
  * Recupera i dati del progetto, le foto e i commenti
  * @param Project $projectModel
- * @param string $nomeProgetto
+ * @param string $projectName
  * @return array
  */
-function getProjectDetailData($projectModel, $nomeProgetto) {
-    $project = $projectModel->getProjectDetail($nomeProgetto);
-    $photos = $projectModel->getProjectPhotos($nomeProgetto);
-    $comments = $projectModel->getProjectComments($nomeProgetto);
+function getProjectDetailData($projectModel, $projectName) {
+    $project = $projectModel->getProjectDetail($projectName);
+    $photos = $projectModel->getProjectPhotos($projectName);
+    $comments = $projectModel->getProjectComments($projectName);
     return [$project, $photos, $comments];
 }
 
@@ -28,12 +28,12 @@ function getProjectDetailData($projectModel, $nomeProgetto) {
  * @param User $user
  */
 function handleAddComment($user) {
-    $nomeProgetto = $_POST['nome_progetto'] ?? '';
-    $testoCommento = trim($_POST['testo_commento'] ?? '');
-    $emailUtente = $_SESSION['user_id'] ?? '';
+    $projectName = $_POST['nome_progetto'] ?? '';
+    $commentText = trim($_POST['testo_commento'] ?? '');
+    $userEmail = $_SESSION['user_id'] ?? '';
 
-    if ($nomeProgetto && $testoCommento && $emailUtente) {
-        if ($user->addComment($nomeProgetto, $emailUtente, $testoCommento)) {
+    if ($projectName && $commentText && $userEmail) {
+        if ($user->addComment($projectName, $userEmail, $commentText)) {
             $_SESSION['success'] = "Commento aggiunto con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento del commento.";
@@ -41,7 +41,7 @@ function handleAddComment($user) {
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire un commento.";
     }
-    header('Location: /project-detail?nome=' . urlencode($nomeProgetto));
+    header('Location: /project-detail?nome=' . urlencode($projectName));
     exit;
 }
 
@@ -50,13 +50,13 @@ function handleAddComment($user) {
  * @param User $user
  */
 function handleAddReply($user) {
-    $idCommento = $_POST['id_commento'] ?? '';
-    $testoRisposta = trim($_POST['testo_risposta'] ?? '');
-    $emailCreatore = $_SESSION['user_id'] ?? '';
-    $nomeProgetto = $_POST['nome_progetto'] ?? '';
+    $commentId = $_POST['id_commento'] ?? '';
+    $responseText = trim($_POST['testo_risposta'] ?? '');
+    $creatorEmail = $_SESSION['user_id'] ?? '';
+    $projectName = $_POST['nome_progetto'] ?? '';
 
-    if ($idCommento && $testoRisposta && $emailCreatore) {
-        if ($user->addReply($idCommento, $testoRisposta, $emailCreatore)) {
+    if ($commentId && $responseText && $creatorEmail) {
+        if ($user->addReply($commentId, $responseText, $creatorEmail)) {
             $_SESSION['success'] = "Risposta aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento della risposta.";
@@ -64,7 +64,7 @@ function handleAddReply($user) {
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire una risposta.";
     }
-    header('Location: /project-detail?nome=' . urlencode($nomeProgetto));
+    header('Location: /project-detail?nome=' . urlencode($projectName));
     exit;
 }
  
@@ -73,26 +73,26 @@ function handleAddReply($user) {
  * @param Database $db
  */
 function handleFundProject($db) {
-    $nomeProgetto = $_POST['nome_progetto'] ?? '';
-    $importo = floatval($_POST['importo'] ?? 0);
-    $emailUtente = $_SESSION['user_id'] ?? '';
-    $codiceReward = $_POST['codice_reward'] ?? '';
+    $projectName = $_POST['nome_progetto'] ?? '';
+    $amount = floatval($_POST['importo'] ?? 0);
+    $userEmail = $_SESSION['user_id'] ?? '';
+    $rewardCode = $_POST['codice_reward'] ?? '';
 
     // Get the PDO connection from the Database object
     $pdo = $db instanceof Database ? $db->getConnection() : $db;
 
-    if ($nomeProgetto && $importo > 0 && $emailUtente && $codiceReward) {
+    if ($projectName && $amount > 0 && $userEmail && $rewardCode) {
         try {
             $stmt = $pdo->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
-            $stmt->bindParam(':email_utente', $emailUtente);
-            $stmt->bindParam(':nome_progetto', $nomeProgetto);
-            $stmt->bindParam(':importo', $importo);
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':importo', $amount);
             if ($stmt->execute()) {
                 // Associa la reward al finanziamento appena inserito
                 $stmt2 = $pdo->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
-                $stmt2->bindParam(':email_utente', $emailUtente);
-                $stmt2->bindParam(':nome_progetto', $nomeProgetto);
-                $stmt2->bindParam(':codice_reward', $codiceReward);
+                $stmt2->bindParam(':email_utente', $userEmail);
+                $stmt2->bindParam(':nome_progetto', $projectName);
+                $stmt2->bindParam(':codice_reward', $rewardCode);
                 $stmt2->execute();
                 $_SESSION['success'] = "Finanziamento effettuato con successo!";
             } else {
@@ -104,7 +104,7 @@ function handleFundProject($db) {
     } else {
         $_SESSION['error'] = "Compila tutti i campi per finanziare il progetto.";
     }
-    header('Location: /project-detail?nome=' . urlencode($nomeProgetto));
+    header('Location: /project-detail?nome=' . urlencode($projectName));
     exit;
 }
 

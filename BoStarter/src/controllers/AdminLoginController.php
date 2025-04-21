@@ -10,7 +10,6 @@ require_once __DIR__ . '/../models/User.php';
 
 // Gestisci il form di login amministratore
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-// Ottieni i dati dal form
     // Ottieni i dati dal form
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
