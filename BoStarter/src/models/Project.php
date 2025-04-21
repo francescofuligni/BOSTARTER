@@ -70,6 +70,19 @@ class Project {
     }
 
     /**
+     * Recupera i dati del progetto, le foto e i commenti
+     * @param Project $projectModel
+     * @param string $projectName
+     * @return array
+     */
+    function getProjectDetailData($projectModel, $projectName) {
+        $project = $projectModel->getProjectDetail($projectName);
+        $photos = $projectModel->getProjectPhotos($projectName);
+        $comments = $projectModel->getProjectComments($projectName);
+        return [$project, $photos, $comments];
+    }
+
+    /**
      * Verifica se l'utente ha già finanziato il progetto nella data odierna
      * @param string $projectName
      * @param string $userEmail
@@ -138,102 +151,35 @@ class Project {
         }
     }
 
+    
     /**
-     * Gestisce il finanziamento di un progetto
-     * @param Database $db
-     */
-    public function fundProject($db) {
-        $projectName = $_POST['nome_progetto'] ?? '';
-        $amount = floatval($_POST['importo'] ?? 0);
-        $userEmail = $_SESSION['user_id'] ?? '';
-        $rewardCode = $_POST['codice_reward'] ?? '';
-
-        // Get the PDO connection from the Database object
-        $pdo = $db instanceof Database ? $db->getConnection() : $db;
-
-        if ($projectName && $amount > 0 && $userEmail && $rewardCode) {
-            try {
-                $stmt = $pdo->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
-                $stmt->bindParam(':email_utente', $userEmail);
-                $stmt->bindParam(':nome_progetto', $projectName);
-                $stmt->bindParam(':importo', $amount);
-                if ($stmt->execute()) {
-                    // Associa la reward al finanziamento appena inserito
-                    $stmt2 = $pdo->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
-                    $stmt2->bindParam(':email_utente', $userEmail);
-                    $stmt2->bindParam(':nome_progetto', $projectName);
-                    $stmt2->bindParam(':codice_reward', $rewardCode);
-                    $stmt2->execute();
-                    $_SESSION['success'] = "Finanziamento effettuato con successo!";
-                } else {
-                    $_SESSION['error'] = "Errore nell'inserimento del finanziamento.";
-                }
-            } catch (PDOException $e) {
-                $_SESSION['error'] = "Errore nell'inserimento del finanziamento.";
-            }
-        } else {
-            $_SESSION['error'] = "Compila tutti i campi per finanziare il progetto.";
-        }
-        header('Location: /project-detail?nome=' . urlencode($projectName));
-        exit;
-    }
-
-    /**
-     * Gestisce l'inserimento di una risposta
-     * @param User $user
-     */
-    public function addReply($user) {
-        $commentId = $_POST['id_commento'] ?? '';
-        $responseText = trim($_POST['testo_risposta'] ?? '');
-        $creatorEmail = $_SESSION['user_id'] ?? '';
-        $projectName = $_POST['nome_progetto'] ?? '';
-
-        if ($commentId && $responseText && $creatorEmail) {
-            if ($user->addReply($commentId, $responseText, $creatorEmail)) {
-                $_SESSION['success'] = "Risposta aggiunta con successo!";
-            } else {
-                $_SESSION['error'] = "Errore nell'inserimento della risposta.";
-            }
-        } else {
-            $_SESSION['error'] = "Compila tutti i campi per inserire una risposta.";
-        }
-        header('Location: /project-detail?nome=' . urlencode($projectName));
-        exit;
-    }
-
-    /**
-     * Recupera i dati del progetto, le foto e i commenti
-     * @param Project $projectModel
+     * Effettua il finanziamento di un progetto e associa una ricompensa
      * @param string $projectName
-     * @return array
+     * @param float $amount
+     * @param string $userEmail
+     * @param string $rewardCode
+     * @return bool
      */
-    public function getProjectDetailData($projectModel, $projectName) {
-        $project = $projectModel->getProjectDetail($projectName);
-        $photos = $projectModel->getProjectPhotos($projectName);
-        $comments = $projectModel->getProjectComments($projectName);
-        return [$project, $photos, $comments];
-    }
-
-    /**
-     * Gestisce l'inserimento di un commento
-     * @param User $user
-     */
-    public function addComment($user) {
-        $projectName = $_POST['nome_progetto'] ?? '';
-        $commentText = trim($_POST['testo_commento'] ?? '');
-        $userEmail = $_SESSION['user_id'] ?? '';
-
-        if ($projectName && $commentText && $userEmail) {
-            if ($user->addComment($projectName, $userEmail, $commentText)) {
-                $_SESSION['success'] = "Commento aggiunto con successo!";
+    public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
+        try {
+            $stmt = $pdo->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':importo', $amount);
+            if ($stmt->execute()) {
+                // Associa la reward al finanziamento appena inserito
+                $stmt2 = $pdo->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
+                $stmt2->bindParam(':email_utente', $userEmail);
+                $stmt2->bindParam(':nome_progetto', $projectName);
+                $stmt2->bindParam(':codice_reward', $rewardCode);
+                $stmt2->execute();
+                return true;
             } else {
-                $_SESSION['error'] = "Errore nell'inserimento del commento.";
+                return false;
             }
-        } else {
-            $_SESSION['error'] = "Compila tutti i campi per inserire un commento.";
+        } catch (PDOException $e) {
+            return false;
         }
-        header('Location: /project-detail?nome=' . urlencode($projectName));
-        exit;
     }
 }
 ?>
