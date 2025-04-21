@@ -59,3 +59,4 @@ class Router {
         exit;
     }
 }
+?>
