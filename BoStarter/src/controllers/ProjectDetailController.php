@@ -64,6 +64,7 @@ function handleFundProject($db) {
     $amount = floatval($_POST['importo'] ?? 0);
     $userEmail = $_SESSION['user_id'] ?? '';
     $rewardCode = $_POST['codice_reward'] ?? '';
+    
     if ($projectName && $amount > 0 && $userEmail && $rewardCode) {
         if($projectModel->fundProject($projectName, $amount, $userEmail, $rewardCode)) {
             $_SESSION['success'] = "Progetto finanziato con successo!";
