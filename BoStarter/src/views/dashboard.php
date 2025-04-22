@@ -17,6 +17,12 @@ require_once __DIR__ . '/components/navbar.php';
 </head>
 <body>
     <div class="container mt-5">
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+        <?php endif; ?>
         <div class="jumbotron">
             <h1 class="display-4">Benvenuto nella tua Dashboard, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
@@ -42,55 +48,9 @@ require_once __DIR__ . '/components/navbar.php';
 
                 <?php
                 if ($userProjects) {
-                    foreach ($userProjects as $project): ?>
-                        <div class="col-md-4 mb-4">
-                            <div class="card h-100 project-card">
-                                <?php if (!empty($project['immagine'])): ?>
-                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($project['immagine']); ?>"
-                                        class="card-img-top" alt="<?php echo htmlspecialchars($project['nome']); ?>"
-                                        style="height: 200px; object-fit: cover;">
-                                <?php else: ?>
-                                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
-                                        style="height: 200px;">
-                                        <span>Nessuna immagine per il progetto.</span>
-                                    </div>
-                                <?php endif; ?>
-
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?php echo htmlspecialchars($project['nome']); ?></h5>
-                                    <p class="card-text">
-                                        <?php echo nl2br(htmlspecialchars(substr($project['descrizione'], 0, 100))); ?>
-                                        <?php echo (strlen($project['descrizione']) > 100) ? '...' : ''; ?>
-                                    </p>
-                                    <div class="mt-auto">
-                                        <a href="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" class="btn btn-primary btn-block">
-                                            Dettagli
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach;
-                }
-                ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="mt-5">
-        <h3>Vedi i progetti</h3>
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
-            <label class="form-check-label" for="filterOpenProjects">
-                Visualizza solo i progetti aperti
-            </label>
-        </div>
-            <div class="row">
-                <?php
-                if ($allProjects) {
-                    foreach ($allProjects as $project) {
-                        echo '<div class="col-md-4 mb-4">';
+                    foreach ($userProjects as $project) {
+                        echo '<div class="col-lg-3 col-md-6 mb-4">';
                         echo '<div class="card h-100 project-card" style="cursor: pointer;" onclick="window.location.href=\'/project-detail?nome=' . urlencode($project['nome']) . '\'">';
-                        // Mostra la prima foto se presente
                         if (!empty($project['immagine'])) {
                             echo '<img src="data:image/jpeg;base64,' . base64_encode($project['immagine']) . '" class="card-img-top" alt="' . htmlspecialchars($project['nome']) . '" style="height: 200px; object-fit: cover;">';
                         } else {
@@ -108,13 +68,52 @@ require_once __DIR__ . '/components/navbar.php';
                         echo '</div>';
                         echo '</div>';
                     }
-                } else {
-                    echo '<div class="col-12"><span class="text-muted">Nessun progetto trovato.</span></div>';
-                }
+                    } else { ?>
+                        <div class="col-12"><span class="text-muted">Non hai ancora creato progetti.</span></div>
+                    <?php } ?>
+                <?php
                 ?>
             </div>
+        <?php endif; ?>
+
+        <div class="mt-5">
+        <h3>Vedi tutti i progetti</h3>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
+            <label class="form-check-label" for="filterOpenProjects">
+                Visualizza solo i progetti aperti
+            </label>
         </div>
-        </script>
+            <?php
+            echo '<div id="all-projects" class="row">';
+            if ($allProjects) {
+                foreach ($allProjects as $project) {
+                    echo '<div class="col-lg-3 col-md-6 mb-4 project-card-container" data-status="' . strtolower($project['stato']) . '">';
+                    echo '<div class="card h-100 project-card" style="cursor: pointer;" onclick="window.location.href=\'/project-detail?nome=' . urlencode($project['nome']) . '\'">';
+                    // Mostra la prima foto se presente
+                    if (!empty($project['immagine'])) {
+                        echo '<img src="data:image/jpeg;base64,' . base64_encode($project['immagine']) . '" class="card-img-top" alt="' . htmlspecialchars($project['nome']) . '" style="height: 200px; object-fit: cover;">';
+                    } else {
+                        echo '<div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">';
+                        echo '<span>Nessuna immagine</span>';
+                        echo '</div>';
+                    }
+                    echo '<div class="card-body">';
+                    echo '<h5 class="card-title">' . htmlspecialchars($project['nome']) . '</h5>';
+                    echo '<p class="card-text">' . htmlspecialchars($project['descrizione']) . '</p>';
+                    echo '<span class="badge badge-'.($project['stato'] === 'APERTO' ? 'success' : 'secondary').'" style="font-size:1rem;">';
+                    echo ucfirst(strtolower($project['stato']));
+                    echo '</span>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="col-12"><span class="text-muted">Nessun progetto trovato.</span></div>';
+            }
+            echo '</div>';
+            ?>
+        </div>
     </div>
 </body>
 </html>
