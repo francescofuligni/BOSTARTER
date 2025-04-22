@@ -10,9 +10,7 @@ $db = $database->getConnection();
 $userModel = new User($db);
 $projectModel = new Project($db);
 
-/**
- * Gestisce l'inserimento di un commento
- */
+// Gestisce l'inserimento di un commento
 function handleAddComment() {
     $projectName = $_POST['nome_progetto'] ?? '';
     $commentText = trim($_POST['testo_commento'] ?? '');
@@ -31,9 +29,8 @@ function handleAddComment() {
     exit;
 }
 
-/**
- * Gestisce l'inserimento di una risposta
- */
+
+// Gestisce l'inserimento di una risposta
 function handleAddReply() {
     $commentId = $_POST['id_commento'] ?? '';
     $responseText = trim($_POST['testo_risposta'] ?? '');
@@ -53,9 +50,7 @@ function handleAddReply() {
     exit;
 }
 
-/**
- * Gestisce il finanziamento di un progetto
- */
+// Gestisce il finanziamento di un progetto
 function handleFundProject() {
     global $projectModel;
     $projectName = $_POST['nome_progetto'] ?? '';
@@ -76,8 +71,7 @@ function handleFundProject() {
     exit;
 }
 
-// --- Routing interno del controller ---
-
+// Routing interno del controller
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
         handleAddComment();
@@ -90,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// GET: recupera i dati per la view
+// GET -> recupera i dati per la view
 if (isset($_GET['nome'])) {
     [$project, $photos, $comments] = $projectModel->getProjectDetailData($projectModel, $_GET['nome']);
     if (isset($_SESSION['user_id']) && isset($project['nome'])) {
