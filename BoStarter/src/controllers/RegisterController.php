@@ -2,9 +2,12 @@
 // Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-// Controlla se i file esistono
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
+
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
 
 // Controlla se il metodo della richiesta è POST (invio del modulo)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,20 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Hash della password
     $hashedPassword = hash('sha256', $password);
 
-    // Connessione al db
-    $database = new Database();
-    $db = $database->getConnection();
-    
-    // Crea un oggetto User (mi serve così posso usare i metodi del modello e ha già la connessione al db)
-    $user = new User($db);
-
-    // Se il codice di sicurezza non è vuoto, lo hash
+    // Se il codice di sicurezza non è vuoto, fa l'hash
     $hashedSecurityCode = '';
     if (!empty($securityCode)) {
         $hashedSecurityCode = hash('sha256', $securityCode);
     }
 
-    $success = $user->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
+    $success = $userModel->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
     
     if ($success) {
         $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';

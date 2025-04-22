@@ -2,9 +2,12 @@
 // Avvia la sessione se non è già stata avviata
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-// Includi il database e il modello utente
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
+
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
 
 // Controlla se l'utente è già loggato come amministratore
 if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'admin') {
@@ -25,28 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /admin-login');
         exit;
     }
-    
-    // Connettiti al database
-    $database = new Database();
-    $db = $database->getConnection();
-    
-    // Crea un oggetto utente
-    $user = new User($db);
-    
 
     // Hash della password e security code
     $hashedPassword = hash('sha256', $password);
     $hashedSecurityCode = hash('sha256', $securityCode);
 
-
-
     // Prova a effettuare il login come amministratore
-    $isAdmin = $user->adminLogin($email, $hashedPassword, $hashedSecurityCode);
+    $isAdmin = $userModel->adminLogin($email, $hashedPassword, $hashedSecurityCode);
     
     if ($isAdmin) {
         // Ottieni i dettagli dell'utente
-        $userData = $user->getUserData($email);
-        
+        $userData = $userModel->getUserData($email);
 
         $_SESSION['user_id'] = $userData['email'];
         $_SESSION['user_name'] = $userData['nome'] . ' ' . $userData['cognome'];

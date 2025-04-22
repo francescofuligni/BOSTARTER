@@ -1,7 +1,16 @@
 <?php
 
+/**
+ * Classe responsabile della validazione del token di autenticazione utente.
+ * Gestisce la sessione e verifica la validità e la scadenza del token.
+ */
 class Authentication
 {
+    /**
+     * Valida il token di autenticazione memorizzato nella sessione.
+     * Reindirizza alla pagina di login se il token non è presente o è scaduto.
+     * @return bool
+     */
     public function validateAuthToken()
     {
         // Avvia la sessione se non è già stata avviata

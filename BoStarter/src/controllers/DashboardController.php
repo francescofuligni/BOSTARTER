@@ -8,15 +8,15 @@ require_once __DIR__ . '/../models/Project.php';
 require_once __DIR__ . '/../models/Competence.php';
 
 
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-$projectModel = new Project($db);
-$competenceModel = new Competence($db);
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
+$projectModel = new Project($conn);
+$competenceModel = new Competence($conn);
 
-// Usa direttamente $user e $_SESSION['user_id']
-$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
-$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
+// Usa direttamente $userModel e $_SESSION['user_id']
+$isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
+$isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
 // Gestione inserimento commento direttamente qui
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_PO
     $emailUtente = $_SESSION['user_id'] ?? '';
 
     if ($nomeProgetto && $testoCommento && $emailUtente) {
-        if ($user->addComment($nomeProgetto, $emailUtente, $testoCommento)) {
+        if ($userModel->addComment($nomeProgetto, $emailUtente, $testoCommento)) {
             $_SESSION['success'] = "Commento aggiunto con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento del commento.";
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
 
     // Verifica che sia il creatore del progetto associato al commento
     if ($idCommento && $testoRisposta && $emailCreatore) {
-        if ($user->addReply($idCommento, $testoRisposta, $emailCreatore)) {
+        if ($userModel->addReply($idCommento, $testoRisposta, $emailCreatore)) {
             $_SESSION['success'] = "Risposta aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento della risposta.";
