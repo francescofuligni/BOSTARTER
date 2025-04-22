@@ -150,35 +150,5 @@ class Project {
             return [];
         }
     }
-    
-    /**
-     * Effettua il finanziamento di un progetto e associa una ricompensa
-     * @param string $projectName
-     * @param float $amount
-     * @param string $userEmail
-     * @param string $rewardCode
-     * @return bool
-     */
-    public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
-        try {
-            $stmt = $pdo->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->bindParam(':nome_progetto', $projectName);
-            $stmt->bindParam(':importo', $amount);
-            if ($stmt->execute()) {
-                // Associa la reward al finanziamento appena inserito
-                $stmt2 = $pdo->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
-                $stmt2->bindParam(':email_utente', $userEmail);
-                $stmt2->bindParam(':nome_progetto', $projectName);
-                $stmt2->bindParam(':codice_reward', $rewardCode);
-                $stmt2->execute();
-                return true;
-            } else {
-                return false;
-            }
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
 }
 ?>
