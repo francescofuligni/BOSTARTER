@@ -70,8 +70,11 @@ require_once __DIR__ . '/components/navbar.php';
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach;
-                }
+                    <?php endforeach; ?>
+                    <?php } else { ?>
+                        <div class="col-12"><span class="text-muted">Non hai ancora creato progetti.</span></div>
+                    <?php } ?>
+                <?php
                 ?>
             </div>
         <?php endif; ?>
