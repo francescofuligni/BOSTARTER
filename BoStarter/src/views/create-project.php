@@ -18,9 +18,6 @@ require_once __DIR__ . '/components/navbar.php';
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
     <?php endif; ?>
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
-    <?php endif; ?>
     <form action="/create-project" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nome progetto</label>
@@ -65,12 +62,12 @@ require_once __DIR__ . '/components/navbar.php';
                     <label for="reward_image[]">Immagine reward</label>
                     <input type="file" class="form-control-file" name="reward_image[]" accept="image/*" required>
                 </div>
+                <button type="button" class="btn btn-primary mb-3" onclick="insertReward()">Aggiungi reward</button>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary mb-3" onclick="insertReward()">Aggiungi reward</button>
 
-        <button type="submit" class="btn btn-primary">Crea progetto</button>
-        <a href="/dashboard" class="btn btn-secondary">Annulla</a>
+        <button type="submit" class="btn btn-success">Crea progetto</button>
+        <a href="/dashboard" class="btn btn-danger">Annulla</a>
     </form>
 </div>
 </body>

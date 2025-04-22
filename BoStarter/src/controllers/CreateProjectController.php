@@ -38,6 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Verifica che almeno una reward sia presente
+    if (empty($_POST['reward_code']) || count(array_filter($_POST['reward_code'], fn($r) => !empty(trim($r)))) === 0) {
+        $_SESSION['error'] = "Aggiungi almeno una ricompensa per creare il progetto.";
+        header('Location: /create-project');
+        exit;
+    }
+
     // Crea il progetto tramite stored procedure (usa la funzione del modello User)
     $creationSuccess = $userModel->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
 
