@@ -7,15 +7,16 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
 require_once __DIR__ . '/../models/Competence.php';
 
-// Usa direttamente $user e $_SESSION['user_id']
-$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
-$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
 $projectModel = new Project($db);
 $competenceModel = new Competence($db);
+
+// Usa direttamente $user e $_SESSION['user_id']
+$isCreator = isset($_SESSION['user_id']) && $user->isCreator($_SESSION['user_id']);
+$isAdmin = isset($_SESSION['user_id']) && $user->isAdmin($_SESSION['user_id']);
 
 // Gestione inserimento commento direttamente qui
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {

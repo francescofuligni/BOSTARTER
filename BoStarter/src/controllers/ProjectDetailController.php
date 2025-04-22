@@ -60,6 +60,7 @@ function handleAddReply($user) {
  * @param Database $db
  */
 function handleFundProject($db) {
+    global $projectModel;
     $projectName = $_POST['nome_progetto'] ?? '';
     $amount = floatval($_POST['importo'] ?? 0);
     $userEmail = $_SESSION['user_id'] ?? '';
@@ -95,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET: recupera i dati per la view
 
 if (isset($_GET['nome'])) {
-    [$project, $photos, $comments] = getProjectDetailData($projectModel, $_GET['nome']);
+    [$project, $photos, $comments] = $projectModel->getProjectDetailData($projectModel, $_GET['nome']);
     if (isset($_SESSION['user_id']) && isset($project['nome'])) {
         $hasFundedToday = $projectModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
     }
     $rewards = [];
     if ($project && isset($project['nome'])) {
-        $rewards = $projectModel->getRewardsForProject($project['nome']);
+        $rewards = $projectModel->getProjectRewards($project['nome']);
     }
 }
 ?>

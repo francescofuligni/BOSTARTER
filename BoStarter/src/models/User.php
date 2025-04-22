@@ -1,11 +1,14 @@
 <?php
 // Creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ...
+require_once __DIR__ . '/../config/MongoLogger.php';
 
 class User {
     private $conn;
+    private $logger;
 
     public function __construct($db) {
         $this->conn = $db;
+        $this->logger = new \MongoLogger();
     }
 
     /**
@@ -136,7 +139,6 @@ class User {
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
-            // Chiama la stored procedure per registrare l'utente
             $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
@@ -147,8 +149,19 @@ class User {
             $stmt->bindParam(':anno_nascita', $birthYear);
             $stmt->bindParam(':tipo', $type);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
-            
-            return $stmt->execute();
+            $result = $stmt->execute();
+
+            // Logga l'evento SOLO se l'inserimento è andato a buon fine
+            if ($result) {
+                $this->logger->log("Nuovo utente registrato", [
+                    'email' => $email,
+                    'nome' => $name,
+                    'cognome' => $lastName,
+                    'nickname' => $nickname,
+                    'tipo' => $type
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             echo "Errore durante la registrazione: " . $e->getMessage();
             return false;
@@ -202,7 +215,21 @@ class User {
             $stmt->bindParam(':data_limite', $maxDate);
             $stmt->bindParam(':tipo', $type);
             $stmt->bindParam(':email_creatore', $creatorEmail);
-            return $stmt->execute();
+            $result = $stmt->execute();
+
+            // Logga l'evento SOLO se l'inserimento è andato a buon fine
+            if ($result) {
+                $this->logger->log("Nuovo progetto creato", [
+                    'nome_progetto' => $name,
+                    'descrizione' => $desc,
+                    'budget' => $budget,
+                    'data_limite' => $maxDate,
+                    'tipo' => $type,
+                    'email_creatore' => $creatorEmail
+                ]);
+            }
+    
+            return $result;
         } catch (PDOException $e) {
             return false;
         }
@@ -221,7 +248,17 @@ class User {
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->bindParam(':email_utente', $userEmail);
             $stmt->bindParam(':testo', $text);
-            return $stmt->execute();
+            $result = $stmt->execute();
+
+            // Logga l'evento SOLO se l'inserimento è andato a buon fine
+            if ($result) {
+                $this->logger->log("Nuovo commento inserito", [
+                    'nome_progetto' => $projectName,
+                    'email_utente' => $userEmail,
+                    'testo' => $text
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             return false;
         }
@@ -240,7 +277,17 @@ class User {
             $stmt->bindParam(':id_commento', $commentId);
             $stmt->bindParam(':testo', $text);
             $stmt->bindParam(':email_creatore', $creatorEmail);
-            return $stmt->execute();
+            $result = $stmt->execute();
+
+            // Logga l'evento SOLO se l'inserimento è andato a buon fine
+            if ($result) {
+                $this->logger->log("Nuova risposta inserita", [
+                    'id_commento' => $commentId,
+                    'testo' => $text,
+                    'email_creatore' => $creatorEmail
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             return false;
         }
