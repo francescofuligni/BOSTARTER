@@ -1,9 +1,13 @@
 function filterOpenProjects() {
-    const checkbox = document.getElementById('filterOpenProjects');
-    const cards = document.querySelectorAll('.project-card');
+    const onlyOpen = document.getElementById('filterOpenProjects').checked;
+    const cards = document.querySelectorAll('#all-projects .project-card-container');
+
     cards.forEach(card => {
-        const badge = card.querySelector('.badge');
-        const isOpen = badge && badge.textContent.trim().toLowerCase() === 'aperto';
-        card.closest('.col-md-4').style.display = (checkbox.checked && !isOpen) ? 'none' : '';
+        const status = card.getAttribute('data-status');
+        if (onlyOpen && status !== 'aperto') {
+            card.style.display = 'none';
+        } else {
+            card.style.display = 'block';
+        }
     });
 }
