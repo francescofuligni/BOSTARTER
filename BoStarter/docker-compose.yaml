@@ -48,24 +48,31 @@ services:
     image: mongo-express:latest
     restart: always
     depends_on:
-      - mongodb
+        - mongodb
+    environment:
+        ME_CONFIG_MONGODB_SERVER: mongodb
+        ME_CONFIG_MONGODB_ADMINUSERNAME: admin_username
+        ME_CONFIG_MONGODB_ADMINPASSWORD: admin_password
+        ME_CONFIG_BASICAUTH: false
+    ports:
+        - "8091:8081"
+    networks:
+        - databases
 
   apache:
-    image: php:8.2-apache
+    build: .
     restart: always
     ports:
       - "8080:80"
     volumes:
       - ./src:/var/www/html
+      - ./:/app
     depends_on:
       - mysql
     networks:
       - databases
     command: >
-      sh -c "docker-php-ext-install mysqli pdo pdo_mysql &&
-             docker-php-ext-enable mysqli pdo pdo_mysql &&
-             a2enmod rewrite &&
-             echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
+      sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
              echo '<Directory /var/www/html>
                 Options Indexes FollowSymLinks
                 AllowOverride All
