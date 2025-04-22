@@ -19,14 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Connettiti al database
-    $database = new Database();
-    $db = $database->getConnection();
+    $db = new Database();
+    $conn = $db->getConnection();
     
     // Crea un oggetto utente
-    $user = new User($db);
+    $userModel = new User($conn);
 
     // Verifica se l'utente è un amministratore
-    if ($user->isAdmin($email)) {
+    if ($userModel->isAdmin($email)) {
         $_SESSION['error'] = "Gli amministratori devono usare il login amministratore.";
         header('Location: /login');
         exit;
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = hash('sha256', $password);
 
     // Prova a effettuare il login con email e password forniti
-    $userData = $user->login($email, $hashedPassword);
+    $userData = $userModel->login($email, $hashedPassword);
     
     if ($userData) {
 
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $userData['email'];
         $_SESSION['user_name'] = $userData['nome'] . ' ' . $userData['cognome'];
         $_SESSION['user_nickname'] = $userData['nickname'];
-        $_SESSION['user_type'] = $user->isCreator($email) ? 'creator' : 'user';
+        $_SESSION['user_type'] = $userModel->isCreator($email) ? 'creator' : 'user';
         $_SESSION['auth_token'] = $token;
         $_SESSION['token_expiration'] = time() + (60 * 60); // Token valido per 60 minuti 
     

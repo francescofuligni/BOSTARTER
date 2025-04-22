@@ -5,10 +5,10 @@ require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$userModel = new User($db);
-$projectModel = new Project($db);
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
+$projectModel = new Project($conn);
 
 // Gestisce l'inserimento di un commento
 function handleAddComment() {

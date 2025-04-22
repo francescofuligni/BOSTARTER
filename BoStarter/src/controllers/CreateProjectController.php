@@ -6,10 +6,10 @@ require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Photo.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-$photoModel = new Photo($db);
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
+$photoModel = new Photo($conn);
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login');
@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Solo i creatori possono creare progetti
-if (!$user->isCreator($_SESSION['user_id'])) {
+if (!$userModel->isCreator($_SESSION['user_id'])) {
     $_SESSION['error'] = "Solo i creatori possono creare progetti.";
     header('Location: /dashboard');
     exit;
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Crea il progetto tramite stored procedure (usa la funzione del modello User)
-    $creationSuccess = $user->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
+    $creationSuccess = $userModel->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
 
     if ($creationSuccess) {
         error_log("Progetto creato: $name da $creatorEmail");
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
                 if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
                     $imageData = file_get_contents($imageTmp);
-                    $rewardSuccess = $user->addRewardToProject($code, $imageData, $description, $name, $creatorEmail);
+                    $rewardSuccess = $userModel->addRewardToProject($code, $imageData, $description, $name, $creatorEmail);
                     error_log("Reward $code inserita per progetto $name: " . ($rewardSuccess ? "OK" : "FALLITO"));
                 } else {
                     error_log("Reward non valida: codice=$code, descrizione=$description, imgTmp=$imageTmp");
