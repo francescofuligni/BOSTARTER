@@ -48,9 +48,9 @@ require_once __DIR__ . '/components/navbar.php';
                         </div>
                         <div class="modal-body">
                             <?php
-                            if ($competencesList && count($competencesList) > 0) {
+                            if ($allCompetences && count($allCompetences) > 0) {
                                 echo '<ul class="list-group">';
-                                foreach ($competencesList as $competence) {
+                                foreach ($allCompetences as $competence) {
                                     echo '<li class="list-group-item">' . htmlspecialchars($competence['nome']) . '</li>';
                                 }
                                 echo '</ul>';

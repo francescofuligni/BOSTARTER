@@ -18,11 +18,6 @@ $competenceModel = new Competence($conn);
 $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
 $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
-$competencesList = [];
-if ($isAdmin) {
-    $competencesList = $competenceModel->getAllCompetences();
-}
-
 // Gestione inserimento commento direttamente qui
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
     $nomeProgetto = $_POST['nome_progetto'];
@@ -63,7 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
 }
 
 // Recupera i progetti attivi tramite il model Project
-$openProjects = $projectModel->getOpenProjects();
 $allProjects = $projectModel->getAllProjects();
-$userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
+
+$userProjects = [];
+if($isCreator) {
+    $userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
+}
+
+$allCompetences = [];
+if ($isAdmin) {
+    $allCompetences = $competenceModel->getAllCompetences();
+}
 ?>
