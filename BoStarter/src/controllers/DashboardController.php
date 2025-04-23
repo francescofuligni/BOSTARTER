@@ -1,12 +1,11 @@
 <?php
-// Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
 require_once __DIR__ . '/../models/Competence.php';
 
+if (session_status() == PHP_SESSION_NONE) session_start();
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -14,12 +13,27 @@ $userModel = new User($conn);
 $projectModel = new Project($conn);
 $competenceModel = new Competence($conn);
 
-// Usa direttamente $userModel e $_SESSION['user_id']
-$isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
-$isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
-// Gestione inserimento competenza
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_competence'], $_POST['security_code']) && $isAdmin) {
+/**
+ * Verifica che l'utente sia autenticato.
+ */
+function checkAccess() {
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+}
+
+/**
+ * Gestisce l'inserimento di una nuova competenza (solo admin).
+ */
+function handleAddCompetence() {
+    if (!$userModel->isAdmin($_SESSION['user_id'])) {
+        $_SESSION['error'] = "Solo gli amministratori possono aggiungere competenze.";
+        header('Location: /dashboard');
+        exit;
+    }
+
     $newCompetence = trim($_POST['new_competence']);
     $securityCode = $_POST['security_code'];
     $adminEmail = $_SESSION['user_id'] ?? '';
@@ -34,12 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_competence'], $_P
     } else {
         $_SESSION['error'] = "Compila tutti i campi per aggiungere una competenza.";
     }
+
     header('Location: /dashboard');
     exit;
 }
 
-// Gestione inserimento commento
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
+/**
+ * Gestisce l'inserimento di un commento a un progetto.
+ */
+function handleAddComment() {
     $nomeProgetto = $_POST['nome_progetto'];
     $testoCommento = trim($_POST['testo_commento']);
     $emailUtente = $_SESSION['user_id'] ?? '';
@@ -53,17 +70,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_PO
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire un commento.";
     }
+
     header('Location: /dashboard');
     exit;
 }
 
-// Gestione inserimento risposta
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST['testo_risposta'])) {
+/**
+ * Gestisce l'inserimento di una risposta a un commento.
+ */
+function handleAddReply() {
     $idCommento = $_POST['id_commento'];
     $testoRisposta = trim($_POST['testo_risposta']);
     $emailCreatore = $_SESSION['user_id'] ?? '';
 
-    // Verifica che sia il creatore del progetto associato al commento
     if ($idCommento && $testoRisposta && $emailCreatore) {
         if ($userModel->addReply($idCommento, $testoRisposta, $emailCreatore)) {
             $_SESSION['success'] = "Risposta aggiunta con successo!";
@@ -73,17 +92,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire una risposta.";
     }
+
     header('Location: /dashboard');
     exit;
 }
 
-$allProjects = $projectModel->getAllProjects();
-$userProjects = [];
-if($isCreator) {
-    $userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
+/**
+ * Recupera dati per il rendering della dashboard.
+ */
+function loadDashboardData() {
+    $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
+    $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
+
+    $allProjects = $projectModel->getAllProjects();
+    $userProjects = $isCreator ? $projectModel->getUserProjects($_SESSION['user_id']) : [];
+    $allCompetences = $isAdmin ? $competenceModel->getAllCompetences() : [];
+
+    return [$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences];
 }
-$allCompetences = [];
-if ($isAdmin) {
-    $allCompetences = $competenceModel->getAllCompetences();
+
+
+checkAccess();
+$isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['new_competence'], $_POST['security_code']) && $isAdmin) {
+        handleAddCompetence();
+    } elseif (isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
+        handleAddComment();
+    } elseif (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
+        handleAddReply();
+    }
 }
+
+[$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences] = loadDashboardData();
 ?>

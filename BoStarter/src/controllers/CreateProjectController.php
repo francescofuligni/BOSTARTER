@@ -1,85 +1,102 @@
 <?php
-// Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Photo.php';
+
+if (session_status() == PHP_SESSION_NONE) session_start();
 
 $db = new Database();
 $conn = $db->getConnection();
 $userModel = new User($conn);
 $photoModel = new Photo($conn);
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: /login');
-    exit;
+
+/**
+ * Verifica che l'utente sia autenticato e sia un creatore.
+ */
+function checkAccess() {
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+
+    if (!$userModel->isCreator($_SESSION['user_id'])) {
+        $_SESSION['error'] = "Solo i creatori possono creare progetti.";
+        header('Location: /dashboard');
+        exit;
+    }
 }
 
-// Solo i creatori possono creare progetti
-if (!$userModel->isCreator($_SESSION['user_id'])) {
-    $_SESSION['error'] = "Solo i creatori possono creare progetti.";
-    header('Location: /dashboard');
-    exit;
+/**
+ * Valida i dati del form di creazione progetto.
+ */
+function validateProjectForm($post) {
+    if (
+        empty($post['name']) || empty($post['description']) ||
+        empty($post['budget']) || floatval($post['budget']) <= 0 ||
+        empty($post['deadline']) || empty($post['type'])
+    ) {
+        return false;
+    }
+
+    if (empty($post['reward_code']) || count(array_filter($post['reward_code'], fn($r) => !empty(trim($r)))) === 0) {
+        return false;
+    }
+
+    return true;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
-    $budget = isset($_POST['budget']) ? floatval($_POST['budget']) : 0;
-    $deadline = isset($_POST['deadline']) ? $_POST['deadline'] : '';
-    $type = isset($_POST['type']) ? trim($_POST['type']) : '';
+/**
+ * Gestisce il caricamento delle immagini del progetto.
+ */
+function handleImageUpload($projectName) {
+    if (!empty($_FILES['immagini']['name'][0])) {
+        foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
+            if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
+                $imageData = file_get_contents($tmpName);
+                $photoModel->addPhotoToProject($projectName, $imageData);
+            }
+        }
+    }
+}
+
+/**
+ * Gestisce le ricompense associate al progetto.
+ */
+function handleRewards($projectName, $creatorEmail) {
+    foreach ($_POST['reward_code'] as $idx => $code) {
+        $description = $_POST['reward_description'][$idx] ?? '';
+        $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
+        if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
+            $imageData = file_get_contents($imageTmp);
+            $userModel->addRewardToProject($code, $imageData, $description, $projectName, $creatorEmail);
+        }
+    }
+}
+
+/**
+ * Gestisce la richiesta POST per creare un nuovo progetto.
+ */
+function handleCreateProject() {
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $budget = floatval($_POST['budget']);
+    $deadline = $_POST['deadline'];
+    $type = trim($_POST['type']);
     $creatorEmail = $_SESSION['user_id'];
 
-    // Validazione base
-    if (empty($name) || empty($description) || $budget <= 0 || empty($deadline) || empty($type)) {
-        $_SESSION['error'] = "Compila tutti i campi obbligatori.";
+    if (!validateProjectForm($_POST)) {
+        $_SESSION['error'] = "Compila tutti i campi obbligatori e almeno una ricompensa.";
         header('Location: /create-project');
         exit;
     }
 
-    // Verifica che almeno una reward sia presente
-    if (empty($_POST['reward_code']) || count(array_filter($_POST['reward_code'], fn($r) => !empty(trim($r)))) === 0) {
-        $_SESSION['error'] = "Aggiungi almeno una ricompensa per creare il progetto.";
-        header('Location: /create-project');
-        exit;
-    }
-
-    // Crea il progetto tramite stored procedure (usa la funzione del modello User)
     $creationSuccess = $userModel->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
 
     if ($creationSuccess) {
-        error_log("Progetto creato: $name da $creatorEmail");
-
-        // Gestisci upload immagini
-        error_log(print_r($_FILES, true));
-        if (!empty($_FILES['immagini']['name'][0])) {
-            foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
-                if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
-                    $imageData = file_get_contents($tmpName);
-                    if (!$photoModel->addPhotoToProject($name, $imageData)) {
-                        error_log("Errore salvataggio immagine $idx");
-                    }
-                } else {
-                    error_log("Errore upload file $idx: " . $_FILES['immagini']['error'][$idx]);
-                }
-            }
-        }
-
-        // Gestione rewards
-        if (!empty($_POST['reward_code'])) {
-            foreach ($_POST['reward_code'] as $idx => $code) {
-                $description = $_POST['reward_description'][$idx] ?? '';
-                $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
-                if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
-                    $imageData = file_get_contents($imageTmp);
-                    $rewardSuccess = $userModel->addRewardToProject($code, $imageData, $description, $name, $creatorEmail);
-                    error_log("Reward $code inserita per progetto $name: " . ($rewardSuccess ? "OK" : "FALLITO"));
-                } else {
-                    error_log("Reward non valida: codice=$code, descrizione=$description, imgTmp=$imageTmp");
-                }
-            }
-        }
+        handleImageUpload($name);
+        handleRewards($name, $creatorEmail);
 
         $_SESSION['success'] = "Progetto creato con successo!";
         header('Location: /dashboard');
@@ -89,5 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /create-project');
         exit;
     }
+}
+
+
+checkAccess();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    handleCreateProject();
 }
 ?>

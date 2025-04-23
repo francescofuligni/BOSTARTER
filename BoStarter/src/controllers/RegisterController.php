@@ -1,46 +1,84 @@
 <?php
-// Avvia la sessione se non è già stata avviata
-if (session_status() == PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
+
+if (session_status() == PHP_SESSION_NONE) session_start();
 
 $db = new Database();
 $conn = $db->getConnection();
 $userModel = new User($conn);
 
-// Controlla se il metodo della richiesta è POST (invio del modulo)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Ottieni i dati del form html
-    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-    $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-    $lastName = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
-    $nickname = isset($_POST['nickname']) ? trim($_POST['nickname']) : '';
-    $brithPlace = isset($_POST['birth_place']) ? trim($_POST['birth_place']) : '';
-    $birthYear = isset($_POST['birth_year']) ? (int)$_POST['birth_year'] : 0;
-    $type = isset($_POST['type']) ? trim($_POST['type']) : '';
-    $securityCode = isset($_POST['security_code']) ? trim($_POST['security_code']) : '';
-    
-    // Validazione dell'input
-    if (empty($email) || empty($password) || empty($name) || empty($lastName) || 
-        empty($nickname) || empty($brithPlace) || ($type == 'AMMINISTRATORE' && empty($securityCode))) {
+
+/**
+ * Reindirizza alla dashboard se è già autenticato.
+ */
+function alreadyLogged() {
+    if (isset($_SESSION['user_id'])) {
+        header('Location: /dashboard');
+        exit;
+    }
+}
+
+/**
+ * Valida i dati del form di registrazione.
+ */
+function checkRegistrationData($data) {
+    return !(
+        empty($data['email']) || empty($data['password']) || empty($data['name']) || empty($data['last_name']) ||
+        empty($data['nickname']) || empty($data['birth_place']) ||
+        ($data['type'] === 'AMMINISTRATORE' && empty($data['security_code']))
+    );
+}
+
+/**
+ * Esegue hash per password e codice di sicurezza.
+ */
+function hashSensitiveData(&$data) {
+    $data['password'] = hash('sha256', $data['password']);
+    if (!empty($data['security_code'])) {
+        $data['security_code'] = hash('sha256', $data['security_code']);
+    } else {
+        $data['security_code'] = '';
+    }
+}
+
+/**
+ * Registra un nuovo utente e gestisce il flusso di risposta.
+ */
+function handleRegistration() {
+    $data = [
+        'email' => trim($_POST['email'] ?? ''),
+        'password' => trim($_POST['password'] ?? ''),
+        'name' => trim($_POST['name'] ?? ''),
+        'last_name' => trim($_POST['last_name'] ?? ''),
+        'nickname' => trim($_POST['nickname'] ?? ''),
+        'birth_place' => trim($_POST['birth_place'] ?? ''),
+        'birth_year' => (int)($_POST['birth_year'] ?? 0),
+        'type' => trim($_POST['type'] ?? ''),
+        'security_code' => trim($_POST['security_code'] ?? '')
+    ];
+
+    if (!checkRegistrationData($data)) {
         $_SESSION['error'] = 'Errore nella compilazione dei campi.';
         header('Location: /register');
         exit;
     }
 
-    // Hash della password
-    $hashedPassword = hash('sha256', $password);
+    hashSensitiveData($data);
 
-    // Se il codice di sicurezza non è vuoto, fa l'hash
-    $hashedSecurityCode = '';
-    if (!empty($securityCode)) {
-        $hashedSecurityCode = hash('sha256', $securityCode);
-    }
+    $success = $userModel->register(
+        $data['email'],
+        $data['password'],
+        $data['name'],
+        $data['last_name'],
+        $data['nickname'],
+        $data['birth_place'],
+        $data['birth_year'],
+        $data['type'],
+        $data['security_code']
+    );
 
-    $success = $userModel->register($email, $hashedPassword, $name, $lastName, $nickname, $brithPlace, $birthYear, $type, $hashedSecurityCode);
-    
     if ($success) {
         $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';
         header('Location: /login');
@@ -50,5 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /register');
         exit;
     }
+}
+
+
+alreadyLogged();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    handleRegistration();
 }
 ?>

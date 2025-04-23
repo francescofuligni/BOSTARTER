@@ -5,7 +5,7 @@ define('BASE_PATH', __DIR__);
 session_start();
 
 // Istanzia il router
-require_once __DIR__ . '/models/Router.php';
+require_once __DIR__ . '/config/Router.php';
 $router = new Router();
 
 require_once __DIR__ . '/routes.php';
