@@ -346,5 +346,22 @@ class User {
             return false;
         }
     }
+
+    /**
+     * Aggiunge una nuova competenza al database
+     * @param string $name
+     * @return bool
+     */
+    public function addCompetence($name, $email, $hashedSecurityCode) {
+        try {
+            $stmt = $this->conn->prepare("CALL aggiungi_competenza(:nome, :email, :codice_sicurezza)");
+            $stmt->bindParam(':nome', $name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
 ?>

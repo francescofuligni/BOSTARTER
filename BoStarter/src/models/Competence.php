@@ -17,13 +17,5 @@ class Competence {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    /**
-     * Aggiunge una nuova competenza al database
-     * @param string $name
-     */
-    public function addCompetence($name) {
-        // TODO
-    }
 }
 ?>

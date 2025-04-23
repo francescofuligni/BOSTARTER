@@ -29,16 +29,18 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
         </div>
 
+
+        <!-- AMMINISTRATORE -->
+
         <?php if ($isAdmin): ?>
             <div class="mb-4">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
-                    Lista Competenze
+                    Lista competenze
                 </button>
             </div>
 
-            <!-- Modal Competenze -->
             <div class="modal fade" id="competencesModal" tabindex="-1" role="dialog" aria-labelledby="competencesModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="competencesModalLabel">Lista delle Competenze</h5>
@@ -58,14 +60,28 @@ require_once __DIR__ . '/components/navbar.php';
                                 echo '<p class="text-muted">Nessuna competenza trovata.</p>';
                             }
                             ?>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+                            <hr>
+                            <form method="POST" action="/dashboard">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="new_competence">Nuova competenza</label>
+                                        <input type="text" class="form-control" id="new_competence" name="new_competence" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="security_code">Codice di sicurezza</label>
+                                        <input type="password" class="form-control" id="security_code" name="security_code" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Aggiungi competenza</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         <?php endif; ?>
+
+
+        <!-- CREATORE -->
 
         <?php if ($isCreator): ?>
             <div class="mb-4">
@@ -106,6 +122,9 @@ require_once __DIR__ . '/components/navbar.php';
                 ?>
             </div>
         <?php endif; ?>
+
+        
+        <!-- TUTTI -->
 
         <div class="mt-5">
         <h3>Vedi tutti i progetti</h3>
