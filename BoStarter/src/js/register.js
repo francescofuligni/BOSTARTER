@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Popolamento della select per l'anno di nascita
     const birthYearSelect = document.getElementById('birth_year');
     const currentYear = new Date().getFullYear();
 
@@ -22,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
         option.value = year;
         option.textContent = year;
         birthYearSelect.appendChild(option);
+    }
+
+    const generaBtn = document.getElementById('genera-btn');
+    if (generaBtn) {
+        generaBtn.addEventListener('click', async () => {
+            await generateCode();
+        });
     }
 });
 
