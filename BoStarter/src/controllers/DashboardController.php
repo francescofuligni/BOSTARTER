@@ -28,6 +28,12 @@ function checkAccess() {
  * Gestisce l'inserimento di una nuova competenza (solo admin).
  */
 function handleAddCompetence() {
+    if (!$userModel->isAdmin($_SESSION['user_id'])) {
+        $_SESSION['error'] = "Solo gli amministratori possono aggiungere competenze.";
+        header('Location: /dashboard');
+        exit;
+    }
+
     $newCompetence = trim($_POST['new_competence']);
     $securityCode = $_POST['security_code'];
     $adminEmail = $_SESSION['user_id'] ?? '';
