@@ -82,7 +82,7 @@ require_once __DIR__ . '/components/navbar.php';
                                     <input type="text" class="form-control" id="security_code" name="security_code" readonly>
                                 </div>
                                 <div class="form-group col-md-4 d-flex align-items-end">
-                                    <button class="btn btn-secondary w-100" type="button" onclick="await generateCode()">Genera</button>
+                                    <button id="genera-btn" class="btn btn-secondary w-100" type="button">Genera</button>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Registrati</button>
