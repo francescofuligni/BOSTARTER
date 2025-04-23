@@ -6,7 +6,7 @@ use MongoDB\BSON\UTCDateTime;
 
 /**
  * Classe per la gestione del logging degli eventi su MongoDB.
- * Consente di registrare messaggi di log con timestamp e dati aggiuntivi.
+ * Registra messaggi di log con timestamp e dati opzionali.
  */
 class MongoLogger {
     private $collection;
@@ -19,9 +19,11 @@ class MongoLogger {
     }
 
     /**
-     * Inserisce un evento di log.
-     * @param string $message
-     * @param array $extra
+     * Registra un messaggio di log su MongoDB.
+     *
+     * @param string $message Messaggio da registrare.
+     * @param array $extra Dati aggiuntivi opzionali.
+     * @return void
      */
     public function log($message, $extra = []) {
         $doc = [

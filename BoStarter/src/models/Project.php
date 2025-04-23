@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Classe per la gestione dei progetti.
+ * Fornisce metodi per recuperare dettagli, immagini, commenti e altre informazioni sui progetti.
+ */
 class Project {
     private $conn;
 
@@ -8,8 +12,9 @@ class Project {
     }
 
     /**
-     * Ottieni tutti i progetti aperti dalla vista dedicata
-     * @return array
+     * Recupera tutti i progetti aperti dalla vista dedicata.
+     *
+     * @return array Array di progetti aperti.
      */
     public function getOpenProjects() {
         try {
@@ -17,14 +22,16 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }
 
     /**
-     * Ottieni tutte le immagini associate a un progetto
-     * @param string $projectName
-     * @return array
+     * Recupera tutte le immagini associate a un progetto.
+     *
+     * @param string $projectName Nome del progetto.
+     * @return array Array di immagini del progetto.
      */
     public function getProjectPhotos($projectName) {
         try {
@@ -33,14 +40,16 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }
 
     /**
-     * Ottieni tutti i commenti relativi a un progetto
-     * @param string $projectName
-     * @return array
+     * Recupera tutti i commenti relativi a un progetto.
+     *
+     * @param string $projectName Nome del progetto.
+     * @return array Array di commenti del progetto.
      */
     public function getProjectComments($projectName) {
         try {
@@ -49,14 +58,16 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }
 
     /**
-     * Ottieni i dettagli di un progetto dalla vista progetti_con_foto
-     * @param string $projectName
-     * @return array|null
+     * Ottiene i dettagli di un progetto dalla vista progetti_con_foto.
+     *
+     * @param string $projectName Nome del progetto.
+     * @return array|null Dettagli del progetto o null in caso di errore.
      */
     private function getProjectDetail($projectName) {
         try {
@@ -65,15 +76,17 @@ class Project {
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return null;
         }
     }
 
     /**
-     * Recupera i dati del progetto, le foto e i commenti
-     * @param Project $projectModel
-     * @param string $projectName
-     * @return array
+     * Restituisce dettagli, immagini e commenti di un progetto.
+     *
+     * @param Project $projectModel Modello progetto da cui chiamare i metodi.
+     * @param string $projectName Nome del progetto.
+     * @return array Array contenente dettagli, immagini e commenti del progetto.
      */
     function getProjectDetailData($projectModel, $projectName) {
         $project = $projectModel->getProjectDetail($projectName);
@@ -83,10 +96,11 @@ class Project {
     }
 
     /**
-     * Verifica se l'utente ha già finanziato il progetto nella data odierna
-     * @param string $projectName
-     * @param string $userEmail
-     * @return bool
+     * Verifica se l'utente ha già finanziato il progetto nella data odierna.
+     *
+     * @param string $projectName Nome del progetto.
+     * @param string $userEmail Email dell'utente.
+     * @return bool True se ha finanziato oggi, false altrimenti.
      */
     public function hasFundedToday($projectName, $userEmail) {  // FORSE DA SPOSTARE NEL MODELLO UTENTE?
         try {
@@ -101,13 +115,15 @@ class Project {
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return false;
         }
     }
 
     /**
-     * Ottieni tutti i progetti con la prima foto associata
-     * @return array
+     * Recupera tutti i progetti con la prima foto associata.
+     *
+     * @return array Array di progetti con foto.
      */
     public function getAllProjects() {
         try {
@@ -115,14 +131,16 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }
     
     /**
-     * Ottieni tutti i progetti creati da un utente
-     * @param string $userEmail
-     * @return array
+     * Recupera tutti i progetti creati da un utente.
+     *
+     * @param string $userEmail Email dell'utente.
+     * @return array Array di progetti creati dall'utente.
      */
     public function getUserProjects($userEmail) {   // FORSE DA SPOSTARE NEL MODELLO UTENTE?
         try {
@@ -131,14 +149,16 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }
 
     /**
-     * Ottieni tutte le ricompense associate a un progetto
-     * @param string $projectName
-     * @return array
+     * Recupera tutte le ricompense associate a un progetto.
+     *
+     * @param string $projectName Nome del progetto.
+     * @return array Array di ricompense del progetto.
      */
     public function getProjectRewards($projectName) {
         try {
@@ -147,6 +167,7 @@ class Project {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
             return [];
         }
     }

@@ -1,16 +1,22 @@
 <?php
 
+/**
+ * Classe per la gestione delle foto dei progetti.
+ * Fornisce metodi per aggiungere immagini al database.
+ */
 class Photo {
     private $conn;
     
     public function __construct($db) {
         $this->conn = $db;
     }
+    
     /**
-     * Aggiunge una nuova immagine a un progetto
-     * @param string $nome_progetto
-     * @param string $imgData
-     * @return bool
+     * Aggiunge una foto a un progetto nel database.
+     *
+     * @param string $nome_progetto Nome del progetto.
+     * @param string $imgData Dati binari dell'immagine.
+     * @return bool True se l'inserimento ha successo, false altrimenti.
      */
     public function addPhotoToProject($nome_progetto, $imgData) {
         try {

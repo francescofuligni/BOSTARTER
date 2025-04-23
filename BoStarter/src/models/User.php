@@ -2,6 +2,10 @@
 // Creo la classe User per metterci tutti le operazioni che servono per gli utenti come login, registrazione, ...
 require_once __DIR__ . '/../config/MongoLogger.php';
 
+/**
+ * Classe per la gestione degli utenti.
+ * Fornisce metodi per login, registrazione, gestione progetti e interazioni utente.
+ */
 class User {
     private $conn;
     private $logger;
@@ -12,10 +16,11 @@ class User {
     }
 
     /**
-     * Effettua il login dell'utente chiamando la stored procedure dedicata
-     * @param string $email
-     * @param string $hashedPassword
-     * @return array|false
+     * Effettua il login dell'utente tramite stored procedure.
+     *
+     * @param string $email Email dell'utente.
+     * @param string $hashedPassword Password hashata dell'utente.
+     * @return array|false Dati utente se autenticato, false altrimenti.
      */
     public function login($email, $hashedPassword) {
         try {
@@ -44,9 +49,10 @@ class User {
     }
     
     /**
-     * Restituisce i dati dell'utente a partire dalla sua email
-     * @param string $email
-     * @return array|false
+     * Recupera i dati dell'utente tramite email.
+     *
+     * @param string $email Email dell'utente.
+     * @return array|false Dati utente se trovati, false altrimenti.
      */
     public function getUserData($email) {
         try {
@@ -62,9 +68,10 @@ class User {
     }
     
     /**
-     * Verifica se l'utente è un creatore
-     * @param string $email
-     * @return bool
+     * Verifica se un utente è creatore.
+     *
+     * @param string $email Email dell'utente.
+     * @return bool True se è creatore, false altrimenti.
      */
     public function isCreator($email) {
         try {
@@ -80,9 +87,10 @@ class User {
     }
 
     /**
-     * Verifica se l'utente è un amministratore
-     * @param string $email
-     * @return bool
+     * Verifica se un utente è amministratore.
+     *
+     * @param string $email Email dell'utente.
+     * @return bool True se è amministratore, false altrimenti.
      */
     public function isAdmin($email) {
         try {
@@ -98,15 +106,15 @@ class User {
     }
     
     /**
-     * Effettua il login di un amministratore tramite stored procedure
-     * @param string $email
-     * @param string $hashedPassword
-     * @param string $hashedSecurityCode
-     * @return bool
+     * Effettua il login di un amministratore tramite stored procedure.
+     *
+     * @param string $email Email dell'amministratore.
+     * @param string $hashedPassword Password hashata.
+     * @param string $hashedSecurityCode Codice di sicurezza hashato.
+     * @return bool True se autenticato, false altrimenti.
      */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
-            
             // Chiama la stored procedure per autenticare l'amministratore
             $stmt = $this->conn->prepare("CALL autenticazione_amministratore(:email, :password, :security_code, @autenticato)");
             $stmt->bindParam(':email', $email);
@@ -125,17 +133,18 @@ class User {
     }
 
     /**
-     * Registra un nuovo utente nel sistema tramite stored procedure
-     * @param string $email
-     * @param string $hashedPassword
-     * @param string $name
-     * @param string $lastName
-     * @param string $nickname
-     * @param string $birthPlace
-     * @param string $birthYear
-     * @param string $type
-     * @param string $hashedSecurityCode
-     * @return bool
+     * Registra un nuovo utente tramite stored procedure.
+     *
+     * @param string $email Email dell'utente.
+     * @param string $hashedPassword Password hashata.
+     * @param string $name Nome dell'utente.
+     * @param string $lastName Cognome dell'utente.
+     * @param string $nickname Nickname dell'utente.
+     * @param string $birthPlace Luogo di nascita.
+     * @param string $birthYear Anno di nascita.
+     * @param string $type Tipo di utente.
+     * @param string $hashedSecurityCode Codice di sicurezza hashato.
+     * @return bool True se registrazione avvenuta, false altrimenti.
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
@@ -169,14 +178,15 @@ class User {
     }
 
     /**
-     * Effettua il logout dell'utente terminando la sessione
+     * Termina la sessione utente e reindirizza alla home.
+     *
+     * @return void
      */
     public function logout() {
         // Distruggi la sessione per effettuare il logout
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        
 
         // RIMOZIONE PER ESSERE SICURI MAGARI POI LO TOGLIAMO
         if (isset($_SESSION['auth_token'])) {
@@ -197,14 +207,15 @@ class User {
     }
 
     /**
-     * Crea un nuovo progetto (solo per creatori)
-     * @param string $name
-     * @param string $desc
-     * @param float $budget
-     * @param string $maxDate
-     * @param string $type
-     * @param string $creatorEmail
-     * @return bool
+     * Crea un nuovo progetto (solo per creatori).
+     *
+     * @param string $name Nome del progetto.
+     * @param string $desc Descrizione del progetto.
+     * @param float $budget Budget previsto.
+     * @param string $maxDate Data limite.
+     * @param string $type Tipo di progetto.
+     * @param string $creatorEmail Email del creatore.
+     * @return bool True se creazione avvenuta, false altrimenti.
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
         try {
@@ -236,11 +247,12 @@ class User {
     }
 
     /**
-     * Aggiunge un commento a un progetto
-     * @param string $projectName
-     * @param string $userEmail
-     * @param string $text
-     * @return bool
+     * Aggiunge un commento a un progetto.
+     *
+     * @param string $projectName Nome del progetto.
+     * @param string $userEmail Email dell'utente.
+     * @param string $text Testo del commento.
+     * @return bool True se inserimento avvenuto, false altrimenti.
      */
     public function addComment($projectName, $userEmail, $text) {
         try {
@@ -265,11 +277,12 @@ class User {
     }
 
     /**
-     * Aggiunge una risposta a un commento
-     * @param int $commentId
-     * @param string $text
-     * @param string $creatorEmail
-     * @return bool
+     * Aggiunge una risposta a un commento.
+     *
+     * @param int $commentId ID del commento.
+     * @param string $text Testo della risposta.
+     * @param string $creatorEmail Email del creatore.
+     * @return bool True se inserimento avvenuto, false altrimenti.
      */
     public function addReply($commentId, $text, $creatorEmail) {
         try {
@@ -294,13 +307,14 @@ class User {
     }
 
     /**
-     * Aggiunge una ricompensa a un progetto (solo per creatori)
-     * @param string $code
-     * @param string $image
-     * @param string $desc
-     * @param string $projectName
-     * @param string $creatorEmail
-     * @return bool
+     * Aggiunge una ricompensa a un progetto (solo per creatori).
+     *
+     * @param string $code Codice della ricompensa.
+     * @param string $image Immagine della ricompensa.
+     * @param string $desc Descrizione della ricompensa.
+     * @param string $projectName Nome del progetto.
+     * @param string $creatorEmail Email del creatore.
+     * @return bool True se inserimento avvenuto, false altrimenti.
      */
     public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
         try {
@@ -317,23 +331,24 @@ class User {
     }
 
     /**
-     * Effettua il finanziamento ad un progetto e associa una ricompensa
-     * @param string $projectName
-     * @param float $amount
-     * @param string $userEmail
-     * @param string $rewardCode
-     * @return bool
+     * Esegue il finanziamento di un progetto e associa una ricompensa.
+     *
+     * @param string $projectName Nome del progetto.
+     * @param float $amount Importo del finanziamento.
+     * @param string $userEmail Email dell'utente.
+     * @param string $rewardCode Codice della ricompensa.
+     * @return bool True se finanziamento avvenuto, false altrimenti.
      */
     public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
         try {
-            $stmt = $this->$conn->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
+            $stmt = $this->conn->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
             $stmt->bindParam(':email_utente', $userEmail);
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->bindParam(':importo', $amount);
             
             if ($stmt->execute()) {
                 // Associa la reward al finanziamento appena inserito
-                $stmt2 = $this->$conn->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
+                $stmt2 = $this->conn->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
                 $stmt2->bindParam(':email_utente', $userEmail);
                 $stmt2->bindParam(':nome_progetto', $projectName);
                 $stmt2->bindParam(':codice_reward', $rewardCode);
@@ -348,9 +363,12 @@ class User {
     }
 
     /**
-     * Aggiunge una nuova competenza al database
-     * @param string $name
-     * @return bool
+     * Aggiunge una nuova competenza al database.
+     *
+     * @param string $name Nome della competenza.
+     * @param string $email Email dell'utente.
+     * @param string $hashedSecurityCode Codice di sicurezza hashato.
+     * @return bool True se inserimento avvenuto, false altrimenti.
      */
     public function addCompetence($name, $email, $hashedSecurityCode) {
         try {

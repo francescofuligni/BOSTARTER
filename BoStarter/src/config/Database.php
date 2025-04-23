@@ -1,10 +1,7 @@
 <?php
-// TODO: da cambiare con dati presi da .env (anche nel docker file dobbiamo nasconderli per sicurezza)
-
 /**
  * Classe per la gestione della connessione al database MySQL tramite PDO.
- * I parametri di connessione dovrebbero essere caricati da variabili d'ambiente
- * per motivi di sicurezza.
+ * I parametri di connessione dovrebbero essere caricati da variabili d'ambiente per motivi di sicurezza.
  */
 class Database {
     private $host = 'mysql';
@@ -14,8 +11,9 @@ class Database {
     private $conn = null;
 
     /**
-     * Stabilisce e restituisce una connessione al database.
-     * @return PDO|null
+     * Stabilisce e restituisce una connessione PDO al database.
+     *
+     * @return PDO|null Oggetto PDO se la connessione ha successo, null altrimenti.
      */
     public function getConnection() {
         try {

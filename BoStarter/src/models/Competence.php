@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Classe per la gestione delle competenze nel database.
+ * Fornisce metodi per recuperare le competenze.
+ */
 class Competence {
     private $conn;
     
@@ -8,14 +12,20 @@ class Competence {
     }
 
     /**
-     * Recupera tutte le competenze dal database
-     * @return array
+     * Restituisce tutte le competenze dal database.
+     *
+     * @return array Lista di competenze o array vuoto in caso di errore.
      */
     public function getAllCompetences() {
-        $sql = "SELECT * FROM COMPETENZA";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "SELECT * FROM COMPETENZA";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
+            return [];
+        }
     }
 }
 ?>
