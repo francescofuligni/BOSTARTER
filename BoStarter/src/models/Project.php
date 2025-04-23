@@ -88,7 +88,7 @@ class Project {
      * @param string $userEmail
      * @return bool
      */
-    public function hasFundedToday($projectName, $userEmail) {
+    public function hasFundedToday($projectName, $userEmail) {  // FORSE DA SPOSTARE NEL MODELLO UTENTE?
         try {
             $stmt = $this->conn->prepare(   // FORSE MEGLIO FATTO CON UNA STORED PROCEDURE?
                 "SELECT COUNT(*) FROM FINANZIAMENTO 
@@ -124,7 +124,7 @@ class Project {
      * @param string $userEmail
      * @return array
      */
-    public function getUserProjects($userEmail) {
+    public function getUserProjects($userEmail) {   // FORSE DA SPOSTARE NEL MODELLO UTENTE?
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente_creatore = :email_utente");
             $stmt->bindParam(':email_utente', $userEmail);

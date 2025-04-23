@@ -18,7 +18,27 @@ $competenceModel = new Competence($conn);
 $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
 $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
-// Gestione inserimento commento direttamente qui
+// Gestione inserimento competenza
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_competence'], $_POST['security_code']) && $isAdmin) {
+    $newCompetence = trim($_POST['new_competence']);
+    $securityCode = $_POST['security_code'];
+    $adminEmail = $_SESSION['user_id'] ?? '';
+
+    if ($newCompetence && $securityCode && $adminEmail) {
+        $hashedSecurityCode = hash('sha256', $securityCode);
+        if ($userModel->addCompetence($newCompetence, $adminEmail, $hashedSecurityCode)) {
+            $_SESSION['success'] = "Competenza aggiunta con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'aggiunta della competenza. Controlla il codice di sicurezza.";
+        }
+    } else {
+        $_SESSION['error'] = "Compila tutti i campi per aggiungere una competenza.";
+    }
+    header('Location: /dashboard');
+    exit;
+}
+
+// Gestione inserimento commento
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
     $nomeProgetto = $_POST['nome_progetto'];
     $testoCommento = trim($_POST['testo_commento']);
@@ -37,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_PO
     exit;
 }
 
-// Gestione inserimento risposta direttamente qui
+// Gestione inserimento risposta
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST['testo_risposta'])) {
     $idCommento = $_POST['id_commento'];
     $testoRisposta = trim($_POST['testo_risposta']);
@@ -57,8 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commento'], $_POST
     exit;
 }
 
-// Recupera i progetti attivi tramite il model Project
-$openProjects = $projectModel->getOpenProjects();
 $allProjects = $projectModel->getAllProjects();
-$userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
+$userProjects = [];
+if($isCreator) {
+    $userProjects = $projectModel->getUserProjects($_SESSION['user_id'] ?? '');
+}
+$allCompetences = [];
+if ($isAdmin) {
+    $allCompetences = $competenceModel->getAllCompetences();
+}
 ?>

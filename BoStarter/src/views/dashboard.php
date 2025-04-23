@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../controllers/DashboardController.php'; // qui vengono creati $db e $user
+require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
 
@@ -12,6 +12,7 @@ require_once __DIR__ . '/components/navbar.php';
     <title>Dashboard - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/style/dashboard.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/dashboard.js"></script>
 </head>
@@ -28,13 +29,59 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
         </div>
 
+
+        <!-- AMMINISTRATORE -->
+
         <?php if ($isAdmin): ?>
             <div class="mb-4">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
-                    Lista Competenze
+                    Lista competenze
                 </button>
             </div>
+
+            <div class="modal fade" id="competencesModal" tabindex="-1" role="dialog" aria-labelledby="competencesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="competencesModalLabel">Lista delle Competenze</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <?php
+                            if ($allCompetences && count($allCompetences) > 0) {
+                                echo '<ul class="list-group">';
+                                foreach ($allCompetences as $competence) {
+                                    echo '<li class="list-group-item">' . htmlspecialchars($competence['nome']) . '</li>';
+                                }
+                                echo '</ul>';
+                            } else {
+                                echo '<p class="text-muted">Nessuna competenza trovata.</p>';
+                            }
+                            ?>
+                            <hr>
+                            <form method="POST" action="/dashboard">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="new_competence">Nuova competenza</label>
+                                        <input type="text" class="form-control" id="new_competence" name="new_competence" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="security_code">Codice di sicurezza</label>
+                                        <input type="password" class="form-control" id="security_code" name="security_code" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Aggiungi competenza</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <?php endif; ?>
+
+
+        <!-- CREATORE -->
 
         <?php if ($isCreator): ?>
             <div class="mb-4">
@@ -75,6 +122,9 @@ require_once __DIR__ . '/components/navbar.php';
                 ?>
             </div>
         <?php endif; ?>
+
+        
+        <!-- TUTTI -->
 
         <div class="mt-5">
         <h3>Vedi tutti i progetti</h3>
