@@ -18,6 +18,11 @@ $competenceModel = new Competence($conn);
 $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
 $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
+$competencesList = [];
+if ($isAdmin) {
+    $competencesList = $competenceModel->getAllCompetences();
+}
+
 // Gestione inserimento commento direttamente qui
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_progetto'], $_POST['testo_commento'])) {
     $nomeProgetto = $_POST['nome_progetto'];

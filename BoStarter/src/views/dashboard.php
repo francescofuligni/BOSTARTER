@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../controllers/DashboardController.php'; // qui vengono creati $db e $user
+require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/components/navbar.php';
 ?>
 
@@ -12,6 +12,7 @@ require_once __DIR__ . '/components/navbar.php';
     <title>Dashboard - BoStarter</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/style/dashboard.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/dashboard.js"></script>
 </head>
@@ -33,6 +34,36 @@ require_once __DIR__ . '/components/navbar.php';
                 <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
                     Lista Competenze
                 </button>
+            </div>
+
+            <!-- Modal Competenze -->
+            <div class="modal fade" id="competencesModal" tabindex="-1" role="dialog" aria-labelledby="competencesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="competencesModalLabel">Lista delle Competenze</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <?php
+                            if ($competencesList && count($competencesList) > 0) {
+                                echo '<ul class="list-group">';
+                                foreach ($competencesList as $competence) {
+                                    echo '<li class="list-group-item">' . htmlspecialchars($competence['nome']) . '</li>';
+                                }
+                                echo '</ul>';
+                            } else {
+                                echo '<p class="text-muted">Nessuna competenza trovata.</p>';
+                            }
+                            ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         <?php endif; ?>
 
