@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Verifica se l'utente è un amministratore
     if ($userModel->isAdmin($email)) {
-        $_SESSION['error'] = "Gli amministratori devono usare il login amministratore.";
-        header('Location: /login');
+        $_SESSION['info'] = "Gli amministratori devono usare il login amministratore.";
+        header('Location: /admin-login'); // Reindirizza alla pagina di login amministratore
         exit;
     }
     
