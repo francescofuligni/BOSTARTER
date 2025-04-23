@@ -30,6 +30,15 @@ require_once __DIR__ . '/components/navbar.php';
                             </div>
                         <?php endif; ?>
                         
+                        <?php if (isset($_SESSION['info'])): ?>
+                            <div class="alert alert-info">
+                                <?php 
+                                    echo $_SESSION['info']; 
+                                    unset($_SESSION['info']);
+                                ?>
+                            </div>
+                        <?php endif; ?>
+                        
                         <form action="/admin-login" method="post">
                             <div class="form-group">
                                 <label for="email">Email</label>
