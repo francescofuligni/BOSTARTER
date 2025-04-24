@@ -7,12 +7,6 @@ require_once __DIR__ . '/../models/Competence.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-$db = new Database();
-$conn = $db->getConnection();
-$userModel = new User($conn);
-$projectModel = new Project($conn);
-$competenceModel = new Competence($conn);
-
 
 /**
  * Verifica che l'utente sia autenticato.
@@ -28,6 +22,11 @@ function checkAccess() {
  * Gestisce l'inserimento di una nuova competenza (solo admin).
  */
 function handleAddCompetence() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     if (!$userModel->isAdmin($_SESSION['user_id'])) {
         $_SESSION['error'] = "Solo gli amministratori possono aggiungere competenze.";
         header('Location: /dashboard');
@@ -57,6 +56,11 @@ function handleAddCompetence() {
  * Gestisce l'inserimento di un commento a un progetto.
  */
 function handleAddComment() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $nomeProgetto = $_POST['nome_progetto'];
     $testoCommento = trim($_POST['testo_commento']);
     $emailUtente = $_SESSION['user_id'] ?? '';
@@ -79,6 +83,11 @@ function handleAddComment() {
  * Gestisce l'inserimento di una risposta a un commento.
  */
 function handleAddReply() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $idCommento = $_POST['id_commento'];
     $testoRisposta = trim($_POST['testo_risposta']);
     $emailCreatore = $_SESSION['user_id'] ?? '';
@@ -101,6 +110,13 @@ function handleAddReply() {
  * Recupera dati per il rendering della dashboard.
  */
 function loadDashboardData() {
+    // Crea Database e i modelli localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    $projectModel = new Project($conn);
+    $competenceModel = new Competence($conn);
+    
     $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
     $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
@@ -113,6 +129,11 @@ function loadDashboardData() {
 
 
 checkAccess();
+
+// Crea il modello per il controllo iniziale admin
+$db = new Database();
+$conn = $db->getConnection();
+$userModel = new User($conn);
 $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

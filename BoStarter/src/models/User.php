@@ -324,7 +324,16 @@ class User {
             $stmt->bindParam(':descrizione', $desc);
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->bindParam(':email_creatore', $creatorEmail);
-            return $stmt->execute();
+            $result = $stmt->execute();
+            if ($result) {
+                $this->logger->log("Nuova ricompensa aggiunta", [
+                    'codice' => $code,
+                    'nome_progetto' => $projectName,
+                    'email_creatore' => $creatorEmail,
+                    'descrizione' => $desc
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             return false;
         }
@@ -353,6 +362,13 @@ class User {
                 $stmt2->bindParam(':nome_progetto', $projectName);
                 $stmt2->bindParam(':codice_reward', $rewardCode);
                 $stmt2->execute();
+                // Logga il finanziamento
+                $this->logger->log("Nuovo finanziamento", [
+                    'nome_progetto' => $projectName,
+                    'email_utente' => $userEmail,
+                    'importo' => $amount,
+                    'codice_reward' => $rewardCode
+                ]);
                 return true;
             } else {
                 return false;
@@ -376,7 +392,14 @@ class User {
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
-            return $stmt->execute();
+            $result = $stmt->execute();
+            if ($result) {
+                $this->logger->log("Nuova competenza aggiunta", [
+                    'nome_competenza' => $name,
+                    'email_utente' => $email
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             return false;
         }

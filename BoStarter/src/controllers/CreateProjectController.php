@@ -6,16 +6,16 @@ require_once __DIR__ . '/../models/Photo.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-$db = new Database();
-$conn = $db->getConnection();
-$userModel = new User($conn);
-$photoModel = new Photo($conn);
-
 
 /**
  * Verifica che l'utente sia autenticato e sia un creatore.
  */
 function checkAccess() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     if (!isset($_SESSION['user_id'])) {
         header('Location: /login');
         exit;
@@ -51,6 +51,11 @@ function validateProjectForm($post) {
  * Gestisce il caricamento delle immagini del progetto.
  */
 function handleImageUpload($projectName) {
+    // Crea Database e Photo localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $photoModel = new Photo($conn);
+    
     if (!empty($_FILES['immagini']['name'][0])) {
         foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
             if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
@@ -65,6 +70,11 @@ function handleImageUpload($projectName) {
  * Gestisce le ricompense associate al progetto.
  */
 function handleRewards($projectName, $creatorEmail) {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     foreach ($_POST['reward_code'] as $idx => $code) {
         $description = $_POST['reward_description'][$idx] ?? '';
         $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
@@ -79,6 +89,11 @@ function handleRewards($projectName, $creatorEmail) {
  * Gestisce la richiesta POST per creare un nuovo progetto.
  */
 function handleCreateProject() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $budget = floatval($_POST['budget']);

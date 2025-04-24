@@ -21,9 +21,14 @@ function alreadyLogged() {
 }
 
 /**
- * Valida i dati, autentica l’admin e imposta la sessione.
+ * Valida i dati, autentica l'admin e imposta la sessione.
  */
 function handleAdminLogin() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
     $securityCode = isset($_POST['security_code']) ? trim($_POST['security_code']) : '';
