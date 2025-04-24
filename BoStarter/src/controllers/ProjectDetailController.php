@@ -6,11 +6,6 @@ require_once __DIR__ . '/../models/Project.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-$db = new Database();
-$conn = $db->getConnection();
-$userModel = new User($conn);
-$projectModel = new Project($conn);
-
 
 /**
  * Verifica che l'utente sia autenticato.
@@ -26,6 +21,11 @@ function checkAccess() {
  * Aggiunge un commento a un progetto.
  */
 function handleAddComment() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $projectName = $_POST['nome_progetto'] ?? '';
     $commentText = trim($_POST['testo_commento'] ?? '');
     $userEmail = $_SESSION['user_id'] ?? '';
@@ -46,6 +46,11 @@ function handleAddComment() {
  * Aggiunge una risposta a un commento.
  */
 function handleAddReply() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $commentId = $_POST['id_commento'] ?? '';
     $responseText = trim($_POST['testo_risposta'] ?? '');
     $creatorEmail = $_SESSION['user_id'] ?? '';
@@ -67,6 +72,11 @@ function handleAddReply() {
  * Esegue un finanziamento su un progetto.
  */
 function handleFundProject() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $projectName = $_POST['nome_progetto'] ?? '';
     $amount = floatval($_POST['importo'] ?? 0);
     $userEmail = $_SESSION['user_id'] ?? '';
@@ -88,6 +98,11 @@ function handleFundProject() {
  * Recupera i dati del progetto per la visualizzazione.
  */
 function loadProjectData() {
+    // Crea Database e Project localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $projectModel = new Project($conn);
+    
     $projectName = $_GET['nome'] ?? '';
     $project = $photos = $comments = $rewards = [];
     $hasFundedToday = false;

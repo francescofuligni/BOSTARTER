@@ -5,11 +5,6 @@ require_once __DIR__ . '/../models/User.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-$db = new Database();
-$conn = $db->getConnection();
-$userModel = new User($conn);
-
-
 /**
  * Reindirizza alla dashboard se è già autenticato.
  */
@@ -47,6 +42,11 @@ function hashSensitiveData(&$data) {
  * Registra un nuovo utente e gestisce il flusso di risposta.
  */
 function handleRegistration() {
+    // Crea Database e User localmente
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $data = [
         'email' => trim($_POST['email'] ?? ''),
         'password' => trim($_POST['password'] ?? ''),

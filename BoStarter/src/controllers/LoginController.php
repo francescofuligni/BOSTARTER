@@ -24,6 +24,11 @@ function alreadyLogged() {
  * Valida credenziali, autentica utente e avvia sessione.
  */
 function handleLogin() {
+    // Crea Database e User localmente per evitare problemi con le variabili globali
+    $db = new Database();
+    $conn = $db->getConnection();
+    $userModel = new User($conn);
+    
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
 

@@ -1,14 +1,18 @@
 <?php
 
+require_once __DIR__ . '/../config/MongoLogger.php';
+
 /**
  * Classe per la gestione delle foto dei progetti.
  * Fornisce metodi per aggiungere immagini al database.
  */
 class Photo {
     private $conn;
+    private $logger;
     
     public function __construct($db) {
         $this->conn = $db;
+        $this->logger = new \MongoLogger();
     }
     
     /**
@@ -23,7 +27,13 @@ class Photo {
             $stmt = $this->conn->prepare("INSERT INTO FOTO (nome_progetto, immagine) VALUES (:nome_progetto, :immagine)");
             $stmt->bindParam(':nome_progetto', $nome_progetto);
             $stmt->bindParam(':immagine', $imgData, PDO::PARAM_LOB); // <-- fondamentale!
-            return $stmt->execute();
+            $result = $stmt->execute();
+            if ($result) {
+                $this->logger->log("Nuova foto aggiunta al progetto", [
+                    'nome_progetto' => $nome_progetto
+                ]);
+            }
+            return $result;
         } catch (PDOException $e) {
             error_log("Errore DB: " . $e->getMessage());
             return false;
