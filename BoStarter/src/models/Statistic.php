@@ -17,8 +17,7 @@ class Statistic {
      */
     public function getTopCreators() {
         try {
-            $sql = "SELECT * FROM classifica_creatori";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT * FROM classifica_creatori");;
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -34,8 +33,7 @@ class Statistic {
      */
     public function getExpiringProjects() {
         try {
-            $sql = "SELECT * FROM progetti_in_scadenza";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT * FROM progetti_in_scadenza");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -51,8 +49,7 @@ class Statistic {
      */
     public function getTopFunders() {
         try {
-            $sql = "SELECT * FROM classifica_finanziatori";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT * FROM classifica_finanziatori");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

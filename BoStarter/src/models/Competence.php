@@ -18,8 +18,7 @@ class Competence {
      */
     public function getAllCompetences() {
         try {
-            $sql = "SELECT * FROM COMPETENZA";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT * FROM COMPETENZA");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -36,10 +35,8 @@ class Competence {
      */
     public function getSkills($userEmail) {
         try {
-            $sql = "SELECT * FROM SKILL_POSSEDUTA
-                    WHERE email_utente = :email_utente";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':email_utente', $userEmail, PDO::PARAM_INT);
+            $stmt = $this->conn->prepare("SELECT * FROM SKILL_POSSEDUTA WHERE email_utente = :email_utente");
+            $stmt->bindParam(':email_utente', $userEmail);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

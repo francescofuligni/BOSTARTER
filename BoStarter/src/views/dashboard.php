@@ -145,6 +145,7 @@ require_once __DIR__ . '/components/navbar.php';
                     </div>
                     <div class="modal-body">
                         <?php
+                        
                         if ($userSkills && count($userSkills) > 0) {
                             echo '<ul class="list-group">';
                             foreach ($userSkills as $skill) {
@@ -189,7 +190,7 @@ require_once __DIR__ . '/components/navbar.php';
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
             <label class="form-check-label" for="filterOpenProjects">
-                Visualizza solo i progetti aperti
+                Vedi solo i progetti aperti
             </label>
         </div>
             <?php
