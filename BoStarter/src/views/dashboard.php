@@ -24,27 +24,27 @@ require_once __DIR__ . '/components/navbar.php';
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
         <?php endif; ?>
-        <div class="jumbotron">
+        <div class="jumbotron pb-3">
             <h1 class="display-4">Benvenuto nella tua Dashboard, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
-        </div>
-
-        <div class="mb-4">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#userSkillsModal">
-                Le tue competenze
-            </button>
-
-            <?php if ($isCreator): ?>
-                <a href="/create-project" class="btn btn-primary">
-                    Crea un progetto
-                </a>
-            <?php endif; ?>
-
-            <?php if ($isAdmin): ?>
-                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
-                    Tutte le competenze
+            
+            <div class="mb-4">
+                <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#userSkillsModal">
+                    Le tue competenze
                 </button>
-            <?php endif; ?>
+
+                <?php if ($isCreator): ?>
+                    <a href="/create-project" class="btn btn-primary mr-4 mb-4">
+                        Crea un progetto
+                    </a>
+                <?php endif; ?>
+
+                <?php if ($isAdmin): ?>
+                    <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#competencesListModal">
+                        Tutte le competenze
+                    </button>
+                <?php endif; ?>
+            </div>
         </div>
 
         
@@ -66,7 +66,7 @@ require_once __DIR__ . '/components/navbar.php';
                             if ($allCompetences && count($allCompetences) > 0) {
                                 echo '<ul class="list-group">';
                                 foreach ($allCompetences as $competence) {
-                                    echo '<li class="list-group-item">' . htmlspecialchars($competence) . '</li>';
+                                    echo '<li class="list-group-item">' . htmlspecialchars($competence['nome']) . '</li>';
                                 }
                                 echo '</ul>';
                             } else {
@@ -167,7 +167,7 @@ require_once __DIR__ . '/components/navbar.php';
                                         <option value="">Seleziona una competenza</option>
                                         <?php
                                         foreach ($allCompetences as $competence) {
-                                            echo '<option value="' . htmlspecialchars($competence) . '">' . htmlspecialchars($competence['nome']) . '</option>';
+                                            echo '<option value="' . htmlspecialchars($competence['nome']) . '">' . htmlspecialchars($competence['nome']) . '</option>';
                                         }
                                         ?>
                                     </select>
