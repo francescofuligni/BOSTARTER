@@ -22,7 +22,6 @@ function checkAccess() {
  * Gestisce l'inserimento di una nuova competenza (solo admin).
  */
 function handleAddCompetence() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);

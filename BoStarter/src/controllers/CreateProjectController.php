@@ -11,7 +11,6 @@ if (session_status() == PHP_SESSION_NONE) session_start();
  * Verifica che l'utente sia autenticato e sia un creatore.
  */
 function checkAccess() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);

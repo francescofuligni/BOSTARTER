@@ -21,7 +21,6 @@ function checkAccess() {
  * Aggiunge un commento a un progetto.
  */
 function handleAddComment() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -46,7 +45,6 @@ function handleAddComment() {
  * Aggiunge una risposta a un commento.
  */
 function handleAddReply() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -72,7 +70,6 @@ function handleAddReply() {
  * Esegue un finanziamento su un progetto.
  */
 function handleFundProject() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -98,7 +95,6 @@ function handleFundProject() {
  * Recupera i dati del progetto per la visualizzazione.
  */
 function loadProjectData() {
-    // Crea Database e Project localmente
     $db = new Database();
     $conn = $db->getConnection();
     $projectModel = new Project($conn);

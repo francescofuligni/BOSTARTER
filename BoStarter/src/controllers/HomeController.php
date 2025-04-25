@@ -10,5 +10,4 @@ $statistic = new Statistic($conn);
 $expiringProjects = $statistic->getExpiringProjects();
 $topCreators = $statistic->getTopCreators();
 $topFunders = $statistic->getTopFunders();
-
 ?>
