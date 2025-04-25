@@ -14,7 +14,7 @@ require_once __DIR__ . '/../controllers/HomeController.php';
 </head>
 <body>
     <div class="container mt-5">
-        <div class="jumbotron">
+        <div class="jumbotron py-5">
             <h1 class="display-4">Benvenuto su BoStarter!</h1>
             <p class="lead">Una piattaforma per il crowdfunding di progetti innovativi.</p>
         </div>

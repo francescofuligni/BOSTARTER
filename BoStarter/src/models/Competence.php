@@ -27,7 +27,7 @@ class Competence {
             return [];
         }
     }
-
+    
     /**
      * Recupera tutte le competenze associate a uno specifico utente.
      *
@@ -36,10 +36,10 @@ class Competence {
      */
     public function getSkills($userEmail) {
         try {
-            $sql = "SELECT C.* FROM SKILL_POSSEDUTA
-                    WHERE UC.ID_UTENTE = :userEmail";
+            $sql = "SELECT * FROM SKILL_POSSEDUTA
+                    WHERE email_utente = :email_utente";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':email_utente', $userEmail, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

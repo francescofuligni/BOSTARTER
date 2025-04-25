@@ -24,29 +24,30 @@ require_once __DIR__ . '/components/navbar.php';
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
         <?php endif; ?>
-        <div class="jumbotron">
+        <div class="jumbotron pb-3">
             <h1 class="display-4">Benvenuto nella tua Dashboard, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
-        </div>
-
-        <div class="mb-4">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#userSkillsModal">
-                Le tue competenze
-            </button>
-
-            <?php if ($isCreator): ?>
-                <a href="/create-project" class="btn btn-primary">
-                    Crea un progetto
-                </a>
-            <?php endif; ?>
-
-            <?php if ($isAdmin): ?>
-                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
-                    Tutte le competenze
+            
+            <div class="mb-4">
+                <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#userSkillsModal">
+                    Le tue skills
                 </button>
-            <?php endif; ?>
+
+                <?php if ($isCreator): ?>
+                    <a href="/create-project" class="btn btn-primary mr-4 mb-4">
+                        Crea un progetto
+                    </a>
+                <?php endif; ?>
+
+                <?php if ($isAdmin): ?>
+                    <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#competencesListModal">
+                        Tutte le competenze
+                    </button>
+                <?php endif; ?>
+            </div>
         </div>
 
+        
         <!-- AMMINISTRATORE -->
 
         <?php if ($isAdmin): ?>
@@ -93,51 +94,6 @@ require_once __DIR__ . '/components/navbar.php';
         <?php endif; ?>
 
 
-        <!-- LE TUE COMPETENZE -->
-
-        <div class="modal fade" id="userSkillsModal" tabindex="-1" role="dialog" aria-labelledby="userSkillsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="userSkillsModalLabel">Le tue competenze</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <?php
-                        if ($userSkills && count($userSkills) > 0) {
-                            echo '<ul class="list-group">';
-                            foreach ($userSkills as $competence) {
-                                echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-                                echo htmlspecialchars($competence['nome']);
-                                echo '<span class="badge badge-primary badge-pill">' . htmlspecialchars($competence['livello']) . '</span>';
-                                echo '</li>';
-                            }
-                            echo '</ul>';
-                        } else {
-                            echo '<p class="text-muted">Non hai ancora aggiunto competenze.</p>';
-                        }
-                        ?>
-                        <hr>
-                        <form method="POST" action="/dashboard">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="skill_name">Nuova competenza</label>
-                                    <input type="text" class="form-control" id="skill_name" name="skill_name" required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="skill_level">Livello (1-5)</label>
-                                    <input type="number" min="1" max="5" class="form-control" id="skill_level" name="skill_level" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Aggiungi competenza</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- CREATORE -->
 
         <?php if ($isCreator): ?>
@@ -177,6 +133,56 @@ require_once __DIR__ . '/components/navbar.php';
 
         
         <!-- TUTTI -->
+
+        <div class="modal fade" id="userSkillsModal" tabindex="-1" role="dialog" aria-labelledby="userSkillsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userSkillsModalLabel">Le tue skills</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php
+                        if ($userSkills && count($userSkills) > 0) {
+                            echo '<ul class="list-group">';
+                            foreach ($userSkills as $skill) {
+                                echo '<li class="list-group-item d-flex align-items-center">';
+                                echo '<span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px;">' . htmlspecialchars($skill['livello']) . '</span>';
+                                echo htmlspecialchars($skill['nome_competenza']);
+                                echo '</li>';
+                            }
+                            echo '</ul>';
+                        } else {
+                            echo '<p class="text-muted">Non hai ancora inserito le tue skills.</p>';
+                        }
+                        ?>
+                        <hr>
+                        <form method="POST" action="/dashboard">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="skill_name">Competenza</label>
+                                    <select class="form-control" id="skill_name" name="skill_name" required>
+                                        <option value="">Seleziona una competenza</option>
+                                        <?php
+                                        foreach ($allCompetences as $competence) {
+                                            echo '<option value="' . htmlspecialchars($competence['nome']) . '">' . htmlspecialchars($competence['nome']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="skill_level">Livello (0-5)</label>
+                                    <input type="number" min="0" max="5" class="form-control" id="skill_level" name="skill_level" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Aggiungi skill</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="mt-5">
         <h3>Tutti i progetti</h3>

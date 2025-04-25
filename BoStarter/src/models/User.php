@@ -434,16 +434,16 @@ class User {
      * @param int $level Livello di competenza.
      * @return bool True se l'inserimento è avvenuto con successo, false altrimenti.
      */
-    public function addSkill($name, $userEmail, $level) {
+    public function addSkill($userEmail, $name, $level) {
         try {
-            $stmt = $this->conn->prepare("CALL aggiungi_skill(:nome, :email, :livello)");
+            $stmt = $this->conn->prepare("CALL aggiungi_skill(:email, :nome, :livello)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':email', $userEmail);
             $stmt->bindParam(':livello', $level);
             $result = $stmt->execute();
             if ($result) {
                 $this->logger->log("Nuova competenza aggiunta", [
-                    'email_utente' => $email,
+                    'email_utente' => $userEmail,
                     'nome_competenza' => $name,
                     'livello' => $level
                 ]);
