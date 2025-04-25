@@ -30,7 +30,7 @@ require_once __DIR__ . '/components/navbar.php';
         </div>
 
         <div class="mb-4">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#userSkillsModal">
                 Le tue competenze
             </button>
 
@@ -92,6 +92,51 @@ require_once __DIR__ . '/components/navbar.php';
             </div>
         <?php endif; ?>
 
+
+        <!-- LE TUE COMPETENZE -->
+
+        <div class="modal fade" id="userSkillsModal" tabindex="-1" role="dialog" aria-labelledby="userSkillsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userSkillsModalLabel">Le tue competenze</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php
+                        if ($userSkills && count($userSkills) > 0) {
+                            echo '<ul class="list-group">';
+                            foreach ($userSkills as $competence) {
+                                echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
+                                echo htmlspecialchars($competence['nome']);
+                                echo '<span class="badge badge-primary badge-pill">' . htmlspecialchars($competence['livello']) . '</span>';
+                                echo '</li>';
+                            }
+                            echo '</ul>';
+                        } else {
+                            echo '<p class="text-muted">Non hai ancora aggiunto competenze.</p>';
+                        }
+                        ?>
+                        <hr>
+                        <form method="POST" action="/dashboard">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="skill_name">Nuova competenza</label>
+                                    <input type="text" class="form-control" id="skill_name" name="skill_name" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="skill_level">Livello (1-5)</label>
+                                    <input type="number" min="1" max="5" class="form-control" id="skill_level" name="skill_level" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Aggiungi competenza</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- CREATORE -->
 

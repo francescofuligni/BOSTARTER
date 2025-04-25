@@ -12,14 +12,34 @@ class Competence {
     }
 
     /**
-     * Restituisce tutte le competenze dal database.
+     * Recupera tutte le competenze dal database.
      *
-     * @return array Lista di competenze o array vuoto in caso di errore.
+     * @return array Elenco delle competenze o un array vuoto in caso di errore.
      */
     public function getAllCompetences() {
         try {
             $sql = "SELECT * FROM COMPETENZA";
             $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    /**
+     * Recupera tutte le competenze associate a uno specifico utente.
+     *
+     * @param string $userEmail Email dell'utente.
+     * @return array Elenco delle competenze dell'utente o un array vuoto in caso di errore.
+     */
+    public function getSkills($userEmail) {
+        try {
+            $sql = "SELECT C.* FROM SKILL_POSSEDUTA
+                    WHERE UC.ID_UTENTE = :userEmail";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

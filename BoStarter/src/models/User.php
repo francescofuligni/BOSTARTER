@@ -82,6 +82,7 @@ class User {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result['count'] > 0;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
@@ -101,6 +102,7 @@ class User {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result['count'] > 0;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
@@ -122,9 +124,7 @@ class User {
             $stmt->bindParam(':security_code', $hashedSecurityCode);
             $stmt->execute();
             
-            
             $result = $this->conn->query("SELECT @autenticato as autenticato")->fetch(PDO::FETCH_ASSOC);
-            
             return $result['autenticato'] ? true : false;
         } catch (PDOException $e) {
             echo "Admin login error: " . $e->getMessage();
@@ -207,7 +207,7 @@ class User {
     }
 
     /**
-     * Crea un nuovo progetto (solo per creatori).
+     * Crea un nuovo progetto (solo creatori).
      *
      * @param string $name Nome del progetto.
      * @param string $desc Descrizione del progetto.
@@ -219,6 +219,10 @@ class User {
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
         try {
+            if(!isCreator($creatorEmail)) {
+                return false;
+            }
+
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':descrizione', $desc);
@@ -242,6 +246,7 @@ class User {
     
             return $result;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
@@ -277,7 +282,7 @@ class User {
     }
 
     /**
-     * Aggiunge una risposta a un commento.
+     * Aggiunge una risposta a un commento (solo creatore del progetto).
      *
      * @param int $commentId ID del commento.
      * @param string $text Testo della risposta.
@@ -286,6 +291,10 @@ class User {
      */
     public function addReply($commentId, $text, $creatorEmail) {
         try {
+            if(!isCreator($creatorEmail)) {
+                return false;
+            }
+
             $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
             $stmt->bindParam(':id_commento', $commentId);
             $stmt->bindParam(':testo', $text);
@@ -302,12 +311,13 @@ class User {
             }
             return $result;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
 
     /**
-     * Aggiunge una ricompensa a un progetto (solo per creatori).
+     * Aggiunge una ricompensa a un progetto (solo creatori).
      *
      * @param string $code Codice della ricompensa.
      * @param string $image Immagine della ricompensa.
@@ -318,6 +328,10 @@ class User {
      */
     public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
         try {
+            if(!isCreator($creatorEmail)) {
+                return false;
+            }
+
             $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
             $stmt->bindParam(':codice', $code);
             $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
@@ -335,6 +349,7 @@ class User {
             }
             return $result;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
@@ -374,20 +389,25 @@ class User {
                 return false;
             }
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
 
     /**
-     * Aggiunge una nuova competenza al database.
+     * Aggiunge una nuova competenza al database (solo amministratori).
      *
      * @param string $name Nome della competenza.
      * @param string $email Email dell'utente.
      * @param string $hashedSecurityCode Codice di sicurezza hashato.
      * @return bool True se inserimento avvenuto, false altrimenti.
      */
-    public function addCompetence($name, $email, $hashedSecurityCode) {
+    public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
         try {
+            if(!isAdmin($adminEmail)) {
+                return false;
+            }
+
             $stmt = $this->conn->prepare("CALL aggiungi_competenza(:nome, :email, :codice_sicurezza)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':email', $email);
@@ -401,6 +421,36 @@ class User {
             }
             return $result;
         } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * Aggiunge una competenza a un utente.
+     *
+     * @param string $name Nome della competenza.
+     * @param string $userEmail Email dell'utente.
+     * @param int $level Livello di competenza.
+     * @return bool True se l'inserimento è avvenuto con successo, false altrimenti.
+     */
+    public function addSkill($name, $userEmail, $level) {
+        try {
+            $stmt = $this->conn->prepare("CALL aggiungi_skill(:nome, :email, :livello)");
+            $stmt->bindParam(':nome', $name);
+            $stmt->bindParam(':email', $userEmail);
+            $stmt->bindParam(':livello', $level);
+            $result = $stmt->execute();
+            if ($result) {
+                $this->logger->log("Nuova competenza aggiunta", [
+                    'email_utente' => $email,
+                    'nome_competenza' => $name,
+                    'livello' => $level
+                ]);
+            }
+            return $result;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return false;
         }
     }
