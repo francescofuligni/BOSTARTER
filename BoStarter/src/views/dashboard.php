@@ -145,6 +145,7 @@ require_once __DIR__ . '/components/navbar.php';
                     </div>
                     <div class="modal-body">
                         <?php
+                        
                         if ($userSkills && count($userSkills) > 0) {
                             echo '<ul class="list-group">';
                             foreach ($userSkills as $skill) {
