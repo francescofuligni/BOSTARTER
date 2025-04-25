@@ -22,7 +22,6 @@ function checkAccess() {
  * Gestisce l'inserimento di una nuova competenza (solo admin).
  */
 function handleAddCompetence() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -56,7 +55,6 @@ function handleAddCompetence() {
  * Gestisce l'inserimento di un commento a un progetto.
  */
 function handleAddComment() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -83,7 +81,6 @@ function handleAddComment() {
  * Gestisce l'inserimento di una risposta a un commento.
  */
 function handleAddReply() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -107,6 +104,32 @@ function handleAddReply() {
 }
 
 /**
+ * Gestisce l'aggiunta di una competenza da parte dell'utente.
+ */
+function handleAddSkill() {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $competenceModel = new Competence($conn);
+
+    $skillName = trim($_POST['skill_name']);
+    $skillLevel = (int) $_POST['skill_level'];
+    $userEmail = $_SESSION['user_id'] ?? '';
+
+    if ($skillName !== '' && $userEmail !== '' && $skillLevel >= 0 && $skillLevel <= 5) {
+        if ($competenceModel->addSkill($skillName, $userEmail, $skillLevel)) {
+            $_SESSION['success'] = "Competenza aggiunta con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'aggiunta della competenza.";
+        }
+    } else {
+        $_SESSION['error'] = "Compila correttamente tutti i campi per aggiungere una competenza.";
+    }
+
+    header('Location: /dashboard');
+    exit;
+}
+
+/**
  * Recupera dati per il rendering della dashboard.
  */
 function loadDashboardData() {
@@ -123,8 +146,9 @@ function loadDashboardData() {
     $allProjects = $projectModel->getAllProjects();
     $userProjects = $isCreator ? $projectModel->getUserProjects($_SESSION['user_id']) : [];
     $allCompetences = $isAdmin ? $competenceModel->getAllCompetences() : [];
+    $userSkills = isset($_SESSION['user_id']) ? $competenceModel->getSkills($_SESSION['user_id']) : [];
 
-    return [$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences];
+    return [$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences, $userSkills];
 }
 
 
@@ -144,7 +168,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
         handleAddReply();
     }
+    elseif (isset($_POST['skill_name'], $_POST['skill_level'])) {
+        handleAddSkill();
+    }
 }
 
-[$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences] = loadDashboardData();
+[$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences, $userSkills] = loadDashboardData();
 ?>

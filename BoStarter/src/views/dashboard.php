@@ -29,21 +29,33 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
         </div>
 
+        <div class="mb-4">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#userSkillsModal">
+                Le tue competenze
+            </button>
+
+            <?php if ($isCreator): ?>
+                <a href="/create-project" class="btn btn-primary">
+                    Crea un progetto
+                </a>
+            <?php endif; ?>
+
+            <?php if ($isAdmin): ?>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
+                    Tutte le competenze
+                </button>
+            <?php endif; ?>
+        </div>
 
         <!-- AMMINISTRATORE -->
 
         <?php if ($isAdmin): ?>
-            <div class="mb-4">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
-                    Lista competenze
-                </button>
-            </div>
 
-            <div class="modal fade" id="competencesModal" tabindex="-1" role="dialog" aria-labelledby="competencesModalLabel" aria-hidden="true">
+            <div class="modal fade" id="competencesListModal" tabindex="-1" role="dialog" aria-labelledby="competencesListModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="competencesModalLabel">Lista delle Competenze</h5>
+                            <h5 class="modal-title" id="competencesListModalLabel">Lista delle Competenze</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -81,14 +93,54 @@ require_once __DIR__ . '/components/navbar.php';
         <?php endif; ?>
 
 
+        <!-- LE TUE COMPETENZE -->
+
+        <div class="modal fade" id="userSkillsModal" tabindex="-1" role="dialog" aria-labelledby="userSkillsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userSkillsModalLabel">Le tue competenze</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php
+                        if ($userSkills && count($userSkills) > 0) {
+                            echo '<ul class="list-group">';
+                            foreach ($userSkills as $competence) {
+                                echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
+                                echo htmlspecialchars($competence['nome']);
+                                echo '<span class="badge badge-primary badge-pill">' . htmlspecialchars($competence['livello']) . '</span>';
+                                echo '</li>';
+                            }
+                            echo '</ul>';
+                        } else {
+                            echo '<p class="text-muted">Non hai ancora aggiunto competenze.</p>';
+                        }
+                        ?>
+                        <hr>
+                        <form method="POST" action="/dashboard">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="skill_name">Nuova competenza</label>
+                                    <input type="text" class="form-control" id="skill_name" name="skill_name" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="skill_level">Livello (1-5)</label>
+                                    <input type="number" min="1" max="5" class="form-control" id="skill_level" name="skill_level" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Aggiungi competenza</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- CREATORE -->
 
         <?php if ($isCreator): ?>
-            <div class="mb-4">
-                <a href="/create-project" class="btn btn-success">
-                    Crea un nuovo progetto
-                </a>
-            </div>
 
             <h3>I tuoi progetti</h3>
             <div class="row mb-5">
@@ -127,7 +179,7 @@ require_once __DIR__ . '/components/navbar.php';
         <!-- TUTTI -->
 
         <div class="mt-5">
-        <h3>Vedi tutti i progetti</h3>
+        <h3>Tutti i progetti</h3>
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
             <label class="form-check-label" for="filterOpenProjects">

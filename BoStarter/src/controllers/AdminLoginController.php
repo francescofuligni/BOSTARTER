@@ -5,11 +5,6 @@ require_once __DIR__ . '/../models/User.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-$db = new Database();
-$conn = $db->getConnection();
-$userModel = new User($conn);
-
-
 /**
  * Reindirizza alla dashboard se è già autenticato.
  */
@@ -24,7 +19,6 @@ function alreadyLogged() {
  * Valida i dati, autentica l'admin e imposta la sessione.
  */
 function handleAdminLogin() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);

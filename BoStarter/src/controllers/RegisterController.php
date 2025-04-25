@@ -42,7 +42,6 @@ function hashSensitiveData(&$data) {
  * Registra un nuovo utente e gestisce il flusso di risposta.
  */
 function handleRegistration() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
