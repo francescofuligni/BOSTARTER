@@ -35,7 +35,7 @@ class Competence {
      */
     public function getSkills($userEmail) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM skill_posseduta WHERE email_utente = :email_utente");
+            $stmt = $this->conn->prepare("SELECT * FROM SKILL_POSSEDUTA WHERE email_utente = :email_utente");
             $stmt->bindParam(':email_utente', $userEmail);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -178,32 +178,26 @@ class User {
     }
 
     /**
-     * Termina la sessione utente e reindirizza alla home.
+     * Termina la sessione utente.
      *
      * @return void
      */
     public function logout() {
-        // Distruggi la sessione per effettuare il logout
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        // RIMOZIONE PER ESSERE SICURI MAGARI POI LO TOGLIAMO
-        if (isset($_SESSION['auth_token'])) {
-            unset($_SESSION['auth_token']);
+        $_SESSION = [];
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
         }
-        if (isset($_SESSION['token_expiration'])) {
-            unset($_SESSION['token_expiration']);
-        }
-        // Distruggi tutte le variabili di sessione
-        $_SESSION = array();
-        
-        // Distruggi la sessione
+
         session_destroy();
-        
-        // Reindirizza alla pagina di login o alla home page
-        header("Location: /home");
-        exit();
     }
 
     /**
