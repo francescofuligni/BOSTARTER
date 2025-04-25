@@ -30,7 +30,7 @@ require_once __DIR__ . '/components/navbar.php';
             
             <div class="mb-4">
                 <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#userSkillsModal">
-                    Le tue competenze
+                    Le tue skills
                 </button>
 
                 <?php if ($isCreator): ?>
@@ -149,7 +149,7 @@ require_once __DIR__ . '/components/navbar.php';
                             echo '<ul class="list-group">';
                             foreach ($userSkills as $skill) {
                                 echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-                                echo htmlspecialchars($skill['nome']);
+                                echo htmlspecialchars($skill['nome_competenza']);
                                 echo '<span class="badge badge-primary badge-pill">' . htmlspecialchars($skill['livello']) . '</span>';
                                 echo '</li>';
                             }

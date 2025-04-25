@@ -109,14 +109,14 @@ function handleAddReply() {
 function handleAddSkill() {
     $db = new Database();
     $conn = $db->getConnection();
-    $competenceModel = new Competence($conn);
+    $userModel = new User($conn);
 
     $skillName = trim($_POST['skill_name']);
     $skillLevel = (int) $_POST['skill_level'];
     $userEmail = $_SESSION['user_id'] ?? '';
 
     if ($skillName !== '' && $userEmail !== '' && $skillLevel >= 0 && $skillLevel <= 5) {
-        if ($competenceModel->addSkill($skillName, $userEmail, $skillLevel)) {
+        if ($userModel->addSkill($userEmail, $skillName, $skillLevel)) {
             $_SESSION['success'] = "Competenza aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'aggiunta della competenza.";
@@ -133,7 +133,6 @@ function handleAddSkill() {
  * Recupera dati per il rendering della dashboard.
  */
 function loadDashboardData() {
-    // Crea Database e i modelli localmente
     $db = new Database();
     $conn = $db->getConnection();
     $userModel = new User($conn);
@@ -167,8 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         handleAddComment();
     } elseif (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
         handleAddReply();
-    }
-    elseif (isset($_POST['skill_name'], $_POST['skill_level'])) {
+    } elseif (isset($_POST['skill_name'], $_POST['skill_level'])) {
         handleAddSkill();
     }
 }
