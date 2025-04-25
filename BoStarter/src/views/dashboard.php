@@ -134,7 +134,7 @@ require_once __DIR__ . '/components/navbar.php';
         <!-- TUTTI -->
 
         <div class="mt-5">
-        <h3>Vedi tutti i progetti</h3>
+        <h3>Tutti i progetti</h3>
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="filterOpenProjects" onclick="filterOpenProjects()">
             <label class="form-check-label" for="filterOpenProjects">
