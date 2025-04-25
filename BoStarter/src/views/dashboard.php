@@ -29,21 +29,33 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
         </div>
 
+        <div class="mb-4">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
+                Le tue competenze
+            </button>
+
+            <?php if ($isCreator): ?>
+                <a href="/create-project" class="btn btn-primary">
+                    Crea un progetto
+                </a>
+            <?php endif; ?>
+
+            <?php if ($isAdmin): ?>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesListModal">
+                    Tutte le competenze
+                </button>
+            <?php endif; ?>
+        </div>
 
         <!-- AMMINISTRATORE -->
 
         <?php if ($isAdmin): ?>
-            <div class="mb-4">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#competencesModal">
-                    Lista competenze
-                </button>
-            </div>
 
-            <div class="modal fade" id="competencesModal" tabindex="-1" role="dialog" aria-labelledby="competencesModalLabel" aria-hidden="true">
+            <div class="modal fade" id="competencesListModal" tabindex="-1" role="dialog" aria-labelledby="competencesListModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="competencesModalLabel">Lista delle Competenze</h5>
+                            <h5 class="modal-title" id="competencesListModalLabel">Lista delle Competenze</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -84,11 +96,6 @@ require_once __DIR__ . '/components/navbar.php';
         <!-- CREATORE -->
 
         <?php if ($isCreator): ?>
-            <div class="mb-4">
-                <a href="/create-project" class="btn btn-success">
-                    Crea un nuovo progetto
-                </a>
-            </div>
 
             <h3>I tuoi progetti</h3>
             <div class="row mb-5">
