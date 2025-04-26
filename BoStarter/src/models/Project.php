@@ -89,9 +89,9 @@ class Project {
      * @return array Array contenente dettagli, immagini e commenti del progetto.
      */
     function getProjectDetailData($projectModel, $projectName) {
-        $project = $projectModel->getProjectDetail($projectName);
-        $photos = $projectModel->getProjectPhotos($projectName);
-        $comments = $projectModel->getProjectComments($projectName);
+        $project = $this->getProjectDetail($projectName);
+        $photos = $this->getProjectPhotos($projectName);
+        $comments = $this->getProjectComments($projectName);
         return [$project, $photos, $comments];
     }
 

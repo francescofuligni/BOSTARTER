@@ -24,7 +24,7 @@ class Photo {
      */
     public function addPhotoToProject($nome_progetto, $imgData) {
         try {
-            $stmt = $this->conn->prepare("INSERT INTO FOTO (nome_progetto, immagine) VALUES (:nome_progetto, :immagine)");
+            $stmt = $this->conn->prepare("CALL inserisci_foto(:nome_progetto, :immagine)");
             $stmt->bindParam(':nome_progetto', $nome_progetto);
             $stmt->bindParam(':immagine', $imgData, PDO::PARAM_LOB); // <-- fondamentale!
             $result = $stmt->execute();

@@ -213,10 +213,6 @@ class User {
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':descrizione', $desc);
@@ -285,10 +281,6 @@ class User {
      */
     public function addReply($commentId, $text, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
             $stmt->bindParam(':id_commento', $commentId);
             $stmt->bindParam(':testo', $text);
@@ -322,10 +314,6 @@ class User {
      */
     public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
             $stmt->bindParam(':codice', $code);
             $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
@@ -398,19 +386,15 @@ class User {
      */
     public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
         try {
-            if(!isAdmin($adminEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL aggiungi_competenza(:nome, :email, :codice_sicurezza)");
             $stmt->bindParam(':nome', $name);
-            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':email', $adminEmail);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
             $result = $stmt->execute();
             if ($result) {
                 $this->logger->log("Nuova competenza aggiunta", [
                     'nome_competenza' => $name,
-                    'email_utente' => $email
+                    'email_utente' => $adminEmail
                 ]);
             }
             return $result;
