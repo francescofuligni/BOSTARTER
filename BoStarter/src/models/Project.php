@@ -95,30 +95,6 @@ class Project {
         return [$project, $photos, $comments];
     }
 
-    /**
-     * Verifica se l'utente ha già finanziato il progetto nella data odierna.
-     *
-     * @param string $projectName Nome del progetto.
-     * @param string $userEmail Email dell'utente.
-     * @return bool True se ha finanziato oggi, false altrimenti.
-     */
-    public function hasFundedToday($projectName, $userEmail) {  // FORSE DA SPOSTARE NEL MODELLO UTENTE?
-        try {
-            $stmt = $this->conn->prepare(   // FORSE MEGLIO FATTO CON UNA STORED PROCEDURE?
-                "SELECT COUNT(*) FROM FINANZIAMENTO 
-                 WHERE nome_progetto = :nome_progetto 
-                 AND email_utente = :email_utente 
-                 AND data = CURDATE()"
-            );
-            $stmt->bindParam(':nome_progetto', $projectName);
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->execute();
-            return $stmt->fetchColumn() > 0;
-        } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return false;
-        }
-    }
 
     /**
      * Recupera tutti i progetti con la prima foto associata.
@@ -136,23 +112,6 @@ class Project {
         }
     }
     
-    /**
-     * Recupera tutti i progetti creati da un utente.
-     *
-     * @param string $userEmail Email dell'utente.
-     * @return array Array di progetti creati dall'utente.
-     */
-    public function getUserProjects($userEmail) {   // FORSE DA SPOSTARE NEL MODELLO UTENTE?
-        try {
-            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente_creatore = :email_utente");
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
-        }
-    }
 
     /**
      * Recupera tutte le ricompense associate a un progetto.

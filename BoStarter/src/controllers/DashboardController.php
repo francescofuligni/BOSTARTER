@@ -143,9 +143,9 @@ function loadDashboardData() {
     $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
     $allProjects = $projectModel->getAllProjects();
-    $userProjects = $isCreator ? $projectModel->getUserProjects($_SESSION['user_id']) : [];
+    $userProjects = $isCreator ? $userModel->getProjects($_SESSION['user_id']) : [];
     $allCompetences = $competenceModel->getAllCompetences();
-    $userSkills = isset($_SESSION['user_id']) ? $competenceModel->getSkills($_SESSION['user_id']) : [];
+    $userSkills = isset($_SESSION['user_id']) ? $userModel->getSkills($_SESSION['user_id']) : [];
 
     return [$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences, $userSkills];
 }
