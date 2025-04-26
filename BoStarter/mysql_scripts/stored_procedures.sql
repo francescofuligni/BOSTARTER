@@ -1,7 +1,7 @@
 USE bostarter_db;
 
 
--- TUTTI GLI UTENTI ------------------------------------------------------------
+-- TUTTI -----------------------------------------------------------------------
 
 
 -- Procedura per l'autenticazione di un utente (utente normale o creatore)
@@ -11,10 +11,10 @@ DELIMITER //
 CREATE PROCEDURE autenticazione_utente (
     IN in_email VARCHAR(32),
     IN in_password CHAR(64),
-    OUT autenticato BOOLEAN
+    OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO autenticato
+    SELECT COUNT(*) > 0 INTO esito
     FROM UTENTE
     WHERE email = in_email AND password = in_password;
 END //
@@ -67,19 +67,6 @@ END //
 DELIMITER ;
 
 
--- Procedura per visualizzare i progetti disponibili
-DROP PROCEDURE IF EXISTS mostra_progetti_aperti;
-
-DELIMITER //
-CREATE PROCEDURE mostra_progetti_aperti()
-BEGIN
-    SELECT *
-    FROM PROGETTO
-    WHERE stato = 'APERTO';
-END //
-DELIMITER ;
-
-
 -- Procedura per il finanziamento di un progetto
 DROP PROCEDURE IF EXISTS finanzia_progetto;
 
@@ -87,15 +74,16 @@ DELIMITER //
 CREATE PROCEDURE finanzia_progetto(
     IN in_email_utente VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
-    IN in_importo DECIMAL(16,2)
+    IN in_importo DECIMAL(16,2),
+    OUT is_progetto_aperto BOOLEAN
 )
 BEGIN
-    DECLARE is_aperto BOOLEAN;
-    SET is_aperto = (SELECT stato FROM PROGETTO WHERE nome = in_nome_progetto) = 'APERTO';
+    SET is_progetto_aperto = (SELECT stato FROM PROGETTO WHERE nome = in_nome_progetto) = 'APERTO';
 
-    IF is_aperto THEN
+    IF is_progetto_aperto THEN
         INSERT INTO FINANZIAMENTO (data, nome_progetto, email_utente, importo)
         VALUES (CURDATE(), in_nome_progetto, in_email_utente, in_importo);
+        SET esito = TRUE;
     END IF;
 END //
 DELIMITER ;
@@ -143,7 +131,7 @@ DELIMITER //
 CREATE PROCEDURE inserisci_candidatura(
     IN in_email_utente VARCHAR(32),
     IN in_id_profilo INT,
-    OUT is_candidato BOOLEAN
+    OUT esito BOOLEAN
 )
 BEGIN
     SELECT NOT EXISTS (
@@ -155,9 +143,9 @@ BEGIN
             AND sp.livello >= sr.livello
         WHERE sr.id_profilo = in_id_profilo
         AND sp.email_utente IS NULL
-    ) INTO is_candidato;
+    ) INTO esito;
 
-    IF is_candidato THEN
+    IF esito THEN
         INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
         VALUES (in_email_utente, in_id_profilo, 'IN ATTESA');
     END IF;
@@ -178,10 +166,10 @@ CREATE PROCEDURE autenticazione_amministratore(
     IN in_email VARCHAR(32),
     IN in_password CHAR(64),
     IN in_codice_sicurezza CHAR(64),
-    OUT autenticato BOOLEAN
+    OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO autenticato
+    SELECT COUNT(*) > 0 INTO esito
     FROM UTENTE u
     JOIN UTENTE_AMMINISTRATORE ua ON u.email = ua.email_utente
     WHERE u.email = in_email 
@@ -198,11 +186,10 @@ DELIMITER //
 CREATE PROCEDURE aggiungi_competenza(
     IN in_competenza VARCHAR(32),
     IN in_email VARCHAR(32),
-    IN in_codice_sicurezza CHAR(64)
+    IN in_codice_sicurezza CHAR(64),
+    OUT is_amministratore BOOLEAN
 )
 BEGIN
-    DECLARE is_amministratore BOOLEAN;
-    
     SELECT COUNT(*) > 0 INTO is_amministratore
     FROM UTENTE_AMMINISTRATORE
     WHERE email_utente = in_email
@@ -231,7 +218,8 @@ CREATE PROCEDURE crea_progetto(
     IN in_budget DECIMAL(16,2),
     IN in_data_limite DATE,
     IN in_tipo ENUM ('SOFTWARE', 'HARDWARE'),
-    IN in_email_creatore VARCHAR(32)
+    IN in_email_creatore VARCHAR(32),
+    OUT esito BOOLEAN
 )
 BEGIN
     DECLARE is_creatore BOOLEAN;
@@ -239,8 +227,10 @@ BEGIN
     SELECT COUNT(*) > 0 INTO is_creatore
     FROM UTENTE_CREATORE
     WHERE email_utente = in_email_creatore;
+
+    SET esito = is_creatore AND in_data_limite > CURDATE();
     
-    IF is_creatore AND in_data_limite > CURDATE() THEN
+    IF esito THEN
         INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
         VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'APERTO', in_tipo, in_email_creatore);
     END IF;
@@ -255,7 +245,8 @@ DELIMITER //
 CREATE PROCEDURE inserisci_foto(
     IN in_immagine LONGBLOB,
     IN in_nome_progetto VARCHAR(32),
-    IN in_email_creatore VARCHAR(32)
+    IN in_email_creatore VARCHAR(32),
+    OUT esito BOOLEAN
 )
 BEGIN
     DECLARE is_creatore_progetto BOOLEAN;
@@ -271,9 +262,12 @@ BEGIN
     WHERE nome = in_nome_progetto
     AND stato = 'APERTO';
 
-    IF is_creatore_progetto AND is_progetto_aperto THEN
+    SET esito = is_creatore_progetto AND is_progetto_aperto;
+
+    IF esito THEN
         INSERT INTO FOTO (immagine, nome_progetto)
         VALUES (in_immagine, in_nome_progetto);
+        SET esito = TRUE;
     END IF;
 END //
 DELIMITER ;
@@ -288,7 +282,8 @@ CREATE PROCEDURE inserisci_reward(
     IN in_immagine LONGBLOB,
     IN in_descrizione VARCHAR(255),
     IN in_nome_progetto VARCHAR(32),
-    IN in_email_creatore VARCHAR(32)
+    IN in_email_creatore VARCHAR(32),
+    OUT esito BOOLEAN
 )
 BEGIN
     DECLARE is_creatore_progetto BOOLEAN;
@@ -303,8 +298,10 @@ BEGIN
     FROM PROGETTO
     WHERE nome = in_nome_progetto
     AND stato = 'APERTO';
+
+    SET esito = is_creatore_progetto AND is_progetto_aperto;
     
-    IF is_creatore_progetto AND is_progetto_aperto THEN
+    IF esito THEN
         INSERT INTO REWARD (codice, immagine, descrizione, nome_progetto)
         VALUES (in_codice, in_immagine, in_descrizione, in_nome_progetto);
     END IF;
@@ -319,11 +316,10 @@ DELIMITER //
 CREATE PROCEDURE inserisci_risposta(
     IN in_id_commento INT,
     IN in_testo VARCHAR(255),
-    IN in_email_creatore VARCHAR(32)
+    IN in_email_creatore VARCHAR(32),
+    OUT is_creatore_progetto BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore_progetto BOOLEAN;
-    
     -- Verifica che l'utente sia il creatore del progetto associato al commento
     SELECT COUNT(*) > 0 INTO is_creatore_progetto
     FROM COMMENTO c
@@ -339,25 +335,24 @@ END //
 DELIMITER ;
 
 
--- Procedura per l'inserimento di un profilo su un progetto software (solo creatori)
+-- Procedura per l'inserimento di un profilo su un progetto software (solo creatore del progetto)
 DROP PROCEDURE IF EXISTS inserisci_profilo;
 
 DELIMITER //
 CREATE PROCEDURE inserisci_profilo(
     IN in_nome VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
-    IN in_email_creatore VARCHAR(32)
+    IN in_email_creatore VARCHAR(32),
+    OUT is_creatore_progetto BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore_progetto_software BOOLEAN;
-    
-    SELECT COUNT(*) > 0 INTO is_creatore_progetto_software
+    SELECT COUNT(*) > 0 INTO is_creatore_progetto
     FROM PROGETTO
     WHERE nome = in_nome_progetto
     AND email_utente_creatore = in_email_creatore
     AND tipo = 'SOFTWARE';
     
-    IF is_creatore_progetto_software THEN
+    IF is_creatore_progetto THEN
         INSERT INTO PROFILO (nome, nome_progetto)
         VALUES (in_nome, in_nome_progetto);
     END IF;
@@ -373,7 +368,8 @@ CREATE PROCEDURE inserisci_skill_richiesta(
     IN in_id_profilo VARCHAR(32),
     IN in_email_creatore VARCHAR(32),
     IN in_competenza VARCHAR(32),
-    IN in_livello INT
+    IN in_livello INT,
+    OUT is_creatore_progetto BOOLEAN
 )
 BEGIN
     DECLARE is_creatore_progetto BOOLEAN;
@@ -392,6 +388,44 @@ END //
 DELIMITER ;
 
 
+-- Procedura per l'inserimento di una componente su un progetto hardware (solo creatore del progetto)
+DROP PROCEDURE IF EXISTS inserisci_composizione;
+
+DELIMITER //
+CREATE PROCEDURE inserisci_composizione(
+    IN in_nome_componente VARCHAR(32),
+    IN in_quantita INT,
+    IN in_nome_progetto VARCHAR(32),
+    IN in_email_creatore VARCHAR(32),
+    OUT is_creatore_progetto BOOLEAN
+)
+BEGIN
+    SELECT COUNT(*) > 0 INTO is_creatore_progetto
+    FROM PROGETTO
+    WHERE nome = in_nome_progetto
+    AND email_utente_creatore = in_email_creatore
+    AND tipo = 'HARDWARE';
+    
+    IF is_creatore_progetto THEN
+        INSERT INTO COMPOSIZIONE (nome_progetto, nome_componente, quantita)
+        VALUES (in_nome_progetto, in_nome_componente, in_quantita);
+    END IF;
+END //
+
+
+-- Procedura per l'inserimento di una nuova componente (solo creatori)
+DROP PROCEDURE IF EXISTS inserisci_componente;
+
+DELIMITER //
+CREATE PROCEDURE inserisci_componente(
+    IN in_nome VARCHAR(32),
+    IN in_descrizione VARCHAR(255),
+    IN in_prezzo DECIMAL(16,2),
+    IN in_email_creatore VARCHAR(32),
+    OUT esito BOOLEAN
+)
+
+
 -- Procedura per gestire una candidatura (solo creatori)
 DROP PROCEDURE IF EXISTS gestisci_candidatura;
 
@@ -400,11 +434,10 @@ CREATE PROCEDURE gestisci_candidatura(
     IN in_email_candidato VARCHAR(32),
     IN in_id_profilo INT,
     IN in_email_creatore VARCHAR(32),
-    IN in_stato ENUM ('ACCETTATA', 'RIFIUTATA')
+    IN in_stato ENUM ('ACCETTATA', 'RIFIUTATA'),
+    OUT is_creatore_progetto BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore_progetto BOOLEAN;
-    
     SELECT COUNT(*) > 0 INTO is_creatore_progetto
     FROM PROFILO pr
     JOIN PROGETTO p ON pr.nome_progetto = p.nome
@@ -419,4 +452,3 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-
