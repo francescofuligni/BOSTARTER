@@ -1,6 +1,11 @@
 USE bostarter_db;
 
 
+
+
+
+-- PROCEDURE DI CONTROLLO --------------------------------------------
+
 -- Procedura per verificare se un utente è creatore
 DROP PROCEDURE IF EXISTS verifica_creatore;
 
@@ -86,6 +91,7 @@ BEGIN
     AND tipo = in_tipo;
 END //
 DELIMITER ;
+
 
 
 
@@ -243,6 +249,7 @@ DELIMITER ;
 
 
 
+
 -- SOLO AMMINISTRATORI ------------------------------------------------------------
 
 
@@ -286,6 +293,7 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
 
 
 
@@ -400,6 +408,7 @@ END //
 DELIMITER ;
 
 
+-- Procedura per l'inserimento di un profilo (solo creatore del progetto SOFTWARE)
 DROP PROCEDURE IF EXISTS inserisci_profilo;
 
 DELIMITER //
@@ -423,6 +432,7 @@ END //
 DELIMITER ;
 
 
+-- Procedura per l'inserimento di una skill richiesta (solo creatore del progetto SOFTWARE)
 DROP PROCEDURE IF EXISTS inserisci_skill_richiesta;
 
 DELIMITER //
