@@ -119,6 +119,7 @@ DELIMITER ;
 
 -- Trigger per aggiornare somma_raccolta quando viene inserito un finanziamento --
 DROP TRIGGER IF EXISTS aggiorna_somma_raccolta;
+
 DELIMITER //
 CREATE TRIGGER aggiorna_somma_raccolta
 AFTER INSERT ON FINANZIAMENTO
@@ -130,3 +131,24 @@ BEGIN
 END //
 DELIMITER ;
 
+
+-- Trigger per aggiornare il profilo all'accettazione di una candidatura --
+DROP TRIGGER IF EXISTS aggiorna_profilo_accettazione;
+
+DELIMITER //
+CREATE TRIGGER aggiorna_profilo_accettazione
+AFTER UPDATE ON CANDIDATURA
+FOR EACH ROW
+BEGIN
+    IF NEW.stato = 'ACCETTATA' THEN
+        UPDATE PROFILO
+        SET stato = 'OCCUPATO'
+        WHERE id = NEW.id_profilo;
+
+        UPDATE CANDIDATURA
+        SET stato = 'RIFIUTATA'
+        WHERE id_profilo = NEW.id_profilo
+          AND email_utente != NEW.email_utente;
+    END IF;
+END //
+DELIMITER ;

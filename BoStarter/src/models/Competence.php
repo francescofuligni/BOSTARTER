@@ -27,22 +27,5 @@ class Competence {
         }
     }
     
-    /**
-     * Recupera tutte le competenze associate a uno specifico utente.
-     *
-     * @param string $userEmail Email dell'utente.
-     * @return array Elenco delle competenze dell'utente o un array vuoto in caso di errore.
-     */
-    public function getSkills($userEmail) {
-        try {
-            $stmt = $this->conn->prepare("SELECT * FROM SKILL_POSSEDUTA WHERE email_utente = :email_utente");
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
-        }
-    }
 }
 ?>

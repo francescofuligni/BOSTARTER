@@ -213,10 +213,6 @@ class User {
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':descrizione', $desc);
@@ -285,10 +281,6 @@ class User {
      */
     public function addReply($commentId, $text, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
             $stmt->bindParam(':id_commento', $commentId);
             $stmt->bindParam(':testo', $text);
@@ -322,10 +314,6 @@ class User {
      */
     public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
         try {
-            if(!isCreator($creatorEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
             $stmt->bindParam(':codice', $code);
             $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
@@ -398,25 +386,82 @@ class User {
      */
     public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
         try {
-            if(!isAdmin($adminEmail)) {
-                return false;
-            }
-
             $stmt = $this->conn->prepare("CALL aggiungi_competenza(:nome, :email, :codice_sicurezza)");
             $stmt->bindParam(':nome', $name);
-            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':email', $adminEmail);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
             $result = $stmt->execute();
             if ($result) {
                 $this->logger->log("Nuova competenza aggiunta", [
                     'nome_competenza' => $name,
-                    'email_utente' => $email
+                    'email_utente' => $adminEmail
                 ]);
             }
             return $result;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
+        }
+    }
+
+    /**
+     * Verifica se l'utente ha già finanziato il progetto nella data odierna.
+     *
+     * @param string $projectName Nome del progetto.
+     * @param string $userEmail Email dell'utente.
+     * @return bool True se ha finanziato oggi, false altrimenti.
+     */
+    public function hasFundedToday($projectName, $userEmail) {
+        try {
+            $stmt = $this->conn->prepare(
+                "SELECT COUNT(*) FROM FINANZIAMENTO
+                 WHERE nome_progetto = :nome_progetto
+                 AND email_utente = :email_utente
+                 AND data = CURDATE()"
+            );
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * Recupera tutti i progetti creati da un utente.
+     *
+     * @param string $userEmail Email dell'utente.
+     * @return array Array di progetti creati dall'utente.
+     */
+    public function getProjects($userEmail) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente_creatore = :email_utente");
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    /**
+     * Recupera tutte le competenze associate a uno specifico utente.
+     *
+     * @param string $userEmail Email dell'utente.
+     * @return array Elenco delle competenze dell'utente o un array vuoto in caso di errore.
+     */
+    public function getSkills($userEmail) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM SKILL_POSSEDUTA WHERE email_utente = :email_utente");
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Errore: " . $e->getMessage();
+            return [];
         }
     }
 

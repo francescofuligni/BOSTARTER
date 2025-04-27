@@ -98,6 +98,7 @@ function loadProjectData() {
     $db = new Database();
     $conn = $db->getConnection();
     $projectModel = new Project($conn);
+    $userModel = new User($conn);
     
     $projectName = $_GET['nome'] ?? '';
     $project = $photos = $comments = $rewards = [];
@@ -106,7 +107,7 @@ function loadProjectData() {
     if ($projectName) {
         [$project, $photos, $comments] = $projectModel->getProjectDetailData($projectModel, $projectName);
         if (isset($_SESSION['user_id']) && isset($project['nome'])) {
-            $hasFundedToday = $projectModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
+            $hasFundedToday = $userModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
             $rewards = $projectModel->getProjectRewards($project['nome']);
         }
     }
