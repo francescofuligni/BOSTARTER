@@ -33,10 +33,10 @@ class Photo {
                     'nome_progetto' => $nome_progetto
                 ]);
             }
-            return $result;
+            return ['success' => $result, 'data' => null];
         } catch (PDOException $e) {
-            error_log("Errore DB: " . $e->getMessage());
-            return false;
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => null];
         }
     }
 }

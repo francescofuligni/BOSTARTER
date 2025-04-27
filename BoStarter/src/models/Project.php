@@ -20,10 +20,10 @@ class Project {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_aperti");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 
@@ -38,10 +38,10 @@ class Project {
             $stmt = $this->conn->prepare("SELECT immagine FROM foto_progetto WHERE nome_progetto = :nome_progetto");
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_COLUMN)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 
@@ -56,10 +56,10 @@ class Project {
             $stmt = $this->conn->prepare("SELECT id, testo, nickname, data, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 
@@ -74,10 +74,10 @@ class Project {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE nome = :nome");
             $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetch(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return null;
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => null];
         }
     }
 
@@ -92,7 +92,14 @@ class Project {
         $project = $this->getProjectDetail($projectName);
         $photos = $this->getProjectPhotos($projectName);
         $comments = $this->getProjectComments($projectName);
-        return [$project, $photos, $comments];
+        return [
+            'success' => $project['success'] && $photos['success'] && $comments['success'],
+            'data' => [
+                'project' => $project['data'],
+                'photos' => $photos['data'],
+                'comments' => $comments['data']
+            ]
+        ];
     }
 
 
@@ -105,10 +112,10 @@ class Project {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
     
@@ -124,10 +131,10 @@ class Project {
             $stmt = $this->conn->prepare("SELECT codice, descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
             $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 }
