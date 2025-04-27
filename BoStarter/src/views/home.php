@@ -14,6 +14,21 @@ require_once __DIR__ . '/../controllers/HomeController.php';
 </head>
 <body>
     <div class="container mt-5">
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+                <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (!empty($_SESSION['error'])): ?>
+            <div class="alert alert-danger">
+                <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['info'])): ?>
+            <div class="alert alert-info">
+                <?php echo htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+            </div>
+        <?php endif; ?>
         <div class="jumbotron py-5">
             <h1 class="display-4">Benvenuto su BoStarter!</h1>
             <p class="lead">Una piattaforma per il crowdfunding di progetti innovativi.</p>

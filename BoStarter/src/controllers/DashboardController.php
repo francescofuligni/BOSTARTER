@@ -38,7 +38,8 @@ function handleAddCompetence() {
 
     if ($newCompetence && $securityCode && $adminEmail) {
         $hashedSecurityCode = hash('sha256', $securityCode);
-        if ($userModel->addCompetence($newCompetence, $adminEmail, $hashedSecurityCode)) {
+        $result = $userModel->addCompetence($newCompetence, $adminEmail, $hashedSecurityCode);
+        if ($result['success'] === true) {
             $_SESSION['success'] = "Competenza aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'aggiunta della competenza. Controlla il codice di sicurezza.";
@@ -64,7 +65,8 @@ function handleAddComment() {
     $emailUtente = $_SESSION['user_id'] ?? '';
 
     if ($nomeProgetto && $testoCommento && $emailUtente) {
-        if ($userModel->addComment($nomeProgetto, $emailUtente, $testoCommento)) {
+        $result = $userModel->addComment($nomeProgetto, $emailUtente, $testoCommento);
+        if ($result['success'] === true) {
             $_SESSION['success'] = "Commento aggiunto con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento del commento.";
@@ -90,7 +92,8 @@ function handleAddReply() {
     $emailCreatore = $_SESSION['user_id'] ?? '';
 
     if ($idCommento && $testoRisposta && $emailCreatore) {
-        if ($userModel->addReply($idCommento, $testoRisposta, $emailCreatore)) {
+        $result = $userModel->addReply($idCommento, $testoRisposta, $emailCreatore);
+        if ($result['success'] === true) {
             $_SESSION['success'] = "Risposta aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'inserimento della risposta.";
@@ -116,7 +119,8 @@ function handleAddSkill() {
     $userEmail = $_SESSION['user_id'] ?? '';
 
     if ($skillName !== '' && $userEmail !== '' && $skillLevel >= 0 && $skillLevel <= 5) {
-        if ($userModel->addSkill($userEmail, $skillName, $skillLevel)) {
+        $result = $userModel->addSkill($userEmail, $skillName, $skillLevel);
+        if ($result['success'] === true) {
             $_SESSION['success'] = "Competenza aggiunta con successo!";
         } else {
             $_SESSION['error'] = "Errore nell'aggiunta della competenza.";
@@ -142,10 +146,17 @@ function loadDashboardData() {
     $isCreator = isset($_SESSION['user_id']) && $userModel->isCreator($_SESSION['user_id']);
     $isAdmin = isset($_SESSION['user_id']) && $userModel->isAdmin($_SESSION['user_id']);
 
-    $allProjects = $projectModel->getAllProjects();
-    $userProjects = $isCreator ? $userModel->getProjects($_SESSION['user_id']) : [];
-    $allCompetences = $competenceModel->getAllCompetences();
-    $userSkills = isset($_SESSION['user_id']) ? $userModel->getSkills($_SESSION['user_id']) : [];
+    $allProjectsResult = $projectModel->getAllProjects();
+    $allProjects = ($allProjectsResult['success'] === true) ? $allProjectsResult['data'] : [];
+
+    $userProjectsResult = $isCreator ? $userModel->getProjects($_SESSION['user_id']) : ['success' => true, 'data' => []];
+    $userProjects = ($userProjectsResult['success'] === true) ? $userProjectsResult['data'] : [];
+
+    $allCompetencesResult = $competenceModel->getAllCompetences();
+    $allCompetences = ($allCompetencesResult['success'] === true) ? $allCompetencesResult['data'] : [];
+
+    $userSkillsResult = isset($_SESSION['user_id']) ? $userModel->getSkills($_SESSION['user_id']) : ['success' => true, 'data' => []];
+    $userSkills = ($userSkillsResult['success'] === true) ? $userSkillsResult['data'] : [];
 
     return [$isCreator, $isAdmin, $allProjects, $userProjects, $allCompetences, $userSkills];
 }

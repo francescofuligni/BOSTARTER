@@ -14,6 +14,21 @@ require_once __DIR__ . '/components/navbar.php';
 </head>
 <body>
     <div class="container mt-5">
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (!empty($_SESSION['error'])): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['info'])): ?>
+            <div class="alert alert-info" role="alert">
+                <?php echo htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+            </div>
+        <?php endif; ?>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
@@ -21,24 +36,6 @@ require_once __DIR__ . '/components/navbar.php';
                         <h3 class="text-center">Accesso Amministratore</h3>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-danger">
-                                <?php 
-                                    echo $_SESSION['error']; 
-                                    unset($_SESSION['error']);
-                                ?>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (isset($_SESSION['info'])): ?>
-                            <div class="alert alert-info">
-                                <?php 
-                                    echo $_SESSION['info']; 
-                                    unset($_SESSION['info']);
-                                ?>
-                            </div>
-                        <?php endif; ?>
-                        
                         <form action="/admin-login" method="post">
                             <div class="form-group">
                                 <label for="email">Email</label>

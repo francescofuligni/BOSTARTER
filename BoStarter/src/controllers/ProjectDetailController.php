@@ -30,9 +30,12 @@ function handleAddComment() {
     $userEmail = $_SESSION['user_id'] ?? '';
 
     if ($projectName && $commentText && $userEmail) {
-        $_SESSION['success'] = $userModel->addComment($projectName, $userEmail, $commentText)
-            ? "Commento aggiunto con successo!"
-            : "Errore nell'inserimento del commento.";
+        $result = $userModel->addComment($projectName, $userEmail, $commentText);
+        if (isset($result['success']) && $result['success']) {
+            $_SESSION['success'] = "Commento aggiunto con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'inserimento del commento.";
+        }
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire un commento.";
     }
@@ -55,9 +58,12 @@ function handleAddReply() {
     $projectName = $_POST['nome_progetto'] ?? '';
 
     if ($commentId && $responseText && $creatorEmail) {
-        $_SESSION['success'] = $userModel->addReply($commentId, $responseText, $creatorEmail)
-            ? "Risposta aggiunta con successo!"
-            : "Errore nell'inserimento della risposta.";
+        $result = $userModel->addReply($commentId, $responseText, $creatorEmail);
+        if (isset($result['success']) && $result['success']) {
+            $_SESSION['success'] = "Risposta aggiunta con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'inserimento della risposta.";
+        }
     } else {
         $_SESSION['error'] = "Compila tutti i campi per inserire una risposta.";
     }
@@ -80,9 +86,12 @@ function handleFundProject() {
     $rewardCode = $_POST['codice_reward'] ?? '';
 
     if ($projectName && $amount > 0 && $userEmail && $rewardCode) {
-        $_SESSION['success'] = $userModel->fundProject($projectName, $amount, $userEmail, $rewardCode)
-            ? "Progetto finanziato con successo!"
-            : "Errore nel finanziamento del progetto.";
+        $result = $userModel->fundProject($projectName, $amount, $userEmail, $rewardCode);
+        if (isset($result['success']) && $result['success']) {
+            $_SESSION['success'] = "Progetto finanziato con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nel finanziamento del progetto.";
+        }
     } else {
         $_SESSION['error'] = "Compila tutti i campi per finanziare un progetto.";
     }
@@ -105,10 +114,26 @@ function loadProjectData() {
     $hasFundedToday = false;
 
     if ($projectName) {
-        [$project, $photos, $comments] = $projectModel->getProjectDetailData($projectModel, $projectName);
+        $detailResult = $projectModel->getProjectDetailData($projectModel, $projectName);
+        if (isset($detailResult['success']) && $detailResult['success']) {
+            $data = $detailResult['data'] ?? [];
+            $project = $data['project'] ?? [];
+            $photos = $data['photos'] ?? [];
+            $comments = $data['comments'] ?? [];
+        } else {
+            $project = $photos = $comments = [];
+        }
+
         if (isset($_SESSION['user_id']) && isset($project['nome'])) {
-            $hasFundedToday = $userModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
-            $rewards = $projectModel->getProjectRewards($project['nome']);
+            $fundResult = $userModel->hasFundedToday($project['nome'], $_SESSION['user_id']);
+            $hasFundedToday = (isset($fundResult['success']) && $fundResult['success']) ? ($fundResult['data'] ?? false) : false;
+
+            $rewardsResult = $projectModel->getProjectRewards($project['nome']);
+            if (isset($rewardsResult['success']) && $rewardsResult['success']) {
+                $rewards = $rewardsResult['data'] ?? [];
+            } else {
+                $rewards = [];
+            }
         }
     }
 

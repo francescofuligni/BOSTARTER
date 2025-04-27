@@ -23,10 +23,18 @@ require_once __DIR__ . '/components/navbar.php';
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-error">
+                            <div class="alert alert-danger" role="alert">
                                 <?php 
-                                    echo $_SESSION['error']; 
+                                    echo htmlspecialchars($_SESSION['error']); 
                                     unset($_SESSION['error']);
+                                ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['success'])): ?>
+                            <div class="alert alert-success" role="alert">
+                                <?php 
+                                    echo htmlspecialchars($_SESSION['success']); 
+                                    unset($_SESSION['success']);
                                 ?>
                             </div>
                         <?php endif; ?>

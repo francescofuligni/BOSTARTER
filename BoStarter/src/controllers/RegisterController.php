@@ -66,7 +66,7 @@ function handleRegistration() {
 
     hashSensitiveData($data);
 
-    $success = $userModel->register(
+    $result = $userModel->register(
         $data['email'],
         $data['password'],
         $data['name'],
@@ -78,7 +78,7 @@ function handleRegistration() {
         $data['security_code']
     );
 
-    if ($success) {
+    if ($result['success']) {
         $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';
         header('Location: /login');
         exit;
