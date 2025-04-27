@@ -72,11 +72,11 @@ class User {
      */
     public function isCreator($email) {
         try {
-            $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_CREATORE WHERE email_utente = :email");
+            $stmt = $this->conn->prepare("CALL verifica_creatore(:email, @esito)");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return ($result['count'] > 0);
+            $result = $this->conn->query("SELECT @esito AS esito")->fetch(PDO::FETCH_ASSOC);
+            return ($result['esito'] == 1);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return false;
@@ -92,11 +92,11 @@ class User {
      */
     public function isAdmin($email) {
         try {
-            $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM UTENTE_AMMINISTRATORE WHERE email_utente = :email");
+            $stmt = $this->conn->prepare("CALL verifica_amministratore(:email, '', @esito)");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return ($result['count'] > 0);
+            $result = $this->conn->query("SELECT @esito AS esito")->fetch(PDO::FETCH_ASSOC);
+            return ($result['esito'] == 1);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return false;
@@ -406,17 +406,12 @@ class User {
      */
     public function hasFundedToday($projectName, $userEmail) {
         try {
-            $stmt = $this->conn->prepare(
-                "SELECT COUNT(*) FROM FINANZIAMENTO
-                 WHERE nome_progetto = :nome_progetto
-                 AND email_utente = :email_utente
-                 AND data = CURDATE()"
-            );
+            $stmt = $this->conn->prepare("CALL ha_finanziato_oggi(:nome_progetto, :email_utente, @esito)");
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->bindParam(':email_utente', $userEmail);
             $stmt->execute();
-            $hasFunded = $stmt->fetchColumn() > 0;
-            return $hasFunded;
+            $result = $this->conn->query("SELECT @esito AS esito")->fetch(PDO::FETCH_ASSOC);
+            return ($result['esito'] == 1);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return false;

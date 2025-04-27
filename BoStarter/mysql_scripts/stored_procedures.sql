@@ -232,6 +232,27 @@ END //
 DELIMITER ;
 
 
+-- Procedura per verificare se un utente ha già finanziato un progetto nella data odierna
+DROP PROCEDURE IF EXISTS ha_finanziato_oggi;
+
+DELIMITER //
+CREATE PROCEDURE ha_finanziato_oggi(
+    IN in_nome_progetto VARCHAR(32),
+    IN in_email_utente VARCHAR(32),
+    OUT esito BOOLEAN
+)
+BEGIN
+    SELECT EXISTS(
+        SELECT 1 
+        FROM FINANZIAMENTO 
+        WHERE nome_progetto = in_nome_progetto
+          AND email_utente = in_email_utente
+          AND data = CURDATE()
+    ) INTO esito;
+END //
+DELIMITER ;
+
+
 
 
 
