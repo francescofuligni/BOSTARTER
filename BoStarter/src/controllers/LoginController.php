@@ -39,9 +39,10 @@ function handleLogin() {
     }
 
     $hashedPassword = hash('sha256', $password);
-    $userData = $userModel->login($email, $hashedPassword);
+    $loginResult = $userModel->login($email, $hashedPassword);
 
-    if ($userData) {
+    if ($loginResult['success']) {
+        $userData = $loginResult['data'];
         $token = bin2hex(random_bytes(32));
 
         $_SESSION['user_id'] = $userData['email'];

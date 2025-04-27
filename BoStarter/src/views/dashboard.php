@@ -19,10 +19,19 @@ require_once __DIR__ . '/components/navbar.php';
 <body>
     <div class="container mt-5">
         <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+            <div class="alert alert-success">
+                <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+            </div>
         <?php endif; ?>
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+        <?php if (!empty($_SESSION['error'])): ?>
+            <div class="alert alert-danger">
+                <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['info'])): ?>
+            <div class="alert alert-info">
+                <?php echo htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+            </div>
         <?php endif; ?>
         <div class="jumbotron pb-3">
             <h1 class="display-4">Benvenuto nella tua Dashboard, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>

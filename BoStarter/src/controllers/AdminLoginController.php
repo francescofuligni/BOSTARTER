@@ -41,13 +41,21 @@ function handleAdminLogin() {
     if ($isAdmin) {
         $userData = $userModel->getUserData($email);
 
-        $_SESSION['user_id'] = $userData['email'];
-        $_SESSION['user_name'] = $userData['nome'] . ' ' . $userData['cognome'];
-        $_SESSION['user_nickname'] = $userData['nickname'];
-        $_SESSION['user_type'] = 'admin';
+        if ($userData['success'] === true) {
+            $data = $userData['data'];
 
-        header('Location: /dashboard');
-        exit;
+            $_SESSION['user_id'] = $data['email'];
+            $_SESSION['user_name'] = $data['nome'] . ' ' . $data['cognome'];
+            $_SESSION['user_nickname'] = $data['nickname'];
+            $_SESSION['user_type'] = 'admin';
+
+            header('Location: /dashboard');
+            exit;
+        } else {
+            $_SESSION['error'] = "Errore nel recupero dei dati utente.";
+            header('Location: /admin-login');
+            exit;
+        }
     } else {
         $_SESSION['error'] = "Email, password o codice di sicurezza non validi.";
         header('Location: /admin-login');

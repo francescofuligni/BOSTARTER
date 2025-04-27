@@ -50,6 +50,18 @@ require_once __DIR__ . '/components/navbar.php';
             <?php if (isset($_SESSION['user_id'])): ?>
             <div class="card shadow-sm">
                 <div class="card-body">
+                    <?php if (isset($_SESSION['error'])): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo htmlspecialchars($_SESSION['error']); ?>
+                        </div>
+                        <?php unset($_SESSION['error']); ?>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION['success'])): ?>
+                        <div class="alert alert-success" role="alert">
+                            <?php echo htmlspecialchars($_SESSION['success']); ?>
+                        </div>
+                        <?php unset($_SESSION['success']); ?>
+                    <?php endif; ?>
                     <h5 class="card-title">Finanzia il progetto</h5>
                     <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
                         <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
@@ -174,6 +186,18 @@ require_once __DIR__ . '/components/navbar.php';
             <?php if (isset($_SESSION['user_id'])): ?>
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
+                    <?php if (isset($_SESSION['error'])): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo htmlspecialchars($_SESSION['error']); ?>
+                        </div>
+                        <?php unset($_SESSION['error']); ?>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION['success'])): ?>
+                        <div class="alert alert-success" role="alert">
+                            <?php echo htmlspecialchars($_SESSION['success']); ?>
+                        </div>
+                        <?php unset($_SESSION['success']); ?>
+                    <?php endif; ?>
                     <h5 class="card-title">Lascia un commento</h5>
                     <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
                         <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">

@@ -108,7 +108,7 @@ function handleCreateProject() {
 
     $creationSuccess = $userModel->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
 
-    if ($creationSuccess) {
+    if ($creationSuccess['success']) {
         handleImageUpload($name);
         handleRewards($name, $creatorEmail);
 

@@ -14,10 +14,22 @@ require_once __DIR__ . '/components/navbar.php';
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Crea un nuovo progetto</h2>
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success">
+            <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+        </div>
     <?php endif; ?>
+    <?php if (isset($_SESSION['error']) && !empty($_SESSION['error'])): ?>
+        <div class="alert alert-danger">
+            <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['info'])): ?>
+        <div class="alert alert-info">
+            <?php echo htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+        </div>
+    <?php endif; ?>
+    <h2>Crea un nuovo progetto</h2>
     <form action="/create-project" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nome progetto</label>

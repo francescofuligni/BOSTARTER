@@ -7,7 +7,13 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $statistic = new Statistic($conn);
-$expiringProjects = $statistic->getExpiringProjects();
-$topCreators = $statistic->getTopCreators();
-$topFunders = $statistic->getTopFunders();
+
+$expiringProjectsResult = $statistic->getExpiringProjects();
+$expiringProjects = ($expiringProjectsResult['success']) ? $expiringProjectsResult['data'] : [];
+
+$topCreatorsResult = $statistic->getTopCreators();
+$topCreators = ($topCreatorsResult['success']) ? $topCreatorsResult['data'] : [];
+
+$topFundersResult = $statistic->getTopFunders();
+$topFunders = ($topFundersResult['success']) ? $topFundersResult['data'] : [];
 ?>

@@ -6,6 +6,11 @@
 class Statistic {
     private $conn;
     
+    /**
+     * Costruttore della classe Statistic.
+     * 
+     * @param PDO $db Connessione al database.
+     */
     public function __construct($db) {
         $this->conn = $db;
     }
@@ -13,48 +18,51 @@ class Statistic {
     /**
      * Restituisce la classifica dei creatori di progetti.
      *
-     * @return array Lista dei creatori ordinati per performance.
+     * @return array ['success' => bool, 'data' => array]
+     *               Dove 'data' è una lista dei creatori ordinati per performance, o un array vuoto in caso di errore.
      */
     public function getTopCreators() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM classifica_creatori");;
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 
     /**
      * Restituisce i progetti in scadenza.
      *
-     * @return array Lista di progetti prossimi alla scadenza.
+     * @return array ['success' => bool, 'data' => array]
+     *               Dove 'data' è una lista di progetti prossimi alla scadenza, o un array vuoto in caso di errore.
      */
     public function getExpiringProjects() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_in_scadenza");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 
     /**
      * Restituisce la classifica dei finanziatori.
      *
-     * @return array Lista dei finanziatori ordinati per contributi.
+     * @return array ['success' => bool, 'data' => array]
+     *               Dove 'data' è una lista dei finanziatori ordinati per contributi, o un array vuoto in caso di errore.
      */
     public function getTopFunders() {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM classifica_finanziatori");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
 }

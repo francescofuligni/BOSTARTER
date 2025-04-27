@@ -20,10 +20,10 @@ class Competence {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM COMPETENZA");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
-            echo "Errore: " . $e->getMessage();
-            return [];
+            error_log($e->getMessage());
+            return ['success' => false, 'data' => []];
         }
     }
     
