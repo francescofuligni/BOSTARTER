@@ -6,6 +6,7 @@ USE bostarter_db;
 
 -- PROCEDURE DI CONTROLLO --------------------------------------------
 
+
 -- Procedura per verificare se un utente è creatore
 DROP PROCEDURE IF EXISTS verifica_creatore;
 
@@ -15,9 +16,7 @@ CREATE PROCEDURE verifica_creatore(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM UTENTE_CREATORE
-    WHERE email_utente = in_email;
+    SELECT EXISTS(SELECT 1 FROM UTENTE_CREATORE WHERE email_utente = in_email) INTO esito;
 END //
 DELIMITER ;
 
@@ -32,10 +31,7 @@ CREATE PROCEDURE verifica_amministratore(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM UTENTE_AMMINISTRATORE
-    WHERE email_utente = in_email
-    AND codice_sicurezza = in_codice_sicurezza;
+    SELECT EXISTS(SELECT 1 FROM UTENTE_AMMINISTRATORE WHERE email_utente = in_email AND codice_sicurezza = in_codice_sicurezza) INTO esito;
 END //
 DELIMITER ;
 
@@ -49,10 +45,7 @@ CREATE PROCEDURE verifica_progetto_aperto(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM PROGETTO
-    WHERE nome = in_nome_progetto
-    AND stato = 'APERTO';
+    SELECT EXISTS(SELECT 1 FROM PROGETTO WHERE nome = in_nome_progetto AND stato = 'APERTO') INTO esito;
 END //
 DELIMITER ;
 
@@ -67,10 +60,7 @@ CREATE PROCEDURE verifica_creatore_progetto(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM PROGETTO
-    WHERE nome = in_nome_progetto
-    AND email_utente_creatore = in_email_creatore;
+    SELECT EXISTS(SELECT 1 FROM PROGETTO WHERE nome = in_nome_progetto AND email_utente_creatore = in_email_creatore) INTO esito;
 END //
 DELIMITER ;
 
@@ -85,10 +75,7 @@ CREATE PROCEDURE verifica_tipo_progetto(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM PROGETTO
-    WHERE nome = in_nome_progetto
-    AND tipo = in_tipo;
+    SELECT EXISTS(SELECT 1 FROM PROGETTO WHERE nome = in_nome_progetto AND tipo = in_tipo) INTO esito;
 END //
 DELIMITER ;
 
@@ -109,9 +96,7 @@ CREATE PROCEDURE autenticazione_utente (
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM UTENTE
-    WHERE email = in_email AND password = in_password;
+    SELECT EXISTS(SELECT 1 FROM UTENTE WHERE email = in_email AND password = in_password) INTO esito;
 END //
 DELIMITER ;
 
@@ -264,12 +249,7 @@ CREATE PROCEDURE autenticazione_amministratore(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO esito
-    FROM UTENTE u
-    JOIN UTENTE_AMMINISTRATORE ua ON u.email = ua.email_utente
-    WHERE u.email = in_email 
-    AND u.password = in_password 
-    AND ua.codice_sicurezza = in_codice_sicurezza;
+    SELECT EXISTS(SELECT 1 FROM UTENTE u JOIN UTENTE_AMMINISTRATORE ua ON u.email = ua.email_utente WHERE u.email = in_email AND u.password = in_password AND ua.codice_sicurezza = in_codice_sicurezza) INTO esito;
 END //
 DELIMITER ;
 
