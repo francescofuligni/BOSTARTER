@@ -150,7 +150,10 @@ class User {
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
-            $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita, :tipo, :codice_sicurezza)");
+            $this->conn->beginTransaction();
+
+            // Inserimento dell'utente
+            $stmt = $this->conn->prepare("CALL registrazione_utente(:email, :password, :nome, :cognome, :nickname, :luogo_nascita, :anno_nascita)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->bindParam(':nome', $name);
@@ -158,21 +161,46 @@ class User {
             $stmt->bindParam(':nickname', $nickname);
             $stmt->bindParam(':luogo_nascita', $birthPlace);
             $stmt->bindParam(':anno_nascita', $birthYear);
-            $stmt->bindParam(':tipo', $type);
-            $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
-            $result = $stmt->execute();
-            if ($result) {
-                $this->logger->log("Nuovo utente registrato", [
-                    'email' => $email,
-                    'nome' => $name,
-                    'cognome' => $lastName,
-                    'nickname' => $nickname,
-                    'tipo' => $type
-                ]);
+            if (!$stmt->execute()) {
+                $this->conn->rollBack();
+                error_log("Errore in registrazione utente");
+                return ['success' => false];
             }
-            return ['success' => $result];
+
+            // Inserimento tabella specifica per creatore o amministratore
+            if ($type === 'CREATORE') {
+                $stmt2 = $this->conn->prepare("CALL registrazione_creatore(:email)");
+                $stmt2->bindParam(':email', $email);
+                if (!$stmt2->execute()) {
+                    $this->conn->rollBack();
+                    error_log("Errore in registrazione creatore");
+                    return ['success' => false];
+                }
+            } elseif ($type === 'AMMINISTRATORE') {
+                $stmt3 = $this->conn->prepare("CALL registrazione_amministratore(:email, :codice_sicurezza)");
+                $stmt3->bindParam(':email', $email);
+                $stmt3->bindParam(':codice_sicurezza', $hashedSecurityCode);
+                if (!$stmt3->execute()) {
+                    $this->conn->rollBack();
+                    error_log("Errore in registrazione amministratore");
+                    return ['success' => false];
+                }
+            }
+
+            $this->conn->commit();
+            $this->logger->log("Nuovo utente registrato", [
+                'email' => $email,
+                'nome' => $name,
+                'cognome' => $lastName,
+                'nickname' => $nickname,
+                'tipo' => $type
+            ]);
+            return ['success' => true];
         } catch (PDOException $e) {
             error_log($e->getMessage());
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
             return ['success' => false];
         }
     }
@@ -217,7 +245,7 @@ class User {
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards) {
         try {
-            // Transazione per garantire l'integrità dei dati
+            // Inizio transazione
             $this->conn->beginTransaction();
 
             // Inserimento progetto
@@ -255,10 +283,9 @@ class User {
                 'email_creatore' => $creatorEmail
             ]);
             return ['success' => true];
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             error_log($e->getMessage());
             if ($this->conn->inTransaction()) {
-                error_log('Rollback per eccezione nella creazione progetto');
                 $this->conn->rollBack();
             }
             return ['success' => false];
@@ -374,12 +401,15 @@ class User {
      */
     public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
         try {
-            $stmt = $this->conn->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo)");
+            $stmt = $this->conn->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo, @is_progetto_aperto)");
             $stmt->bindParam(':email_utente', $userEmail);
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->bindParam(':importo', $amount);
-            
             if ($stmt->execute()) {
+                $result = $this->conn->query("SELECT @is_progetto_aperto as is_progetto_aperto")->fetch(PDO::FETCH_ASSOC);
+                if (!$result || !$result['is_progetto_aperto']) {
+                    return ['success' => false];
+                }
                 $stmt2 = $this->conn->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
                 $stmt2->bindParam(':email_utente', $userEmail);
                 $stmt2->bindParam(':nome_progetto', $projectName);
@@ -413,18 +443,20 @@ class User {
      */
     public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
         try {
-            $stmt = $this->conn->prepare("CALL aggiungi_competenza(:nome, :email, :codice_sicurezza)");
-            $stmt->bindParam(':nome', $name);
+            $stmt = $this->conn->prepare("CALL aggiungi_competenza(:competenza, :email, :codice_sicurezza, @is_amministratore)");
+            $stmt->bindParam(':competenza', $name);
             $stmt->bindParam(':email', $adminEmail);
             $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
-            $result = $stmt->execute();
-            if ($result) {
+            $stmt->execute();
+            $result = $this->conn->query("SELECT @is_amministratore as is_amministratore")->fetch(PDO::FETCH_ASSOC);
+            if ($result && $result['is_amministratore']) {
                 $this->logger->log("Nuova competenza aggiunta", [
                     'nome_competenza' => $name,
                     'email_utente' => $adminEmail
                 ]);
+                return ['success' => true];
             }
-            return ['success' => $result];
+            return ['success' => false];
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return ['success' => false];

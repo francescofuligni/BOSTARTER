@@ -115,7 +115,7 @@ END //
 DELIMITER ;
 
 
--- Procedura per la registrazione di un nuovo utente
+-- Procedura per la registrazione di un utente
 DROP PROCEDURE IF EXISTS registrazione_utente;
 
 DELIMITER //
@@ -126,21 +126,39 @@ CREATE PROCEDURE registrazione_utente (
     IN in_cognome VARCHAR(32),
     IN in_nickname VARCHAR(32),
     IN in_luogo_nascita VARCHAR(32),
-    IN in_anno_nascita INT,
-    IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE'),
-    IN in_codice_sicurezza CHAR(64)
+    IN in_anno_nascita INT
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)
     VALUES (in_email, in_password, in_nome, in_cognome, in_nickname, in_luogo_nascita, in_anno_nascita);
+END //
+DELIMITER ;
 
-    IF tipo = 'CREATORE' THEN
-        INSERT INTO UTENTE_CREATORE (email_utente)
-        VALUES (in_email);
-    ELSEIF tipo = 'AMMINISTRATORE' THEN
-        INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
-        VALUES (in_email, in_codice_sicurezza);
-    END IF;
+
+-- Procedura per la registrazione di un creatore
+DROP PROCEDURE IF EXISTS registrazione_creatore;
+
+DELIMITER //
+CREATE PROCEDURE registrazione_creatore (
+    IN in_email VARCHAR(32)
+)
+BEGIN
+    INSERT INTO UTENTE_CREATORE (email_utente)
+    VALUES (in_email);
+END //
+
+
+-- Procedura per l'inserimento di un amministratore
+DROP PROCEDURE IF EXISTS registrazione_amministratore;
+
+DELIMITER //
+CREATE PROCEDURE registrazione_amministratore (
+    IN in_email VARCHAR(32),
+    IN in_codice_sicurezza CHAR(64)
+)
+BEGIN
+    INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
+    VALUES (in_email, in_codice_sicurezza);
 END //
 DELIMITER ;
 
