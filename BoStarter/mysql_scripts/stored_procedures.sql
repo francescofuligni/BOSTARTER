@@ -27,6 +27,20 @@ DROP PROCEDURE IF EXISTS verifica_amministratore;
 DELIMITER //
 CREATE PROCEDURE verifica_amministratore(
     IN in_email VARCHAR(32),
+    OUT esito BOOLEAN
+)
+BEGIN
+    SELECT EXISTS(SELECT 1 FROM UTENTE_AMMINISTRATORE WHERE email_utente = in_email) INTO esito;
+END //
+DELIMITER ;
+
+
+-- Procedura per verificare se un utente è amministratore e ha un codice di sicurezza valido
+DROP PROCEDURE IF EXISTS verifica_amministratore_con_codice;
+
+DELIMITER //
+CREATE PROCEDURE verifica_amministratore_con_codice(
+    IN in_email VARCHAR(32),
     IN in_codice_sicurezza CHAR(64),
     OUT esito BOOLEAN
 )
@@ -101,7 +115,7 @@ END //
 DELIMITER ;
 
 
--- Procedura per la registrazione di un nuovo utente
+-- Procedura per la registrazione di un utente
 DROP PROCEDURE IF EXISTS registrazione_utente;
 
 DELIMITER //
@@ -112,21 +126,39 @@ CREATE PROCEDURE registrazione_utente (
     IN in_cognome VARCHAR(32),
     IN in_nickname VARCHAR(32),
     IN in_luogo_nascita VARCHAR(32),
-    IN in_anno_nascita INT,
-    IN tipo ENUM ('UTENTE', 'CREATORE', 'AMMINISTRATORE'),
-    IN in_codice_sicurezza CHAR(64)
+    IN in_anno_nascita INT
 )
 BEGIN
     INSERT INTO UTENTE (email, password, nome, cognome, nickname, luogo_nascita, anno_nascita)
     VALUES (in_email, in_password, in_nome, in_cognome, in_nickname, in_luogo_nascita, in_anno_nascita);
+END //
+DELIMITER ;
 
-    IF tipo = 'CREATORE' THEN
-        INSERT INTO UTENTE_CREATORE (email_utente)
-        VALUES (in_email);
-    ELSEIF tipo = 'AMMINISTRATORE' THEN
-        INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
-        VALUES (in_email, in_codice_sicurezza);
-    END IF;
+
+-- Procedura per la registrazione di un creatore
+DROP PROCEDURE IF EXISTS registrazione_creatore;
+
+DELIMITER //
+CREATE PROCEDURE registrazione_creatore (
+    IN in_email VARCHAR(32)
+)
+BEGIN
+    INSERT INTO UTENTE_CREATORE (email_utente)
+    VALUES (in_email);
+END //
+
+
+-- Procedura per l'inserimento di un amministratore
+DROP PROCEDURE IF EXISTS registrazione_amministratore;
+
+DELIMITER //
+CREATE PROCEDURE registrazione_amministratore (
+    IN in_email VARCHAR(32),
+    IN in_codice_sicurezza CHAR(64)
+)
+BEGIN
+    INSERT INTO UTENTE_AMMINISTRATORE (email_utente, codice_sicurezza)
+    VALUES (in_email, in_codice_sicurezza);
 END //
 DELIMITER ;
 
@@ -175,7 +207,7 @@ DELIMITER //
 CREATE PROCEDURE scegli_reward(
     IN in_email_utente VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
-    IN in_codice_reward VARCHAR(32)
+    IN in_codice_reward INT
 )
 BEGIN
     UPDATE FINANZIAMENTO 
@@ -286,7 +318,7 @@ CREATE PROCEDURE aggiungi_competenza(
     OUT is_amministratore BOOLEAN
 )
 BEGIN
-    CALL verifica_amministratore(in_email, in_codice_sicurezza, is_amministratore);
+    CALL verifica_amministratore_con_codice(in_email, in_codice_sicurezza, is_amministratore);
     
     IF is_amministratore THEN
         INSERT INTO COMPETENZA (nome)
@@ -361,7 +393,6 @@ DROP PROCEDURE IF EXISTS inserisci_reward;
 
 DELIMITER //
 CREATE PROCEDURE inserisci_reward(
-    IN in_codice VARCHAR(32),
     IN in_immagine LONGBLOB,
     IN in_descrizione VARCHAR(255),
     IN in_nome_progetto VARCHAR(32),
@@ -378,8 +409,8 @@ BEGIN
     SET esito = is_creatore_progetto AND is_progetto_aperto;
     
     IF esito THEN
-        INSERT INTO REWARD (codice, immagine, descrizione, nome_progetto)
-        VALUES (in_codice, in_immagine, in_descrizione, in_nome_progetto);
+        INSERT INTO REWARD (immagine, descrizione, nome_progetto)
+        VALUES (in_immagine, in_descrizione, in_nome_progetto);
     END IF;
 END //
 DELIMITER ;

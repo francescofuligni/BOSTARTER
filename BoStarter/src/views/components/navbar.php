@@ -10,7 +10,9 @@ $isAuthPage = strpos($currentPath, '/login') !== false || strpos($currentPath, '
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <a class="navbar-brand" href="/">BoStarter</a>
+        <a class="navbar-brand" href="/">
+            <img src="../../public/bostarter.png" alt="BoStarter" style="height:30px;">
+        </a>
         
         <div id="navbarNav">
             <?php if (!$isAuthPage): ?>

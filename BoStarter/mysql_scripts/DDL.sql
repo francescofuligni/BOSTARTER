@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS FOTO (
 
 
 CREATE TABLE IF NOT EXISTS REWARD (
-    codice VARCHAR(32) PRIMARY KEY,
+    codice INT AUTO_INCREMENT PRIMARY KEY,
     immagine LONGBLOB NOT NULL,
     descrizione VARCHAR(255) NOT NULL,
     nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome)
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS FINANZIAMENTO (
     nome_progetto VARCHAR(32) NOT NULL REFERENCES PROGETTO(nome),
     email_utente VARCHAR(32) NOT NULL REFERENCES UTENTE(email),
     importo DECIMAL(16,2) NOT NULL CHECK (importo > 0),
-    codice_reward VARCHAR(32) REFERENCES REWARD(codice),
+    codice_reward INT REFERENCES REWARD(codice),
     PRIMARY KEY (data, nome_progetto, email_utente)
 ) ENGINE = 'InnoDB';
 

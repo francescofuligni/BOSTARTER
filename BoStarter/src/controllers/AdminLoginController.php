@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 
+
 if (session_status() == PHP_SESSION_NONE) session_start();
 
 /**
@@ -39,7 +40,7 @@ function handleAdminLogin() {
     $isAdmin = $userModel->adminLogin($email, $hashedPassword, $hashedSecurityCode);
 
     if ($isAdmin) {
-        $userData = $userModel->getUserData($email);
+        $userData = $userModel->getData($email);
 
         if ($userData['success'] === true) {
             $data = $userData['data'];
