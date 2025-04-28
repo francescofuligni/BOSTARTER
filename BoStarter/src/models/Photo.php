@@ -20,7 +20,7 @@ class Photo {
      *
      * @param string $nome_progetto Nome del progetto.
      * @param string $imgData Dati binari dell'immagine.
-     * @return bool True se l'inserimento ha successo, false altrimenti.
+     * @return array ['success' => bool]
      */
     public function addPhotoToProject($nome_progetto, $imgData) {
         try {
@@ -33,10 +33,10 @@ class Photo {
                     'nome_progetto' => $nome_progetto
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 }

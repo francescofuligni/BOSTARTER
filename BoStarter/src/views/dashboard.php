@@ -50,7 +50,7 @@ require_once __DIR__ . '/components/navbar.php';
 
                 <?php if ($isAdmin): ?>
                     <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#competencesListModal">
-                        Tutte le competenze
+                        Lista delle competenze
                     </button>
                 <?php endif; ?>
             </div>
@@ -65,7 +65,7 @@ require_once __DIR__ . '/components/navbar.php';
                 <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="competencesListModalLabel">Lista delle Competenze</h5>
+                            <h5 class="modal-title" id="competencesListModalLabel">Lista delle competenze</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
                                 <span aria-hidden="true">&times;</span>
                             </button>

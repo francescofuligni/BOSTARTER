@@ -67,7 +67,7 @@ class Project {
      * Ottiene i dettagli di un progetto dalla vista progetti_con_foto.
      *
      * @param string $projectName Nome del progetto.
-     * @return array|null Dettagli del progetto o null in caso di errore.
+     * @return array ['success' => bool, 'data' => array|null] Dettagli del progetto o null in caso di errore.
      */
     private function getProjectDetail($projectName) {
         try {
@@ -128,7 +128,7 @@ class Project {
      */
     public function getProjectRewards($projectName) {
         try {
-            $stmt = $this->conn->prepare("SELECT codice, descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
+            $stmt = $this->conn->prepare("SELECT descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
             $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
             return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];

@@ -92,7 +92,7 @@ class User {
      */
     public function isAdmin($email) {
         try {
-            $stmt = $this->conn->prepare("CALL verifica_amministratore(:email, '', @esito)");
+            $stmt = $this->conn->prepare("CALL verifica_amministratore(:email, @esito)");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             $result = $this->conn->query("SELECT @esito AS esito")->fetch(PDO::FETCH_ASSOC);
@@ -139,8 +139,8 @@ class User {
      * @param string $birthYear Anno di nascita.
      * @param string $type Tipo di utente.
      * @param string $hashedSecurityCode Codice di sicurezza hashato.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'operazione e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'operazione.
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
@@ -164,10 +164,10 @@ class User {
                     'tipo' => $type
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -203,10 +203,11 @@ class User {
      * @param string $maxDate Data limite.
      * @param string $type Tipo di progetto.
      * @param string $creatorEmail Email del creatore.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito della creazione e 'data' è sempre null.
+     * @param array $rewards Array di ricompense, ciascuna ['image' => ..., 'desc' => ...].
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito della creazione.
      */
-    public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail) {
+    public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards) {
         try {
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
             $stmt->bindParam(':nome', $name);
@@ -216,20 +217,29 @@ class User {
             $stmt->bindParam(':tipo', $type);
             $stmt->bindParam(':email_creatore', $creatorEmail);
             $result = $stmt->execute();
-            if ($result) {
-                $this->logger->log("Nuovo progetto creato", [
-                    'nome_progetto' => $name,
-                    'descrizione' => $desc,
-                    'budget' => $budget,
-                    'data_limite' => $maxDate,
-                    'tipo' => $type,
-                    'email_creatore' => $creatorEmail
-                ]);
+            if (!$result) {
+                return ['success' => false];
             }
-            return ['success' => $result, 'data' => null];
-        } catch (PDOException $e) {
+
+            foreach ($rewards as $reward) {
+                $resultReward = $this->addRewardToProject($reward['image'], $reward['desc'], $name, $creatorEmail);
+                if (!$resultReward['success']) {
+                    error_log('Errore nell\'inserimento di una reward per il progetto: ' . $name);
+                }
+            }
+
+            $this->logger->log("Nuovo progetto creato", [
+                'nome_progetto' => $name,
+                'descrizione' => $desc,
+                'budget' => $budget,
+                'data_limite' => $maxDate,
+                'tipo' => $type,
+                'email_creatore' => $creatorEmail
+            ]);
+            return ['success' => $result];
+        } catch (\Exception $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -239,8 +249,8 @@ class User {
      * @param string $projectName Nome del progetto.
      * @param string $userEmail Email dell'utente.
      * @param string $text Testo del commento.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'inserimento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
      */
     public function addComment($projectName, $userEmail, $text) {
         try {
@@ -256,10 +266,10 @@ class User {
                     'testo' => $text
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -269,8 +279,8 @@ class User {
      * @param int $commentId ID del commento.
      * @param string $text Testo della risposta.
      * @param string $creatorEmail Email del creatore.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'inserimento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
      */
     public function addReply($commentId, $text, $creatorEmail) {
         try {
@@ -286,10 +296,10 @@ class User {
                     'email_creatore' => $creatorEmail
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -301,13 +311,12 @@ class User {
      * @param string $desc Descrizione della ricompensa.
      * @param string $projectName Nome del progetto.
      * @param string $creatorEmail Email del creatore.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'inserimento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
      */
-    public function addRewardToProject($code, $image, $desc, $projectName, $creatorEmail) {
+    public function addRewardToProject($image, $desc, $projectName, $creatorEmail) {
         try {
-            $stmt = $this->conn->prepare("CALL inserisci_reward(:codice, :immagine, :descrizione, :nome_progetto, :email_creatore)");
-            $stmt->bindParam(':codice', $code);
+            $stmt = $this->conn->prepare("CALL inserisci_reward(:immagine, :descrizione, :nome_progetto, :email_creatore)");
             $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
             $stmt->bindParam(':descrizione', $desc);
             $stmt->bindParam(':nome_progetto', $projectName);
@@ -315,16 +324,15 @@ class User {
             $result = $stmt->execute();
             if ($result) {
                 $this->logger->log("Nuova ricompensa aggiunta", [
-                    'codice' => $code,
                     'nome_progetto' => $projectName,
                     'email_creatore' => $creatorEmail,
                     'descrizione' => $desc
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -335,8 +343,8 @@ class User {
      * @param float $amount Importo del finanziamento.
      * @param string $userEmail Email dell'utente.
      * @param string $rewardCode Codice della ricompensa.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito del finanziamento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito del finanziamento.
      */
     public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
         try {
@@ -357,13 +365,13 @@ class User {
                     'importo' => $amount,
                     'codice_reward' => $rewardCode
                 ]);
-                return ['success' => true, 'data' => null];
+                return ['success' => true];
             } else {
-                return ['success' => false, 'data' => null];
+                return ['success' => false];
             }
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -373,8 +381,8 @@ class User {
      * @param string $name Nome della competenza.
      * @param string $adminEmail Email dell'amministratore.
      * @param string $hashedSecurityCode Codice di sicurezza hashato.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'inserimento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
      */
     public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
         try {
@@ -389,10 +397,10 @@ class User {
                     'email_utente' => $adminEmail
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 
@@ -462,8 +470,8 @@ class User {
      * @param string $userEmail Email dell'utente.
      * @param string $name Nome della competenza.
      * @param int $level Livello di competenza.
-     * @return array ['success' => bool, 'data' => null]
-     *               Dove 'success' indica l'esito dell'inserimento e 'data' è sempre null.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
      */
     public function addSkill($userEmail, $name, $level) {
         try {
@@ -479,10 +487,10 @@ class User {
                     'livello' => $level
                 ]);
             }
-            return ['success' => $result, 'data' => null];
+            return ['success' => $result];
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            return ['success' => false, 'data' => null];
+            return ['success' => false];
         }
     }
 }

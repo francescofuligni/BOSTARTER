@@ -27,6 +27,20 @@ DROP PROCEDURE IF EXISTS verifica_amministratore;
 DELIMITER //
 CREATE PROCEDURE verifica_amministratore(
     IN in_email VARCHAR(32),
+    OUT esito BOOLEAN
+)
+BEGIN
+    SELECT EXISTS(SELECT 1 FROM UTENTE_AMMINISTRATORE WHERE email_utente = in_email) INTO esito;
+END //
+DELIMITER ;
+
+
+-- Procedura per verificare se un utente è amministratore e ha un codice di sicurezza valido
+DROP PROCEDURE IF EXISTS verifica_amministratore_con_codice;
+
+DELIMITER //
+CREATE PROCEDURE verifica_amministratore_con_codice(
+    IN in_email VARCHAR(32),
     IN in_codice_sicurezza CHAR(64),
     OUT esito BOOLEAN
 )
@@ -175,7 +189,7 @@ DELIMITER //
 CREATE PROCEDURE scegli_reward(
     IN in_email_utente VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
-    IN in_codice_reward VARCHAR(32)
+    IN in_codice_reward INT
 )
 BEGIN
     UPDATE FINANZIAMENTO 
@@ -286,7 +300,7 @@ CREATE PROCEDURE aggiungi_competenza(
     OUT is_amministratore BOOLEAN
 )
 BEGIN
-    CALL verifica_amministratore(in_email, in_codice_sicurezza, is_amministratore);
+    CALL verifica_amministratore_con_codice(in_email, in_codice_sicurezza, is_amministratore);
     
     IF is_amministratore THEN
         INSERT INTO COMPETENZA (nome)
@@ -361,7 +375,6 @@ DROP PROCEDURE IF EXISTS inserisci_reward;
 
 DELIMITER //
 CREATE PROCEDURE inserisci_reward(
-    IN in_codice VARCHAR(32),
     IN in_immagine LONGBLOB,
     IN in_descrizione VARCHAR(255),
     IN in_nome_progetto VARCHAR(32),
@@ -378,8 +391,8 @@ BEGIN
     SET esito = is_creatore_progetto AND is_progetto_aperto;
     
     IF esito THEN
-        INSERT INTO REWARD (codice, immagine, descrizione, nome_progetto)
-        VALUES (in_codice, in_immagine, in_descrizione, in_nome_progetto);
+        INSERT INTO REWARD (immagine, descrizione, nome_progetto)
+        VALUES (in_immagine, in_descrizione, in_nome_progetto);
     END IF;
 END //
 DELIMITER ;
