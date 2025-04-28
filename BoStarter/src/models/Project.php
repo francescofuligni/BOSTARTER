@@ -157,8 +157,12 @@ class Project {
      * @return array ['success' => bool]
      *               Dove 'success' indica l'esito della creazione.
      */
-    public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards, $photos) {
+    public function create($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards, $photos) {
         try {
+            if (empty($rewards) || empty($photos)) {
+                return ['success' => false];
+            }
+            
             // Inizio transazione
             $this->conn->beginTransaction();
 
