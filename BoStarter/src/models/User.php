@@ -15,6 +15,7 @@ class User {
         $this->logger = new \MongoLogger();
     }
 
+
     /**
      * Effettua il login dell'utente tramite stored procedure.
      *
@@ -44,6 +45,7 @@ class User {
         }
     }
     
+
     /**
      * Recupera i dati dell'utente tramite email.
      *
@@ -63,6 +65,7 @@ class User {
         }
     }
     
+
     /**
      * Verifica se un utente è creatore.
      *
@@ -82,6 +85,7 @@ class User {
             return false;
         }
     }
+
 
     /**
      * Verifica se un utente è amministratore.
@@ -103,6 +107,7 @@ class User {
         }
     }
     
+
     /**
      * Effettua il login di un amministratore tramite stored procedure.
      *
@@ -126,6 +131,7 @@ class User {
             return false;
         }
     }
+
 
     /**
      * Registra un nuovo utente tramite stored procedure.
@@ -171,6 +177,7 @@ class User {
         }
     }
 
+
     /**
      * Termina la sessione utente.
      *
@@ -194,6 +201,7 @@ class User {
         session_destroy();
     }
 
+
     /**
      * Crea un nuovo progetto (solo creatori).
      *
@@ -209,6 +217,10 @@ class User {
      */
     public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards) {
         try {
+            // Transazione per garantire l'integrità dei dati
+            $this->conn->beginTransaction();
+
+            // Inserimento progetto
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':descrizione', $desc);
@@ -218,16 +230,22 @@ class User {
             $stmt->bindParam(':email_creatore', $creatorEmail);
             $result = $stmt->execute();
             if (!$result) {
+                $this->conn->rollBack();
                 return ['success' => false];
             }
 
+            // Inserimento rewards
             foreach ($rewards as $reward) {
                 $resultReward = $this->addRewardToProject($reward['image'], $reward['desc'], $name, $creatorEmail);
                 if (!$resultReward['success']) {
-                    error_log('Errore nell\'inserimento di una reward per il progetto: ' . $name);
+                    error_log('Errore reward, rollback...');
+                    $this->conn->rollBack();
+                    return ['success' => false];
                 }
             }
 
+            // Tutto OK
+            $this->conn->commit();
             $this->logger->log("Nuovo progetto creato", [
                 'nome_progetto' => $name,
                 'descrizione' => $desc,
@@ -236,12 +254,17 @@ class User {
                 'tipo' => $type,
                 'email_creatore' => $creatorEmail
             ]);
-            return ['success' => $result];
+            return ['success' => true];
         } catch (\Exception $e) {
             error_log($e->getMessage());
+            if ($this->conn->inTransaction()) {
+                error_log('Rollback per eccezione nella creazione progetto');
+                $this->conn->rollBack();
+            }
             return ['success' => false];
         }
     }
+
 
     /**
      * Aggiunge un commento a un progetto.
@@ -273,6 +296,7 @@ class User {
         }
     }
 
+
     /**
      * Aggiunge una risposta a un commento (solo creatore del progetto).
      *
@@ -302,6 +326,7 @@ class User {
             return ['success' => false];
         }
     }
+
 
     /**
      * Aggiunge una ricompensa a un progetto (solo creatori).
@@ -335,6 +360,7 @@ class User {
             return ['success' => false];
         }
     }
+
 
     /**
      * Esegue il finanziamento di un progetto e associa una ricompensa.
@@ -375,6 +401,7 @@ class User {
         }
     }
 
+
     /**
      * Aggiunge una nuova competenza al database (solo amministratori).
      *
@@ -404,6 +431,7 @@ class User {
         }
     }
 
+
     /**
      * Verifica se l'utente ha già finanziato il progetto nella data odierna.
      *
@@ -426,6 +454,7 @@ class User {
         }
     }
 
+
     /**
      * Recupera tutti i progetti creati da un utente.
      *
@@ -444,6 +473,7 @@ class User {
             return ['success' => false, 'data' => []];
         }
     }
+
 
     /**
      * Recupera tutte le competenze associate a uno specifico utente.
@@ -464,6 +494,7 @@ class User {
         }
     }
 
+    
     /**
      * Aggiunge una competenza a un utente.
      *
