@@ -114,7 +114,7 @@ function loadProjectData() {
     $hasFundedToday = false;
 
     if ($projectName) {
-        $detailResult = $projectModel->getProjectDetailData($projectModel, $projectName);
+        $detailResult = $projectModel->getProjectDetailData($projectName);
         if (isset($detailResult['success']) && $detailResult['success']) {
             $data = $detailResult['data'] ?? [];
             $project = $data['project'] ?? [];

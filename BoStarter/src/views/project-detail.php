@@ -17,6 +17,7 @@ require_once __DIR__ . '/components/navbar.php';
             }
         }
     </style>
+    
 </head>
 <body>
 <div class="container mt-5">
@@ -30,6 +31,7 @@ require_once __DIR__ . '/components/navbar.php';
             <p><strong>Tipo:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
             <p><strong>Email creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
 
+            
             <div class="mb-3">
                 <strong>Galleria foto:</strong>
                 <div class="d-flex flex-wrap">
@@ -72,7 +74,7 @@ require_once __DIR__ . '/components/navbar.php';
                         <?php if (!empty($rewards)): ?>
                         <div class="form-group">
                             <label for="codice_reward">Scegli una reward</label>
-                            <select class="form-control" name="codice_reward" id="codice_reward" required onchange="showRewardImage()">
+                            <select id="codice_reward" class="form-control" name="codice_reward" required onchange="showRewardImage()">
                                 <option value="">Seleziona...</option>
                                 <?php foreach ($rewards as $idx => $reward): ?>
                                     <option 
@@ -89,22 +91,7 @@ require_once __DIR__ . '/components/navbar.php';
                             <img id="reward-img" src="" alt="Reward" class="img-thumbnail" style="max-width:150px;max-height:150px;">
                             <div id="reward-desc" class="mt-2"></div>
                         </div>
-                        <script>
-                        function showRewardImage() {
-                            var select = document.getElementById('codice_reward');
-                            var idx = select.selectedIndex;
-                            var option = select.options[idx];
-                            var img = option.getAttribute('data-img');
-                            var desc = option.getAttribute('data-desc');
-                            if (img && select.value) {
-                                document.getElementById('reward-img').src = img;
-                                document.getElementById('reward-desc').innerText = desc;
-                                document.getElementById('reward-image-preview').style.display = 'block';
-                            } else {
-                                document.getElementById('reward-image-preview').style.display = 'none';
-                            }
-                        }
-                        </script>
+
                         <?php else: ?>
                             <div class="alert alert-warning">Nessuna reward disponibile per questo progetto.</div>
                         <?php endif; ?>
@@ -233,6 +220,7 @@ require_once __DIR__ . '/components/navbar.php';
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var zoomImgs = document.querySelectorAll('.img-thumbnail[data-toggle="modal"]');
@@ -247,5 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script src="/js/project-detail.js"></script>
 </body>
 </html>

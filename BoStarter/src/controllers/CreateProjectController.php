@@ -38,32 +38,10 @@ function validateProjectForm($post) {
     ) {
         return false;
     }
-
-    if (empty($post['reward_code']) || count(array_filter($post['reward_code'], fn($r) => !empty(trim($r)))) === 0) {
-        return false;
-    }
-
     return true;
 }
 
-/**
- * Gestisce il caricamento delle immagini del progetto.
- */
-function handleImageUpload($projectName) {
-    // Crea Database e Photo localmente
-    $db = new Database();
-    $conn = $db->getConnection();
-    $projectModel = new Project($conn);
-    
-    if (!empty($_FILES['immagini']['name'][0])) {
-        foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
-            if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
-                $imageData = file_get_contents($tmpName);
-                $projectModel->addPhoto($projectName, $imageData);
-            }
-        }
-    }
-}
+
 
 /**
  * Gestisce le ricompense associate al progetto.
@@ -72,7 +50,7 @@ function handleRewards($projectName, $creatorEmail) {
     $db = new Database();
     $conn = $db->getConnection();
     $projectModel = new Project($conn);
-    foreach ($_POST['reward_code'] as $idx => $code) {
+    foreach ($_POST['reward_coreward_name'] as $idx => $code) {
         $description = $_POST['reward_description'][$idx] ?? '';
         $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
         if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
@@ -102,10 +80,9 @@ function handleCreateProject() {
 
     // For project creation, collect rewards and photos arrays
     $rewards = [];
-    foreach ($_POST['reward_code'] as $idx => $code) {
-        $description = $_POST['reward_description'][$idx] ?? '';
+    foreach ($_POST['reward_description'] as $idx => $description) {
         $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
-        if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
+        if ($description && $imageTmp && is_uploaded_file($imageTmp)) {
             $imageData = file_get_contents($imageTmp);
             $rewards[] = ['image' => $imageData, 'desc' => $description];
         }
@@ -126,7 +103,7 @@ function handleCreateProject() {
         header('Location: /dashboard');
         exit;
     } else {
-        $_SESSION['error'] = "Errore nella creazione del progetto.";
+        $_SESSION['error'] = "Errore nella creazione del progetto. " . ($creationSuccess['error'] ?? 'Errore sconosciuto');
         header('Location: /create-project');
         exit;
     }
