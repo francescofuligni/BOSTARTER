@@ -17,12 +17,12 @@ class User {
 
 
     /**
-     * Effettua il login dell'utente tramite stored procedure.
+     * Esegue il login di un utente.
      *
      * @param string $email Email dell'utente.
-     * @param string $hashedPassword Password hashata dell'utente.
+     * @param string $hashedPassword Password hashata.
      * @return array ['success' => bool, 'data' => array|null]
-     *               Dove 'data' contiene i dati dell'utente autenticato, oppure null in caso di errore o autenticazione fallita.
+     * @throws PDOException
      */
     public function login($email, $hashedPassword) {
         try {
@@ -47,13 +47,13 @@ class User {
     
 
     /**
-     * Recupera i dati dell'utente tramite email.
+     * Recupera i dati di un utente.
      *
      * @param string $email Email dell'utente.
      * @return array ['success' => bool, 'data' => array|null]
-     *               Dove 'data' contiene i dati dell'utente oppure null in caso di errore o utente non trovato.
+     * @throws PDOException
      */
-    public function getUserData($email) {
+    public function getData($email) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM UTENTE WHERE email = :email");
             $stmt->bindParam(':email', $email);
@@ -67,11 +67,11 @@ class User {
     
 
     /**
-     * Verifica se un utente è creatore.
+     * Verifica se un utente è un creatore.
      *
      * @param string $email Email dell'utente.
-     * @return bool Restituisce true se l'utente è creatore, false altrimenti.
-     *              Il valore false può derivare da un controllo fallito o da un errore di database.
+     * @return bool True se l'utente è creatore, false altrimenti.
+     * @throws PDOException
      */
     public function isCreator($email) {
         try {
@@ -91,8 +91,8 @@ class User {
      * Verifica se un utente è amministratore.
      *
      * @param string $email Email dell'utente.
-     * @return bool Restituisce true se l'utente è amministratore, false altrimenti.
-     *              Il valore false può derivare da un controllo fallito o da un errore di database.
+     * @return bool True se l'utente è amministratore, false altrimenti.
+     * @throws PDOException
      */
     public function isAdmin($email) {
         try {
@@ -109,13 +109,13 @@ class User {
     
 
     /**
-     * Effettua il login di un amministratore tramite stored procedure.
+     * Esegue il login di un amministratore.
      *
      * @param string $email Email dell'amministratore.
      * @param string $hashedPassword Password hashata.
      * @param string $hashedSecurityCode Codice di sicurezza hashato.
-     * @return bool Restituisce true se l'amministratore è autenticato, false altrimenti.
-     *              Il valore false può derivare da autenticazione fallita o da un errore di database.
+     * @return bool True se autenticato, false altrimenti.
+     * @throws PDOException
      */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
@@ -134,19 +134,19 @@ class User {
 
 
     /**
-     * Registra un nuovo utente tramite stored procedure.
+     * Registra un nuovo utente (anche come creatore o amministratore).
      *
-     * @param string $email Email dell'utente.
-     * @param string $hashedPassword Password hashata.
-     * @param string $name Nome dell'utente.
-     * @param string $lastName Cognome dell'utente.
-     * @param string $nickname Nickname dell'utente.
-     * @param string $birthPlace Luogo di nascita.
-     * @param string $birthYear Anno di nascita.
-     * @param string $type Tipo di utente.
-     * @param string $hashedSecurityCode Codice di sicurezza hashato.
+     * @param string $email
+     * @param string $hashedPassword
+     * @param string $name
+     * @param string $lastName
+     * @param string $nickname
+     * @param string $birthPlace
+     * @param string $birthYear
+     * @param string $type Tipo di utente ('CREATORE' o 'AMMINISTRATORE').
+     * @param string $hashedSecurityCode
      * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'operazione.
+     * @throws PDOException
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
@@ -231,246 +231,12 @@ class User {
 
 
     /**
-     * Crea un nuovo progetto (solo creatori).
-     *
-     * @param string $name Nome del progetto.
-     * @param string $desc Descrizione del progetto.
-     * @param float $budget Budget previsto.
-     * @param string $maxDate Data limite.
-     * @param string $type Tipo di progetto.
-     * @param string $creatorEmail Email del creatore.
-     * @param array $rewards Array di ricompense, ciascuna ['image' => ..., 'desc' => ...].
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito della creazione.
-     */
-    public function createProject($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards) {
-        try {
-            // Inizio transazione
-            $this->conn->beginTransaction();
-
-            // Inserimento progetto
-            $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore)");
-            $stmt->bindParam(':nome', $name);
-            $stmt->bindParam(':descrizione', $desc);
-            $stmt->bindParam(':budget', $budget);
-            $stmt->bindParam(':data_limite', $maxDate);
-            $stmt->bindParam(':tipo', $type);
-            $stmt->bindParam(':email_creatore', $creatorEmail);
-            $result = $stmt->execute();
-            if (!$result) {
-                $this->conn->rollBack();
-                return ['success' => false];
-            }
-
-            // Inserimento rewards
-            foreach ($rewards as $reward) {
-                $resultReward = $this->addRewardToProject($reward['image'], $reward['desc'], $name, $creatorEmail);
-                if (!$resultReward['success']) {
-                    error_log('Errore reward, rollback...');
-                    $this->conn->rollBack();
-                    return ['success' => false];
-                }
-            }
-
-            // Tutto OK
-            $this->conn->commit();
-            $this->logger->log("Nuovo progetto creato", [
-                'nome_progetto' => $name,
-                'descrizione' => $desc,
-                'budget' => $budget,
-                'data_limite' => $maxDate,
-                'tipo' => $type,
-                'email_creatore' => $creatorEmail
-            ]);
-            return ['success' => true];
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            if ($this->conn->inTransaction()) {
-                $this->conn->rollBack();
-            }
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Aggiunge un commento a un progetto.
+     * Verifica se l'utente ha già finanziato oggi un progetto.
      *
      * @param string $projectName Nome del progetto.
      * @param string $userEmail Email dell'utente.
-     * @param string $text Testo del commento.
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'inserimento.
-     */
-    public function addComment($projectName, $userEmail, $text) {
-        try {
-            $stmt = $this->conn->prepare("CALL inserisci_commento(:nome_progetto, :email_utente, :testo)");
-            $stmt->bindParam(':nome_progetto', $projectName);
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->bindParam(':testo', $text);
-            $result = $stmt->execute();
-            if ($result) {
-                $this->logger->log("Nuovo commento inserito", [
-                    'nome_progetto' => $projectName,
-                    'email_utente' => $userEmail,
-                    'testo' => $text
-                ]);
-            }
-            return ['success' => $result];
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Aggiunge una risposta a un commento (solo creatore del progetto).
-     *
-     * @param int $commentId ID del commento.
-     * @param string $text Testo della risposta.
-     * @param string $creatorEmail Email del creatore.
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'inserimento.
-     */
-    public function addReply($commentId, $text, $creatorEmail) {
-        try {
-            $stmt = $this->conn->prepare("CALL inserisci_risposta(:id_commento, :testo, :email_creatore)");
-            $stmt->bindParam(':id_commento', $commentId);
-            $stmt->bindParam(':testo', $text);
-            $stmt->bindParam(':email_creatore', $creatorEmail);
-            $result = $stmt->execute();
-            if ($result) {
-                $this->logger->log("Nuova risposta inserita", [
-                    'id_commento' => $commentId,
-                    'testo' => $text,
-                    'email_creatore' => $creatorEmail
-                ]);
-            }
-            return ['success' => $result];
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Aggiunge una ricompensa a un progetto (solo creatori).
-     *
-     * @param string $code Codice della ricompensa.
-     * @param string $image Immagine della ricompensa.
-     * @param string $desc Descrizione della ricompensa.
-     * @param string $projectName Nome del progetto.
-     * @param string $creatorEmail Email del creatore.
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'inserimento.
-     */
-    public function addRewardToProject($image, $desc, $projectName, $creatorEmail) {
-        try {
-            $stmt = $this->conn->prepare("CALL inserisci_reward(:immagine, :descrizione, :nome_progetto, :email_creatore)");
-            $stmt->bindParam(':immagine', $image, PDO::PARAM_LOB);
-            $stmt->bindParam(':descrizione', $desc);
-            $stmt->bindParam(':nome_progetto', $projectName);
-            $stmt->bindParam(':email_creatore', $creatorEmail);
-            $result = $stmt->execute();
-            if ($result) {
-                $this->logger->log("Nuova ricompensa aggiunta", [
-                    'nome_progetto' => $projectName,
-                    'email_creatore' => $creatorEmail,
-                    'descrizione' => $desc
-                ]);
-            }
-            return ['success' => $result];
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Esegue il finanziamento di un progetto e associa una ricompensa.
-     *
-     * @param string $projectName Nome del progetto.
-     * @param float $amount Importo del finanziamento.
-     * @param string $userEmail Email dell'utente.
-     * @param string $rewardCode Codice della ricompensa.
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito del finanziamento.
-     */
-    public function fundProject($projectName, $amount, $userEmail, $rewardCode) {
-        try {
-            $stmt = $this->conn->prepare("CALL finanzia_progetto(:email_utente, :nome_progetto, :importo, @is_progetto_aperto)");
-            $stmt->bindParam(':email_utente', $userEmail);
-            $stmt->bindParam(':nome_progetto', $projectName);
-            $stmt->bindParam(':importo', $amount);
-            if ($stmt->execute()) {
-                $result = $this->conn->query("SELECT @is_progetto_aperto as is_progetto_aperto")->fetch(PDO::FETCH_ASSOC);
-                if (!$result || !$result['is_progetto_aperto']) {
-                    return ['success' => false];
-                }
-                $stmt2 = $this->conn->prepare("CALL scegli_reward(:email_utente, :nome_progetto, :codice_reward)");
-                $stmt2->bindParam(':email_utente', $userEmail);
-                $stmt2->bindParam(':nome_progetto', $projectName);
-                $stmt2->bindParam(':codice_reward', $rewardCode);
-                $stmt2->execute();
-                $this->logger->log("Nuovo finanziamento", [
-                    'nome_progetto' => $projectName,
-                    'email_utente' => $userEmail,
-                    'importo' => $amount,
-                    'codice_reward' => $rewardCode
-                ]);
-                return ['success' => true];
-            } else {
-                return ['success' => false];
-            }
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Aggiunge una nuova competenza al database (solo amministratori).
-     *
-     * @param string $name Nome della competenza.
-     * @param string $adminEmail Email dell'amministratore.
-     * @param string $hashedSecurityCode Codice di sicurezza hashato.
-     * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'inserimento.
-     */
-    public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
-        try {
-            $stmt = $this->conn->prepare("CALL aggiungi_competenza(:competenza, :email, :codice_sicurezza, @is_amministratore)");
-            $stmt->bindParam(':competenza', $name);
-            $stmt->bindParam(':email', $adminEmail);
-            $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
-            $stmt->execute();
-            $result = $this->conn->query("SELECT @is_amministratore as is_amministratore")->fetch(PDO::FETCH_ASSOC);
-            if ($result && $result['is_amministratore']) {
-                $this->logger->log("Nuova competenza aggiunta", [
-                    'nome_competenza' => $name,
-                    'email_utente' => $adminEmail
-                ]);
-                return ['success' => true];
-            }
-            return ['success' => false];
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return ['success' => false];
-        }
-    }
-
-
-    /**
-     * Verifica se l'utente ha già finanziato il progetto nella data odierna.
-     *
-     * @param string $projectName Nome del progetto.
-     * @param string $userEmail Email dell'utente.
-     * @return bool Restituisce true se ha finanziato oggi, false altrimenti.
-     *              Il valore false può derivare da un controllo fallito o da un errore di database.
+     * @return bool True se ha finanziato oggi, false altrimenti.
+     * @throws PDOException
      */
     public function hasFundedToday($projectName, $userEmail) {
         try {
@@ -492,7 +258,7 @@ class User {
      *
      * @param string $userEmail Email dell'utente.
      * @return array ['success' => bool, 'data' => array]
-     *               Dove 'data' è un array di progetti creati dall'utente, o un array vuoto in caso di errore.
+     * @throws PDOException
      */
     public function getProjects($userEmail) {
         try {
@@ -508,11 +274,11 @@ class User {
 
 
     /**
-     * Recupera tutte le competenze associate a uno specifico utente.
+     * Recupera tutte le competenze di un utente.
      *
      * @param string $userEmail Email dell'utente.
      * @return array ['success' => bool, 'data' => array]
-     *               Dove 'data' è un array delle competenze dell'utente, o un array vuoto in caso di errore.
+     * @throws PDOException
      */
     public function getSkills($userEmail) {
         try {
@@ -534,7 +300,7 @@ class User {
      * @param string $name Nome della competenza.
      * @param int $level Livello di competenza.
      * @return array ['success' => bool]
-     *               Dove 'success' indica l'esito dell'inserimento.
+     * @throws PDOException
      */
     public function addSkill($userEmail, $name, $level) {
         try {

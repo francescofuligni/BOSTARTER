@@ -11,6 +11,7 @@ class Competence {
         $this->conn = $db;
     }
 
+    
     /**
      * Recupera tutte le competenze dal database.
      *
@@ -27,5 +28,36 @@ class Competence {
         }
     }
     
+
+    /**
+     * Aggiunge una nuova competenza al database (solo amministratori).
+     *
+     * @param string $name Nome della competenza.
+     * @param string $adminEmail Email dell'amministratore.
+     * @param string $hashedSecurityCode Codice di sicurezza hashato.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito dell'inserimento.
+     */
+    public function addCompetence($name, $adminEmail, $hashedSecurityCode) {
+        try {
+            $stmt = $this->conn->prepare("CALL aggiungi_competenza(:competenza, :email, :codice_sicurezza, @is_amministratore)");
+            $stmt->bindParam(':competenza', $name);
+            $stmt->bindParam(':email', $adminEmail);
+            $stmt->bindParam(':codice_sicurezza', $hashedSecurityCode);
+            $stmt->execute();
+            $result = $this->conn->query("SELECT @is_amministratore as is_amministratore")->fetch(PDO::FETCH_ASSOC);
+            if ($result && $result['is_amministratore']) {
+                $this->logger->log("Nuova competenza aggiunta", [
+                    'nome_competenza' => $name,
+                    'email_utente' => $adminEmail
+                ]);
+                return ['success' => true];
+            }
+            return ['success' => false];
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return ['success' => false];
+        }
+    }
 }
 ?>
