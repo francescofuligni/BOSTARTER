@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/Photo.php';
+require_once __DIR__ . '/../models/Project.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
@@ -53,13 +53,13 @@ function handleImageUpload($projectName) {
     // Crea Database e Photo localmente
     $db = new Database();
     $conn = $db->getConnection();
-    $photoModel = new Photo($conn);
+    $projectModel = new Project($conn);
     
     if (!empty($_FILES['immagini']['name'][0])) {
         foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
             if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
                 $imageData = file_get_contents($tmpName);
-                $photoModel->addPhotoToProject($projectName, $imageData);
+                $projectModel->addPhoto($projectName, $imageData);
             }
         }
     }
@@ -69,29 +69,23 @@ function handleImageUpload($projectName) {
  * Gestisce le ricompense associate al progetto.
  */
 function handleRewards($projectName, $creatorEmail) {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
-    $userModel = new User($conn);
-    
+    $projectModel = new Project($conn);
     foreach ($_POST['reward_code'] as $idx => $code) {
         $description = $_POST['reward_description'][$idx] ?? '';
         $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
         if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
             $imageData = file_get_contents($imageTmp);
-            $userModel->addRewardToProject($code, $imageData, $description, $projectName, $creatorEmail);
+            $projectModel->addReward($imageData, $description, $projectName, $creatorEmail);
         }
     }
 }
 
-/**
- * Gestisce la richiesta POST per creare un nuovo progetto.
- */
 function handleCreateProject() {
-    // Crea Database e User localmente
     $db = new Database();
     $conn = $db->getConnection();
-    $userModel = new User($conn);
+    $projectModel = new Project($conn);
     
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
@@ -106,12 +100,28 @@ function handleCreateProject() {
         exit;
     }
 
-    $creationSuccess = $userModel->createProject($name, $description, $budget, $deadline, $type, $creatorEmail);
+    // For project creation, collect rewards and photos arrays
+    $rewards = [];
+    foreach ($_POST['reward_code'] as $idx => $code) {
+        $description = $_POST['reward_description'][$idx] ?? '';
+        $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
+        if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
+            $imageData = file_get_contents($imageTmp);
+            $rewards[] = ['image' => $imageData, 'desc' => $description];
+        }
+    }
+    $photos = [];
+    if (!empty($_FILES['immagini']['name'][0])) {
+        foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
+            if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
+                $photos[] = file_get_contents($tmpName);
+            }
+        }
+    }
+
+    $creationSuccess = $projectModel->create($name, $description, $budget, $deadline, $type, $creatorEmail, $rewards, $photos);
 
     if ($creationSuccess['success']) {
-        handleImageUpload($name);
-        handleRewards($name, $creatorEmail);
-
         $_SESSION['success'] = "Progetto creato con successo!";
         header('Location: /dashboard');
         exit;

@@ -6,9 +6,11 @@
  */
 class Project {
     private $conn;
-
+    private $logger;
+    
     public function __construct($db) {
         $this->conn = $db;
+        $this->logger = new \MongoLogger();
     }
 
 
