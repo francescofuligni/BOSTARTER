@@ -11,6 +11,7 @@ require_once __DIR__ . '/../controllers/HomeController.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoStarter - Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style/card.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -35,59 +36,87 @@ require_once __DIR__ . '/../controllers/HomeController.php';
         </div>
 
         <!-- Preview Progetti in Scadenza -->
-        <h2 class="mt-4">Progetti in scadenza</h2>
+        <h3 class="mt-4">Progetti in scadenza</h3>
         <div class="row">
-            <?php foreach (array_slice($expiringProjects, 0, 3) as $project): ?>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title"><?php echo htmlspecialchars($project['nome'] ?? 'Progetto'); ?></h5>
-                            <p class="card-text">Budget mancante: <?php echo htmlspecialchars($project['differenza_budget'] ?? 'N/A'); ?> €</p>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+            <?php
+            if (!empty($expiringProjects)) {
+                foreach (array_slice($expiringProjects, 0, 3) as $project) {
+                    echo '<div class="col-lg-3 col-md-6 mb-4">';
+                    echo '<div class="card h-100 project-card" style="cursor: pointer;" onclick="window.location.href=\'/project-detail?nome=' . urlencode($project['nome']) . '\'">';
+                    if (!empty($project['immagine'])) {
+                        echo '<img src="data:image/jpeg;base64,' . base64_encode($project['immagine']) . '" class="card-img-top" alt="' . htmlspecialchars($project['nome']) . '" style="height: 200px; object-fit: cover;">';
+                    } else {
+                        echo '<div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">';
+                        echo '<span>Nessuna immagine</span>';
+                        echo '</div>';
+                    }
+                    echo '<div class="card-body">';
+                    echo '<h5 class="card-title">' . htmlspecialchars($project['nome']) . '</h5>';
+                    echo '<p class="card-text">Budget mancante: ' . htmlspecialchars($project['differenza_budget']) . ' €</p>';
+                    if (!empty($project['data_scadenza'])) {
+                        echo '<p class="card-text"><small class="text-muted">Scade il: ' . htmlspecialchars(date('d/m/Y', strtotime($project['data_scadenza']))) . '</small></p>';
+                    }
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="col-12"><span class="text-muted">Non ci sono progetti.</span></div>';
+            }
+            ?>
         </div>
 
         <!-- Top Creators -->
-        <h2 class="mt-4">Top Creatori</h2>
+        <h3 class="mt-4">Classifica dei creatori</h3>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Nickname</th>
-                    <th>Affidabilità</th>
+                    <th class="text-center" style="width: 10%;">#</th>
+                    <th class="text-center" style="width: 45%;">Nickname</th>
+                    <th class="text-center" style="width: 45%;">Affidabilità</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach (array_slice($topCreators, 0, 3) as $i => $creator): ?>
+                <?php if (!empty($topCreators)): ?>
+                    <?php foreach (array_slice($topCreators, 0, 3) as $i => $creator): ?>
+                        <tr>
+                            <td class="text-center" style="width: 10%;"><?php echo $i + 1; ?></td>
+                            <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($creator['nickname'] ?? ''); ?></td>
+                            <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($creator['affidabilita'] ?? '') . '%'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
-                        <td><?php echo $i + 1; ?></td>
-                        <td><?php echo htmlspecialchars($creator['nickname'] ?? 'Creatore'); ?></td>
-                        <td><?php echo htmlspecialchars($creator['affidabilita'] ?? 'N/A'); ?></td>
+                        <td colspan="3" class="text-muted text-center">Non ci sono creatori.</td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
 
         <!-- Top Funders -->
-        <h2 class="mt-4">Top Finanziatori</h2>
+        <h3 class="mt-4">Classifica dei finanziatori</h3>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Nickname</th>
-                    <th>Totale Finanziamenti</th>
+                    <th class="text-center" style="width: 10%;">#</th>
+                    <th class="text-center" style="width: 45%;">Nickname</th>
+                    <th class="text-center" style="width: 45%;">Totale Finanziamenti</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach (array_slice($topFunders, 0, 3) as $i => $funder): ?>
+                <?php if (!empty($topFunders)): ?>
+                    <?php foreach (array_slice($topFunders, 0, 3) as $i => $funder): ?>
+                        <tr>
+                            <td class="text-center" style="width: 10%;"><?php echo $i + 1; ?></td>
+                            <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($funder['nickname'] ?? ''); ?></td>
+                            <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($funder['tot_finanziamenti'] ?? ''); ?> €</td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
-                        <td><?php echo $i + 1; ?></td>
-                        <td><?php echo htmlspecialchars($funder['nickname'] ?? 'Finanziatore'); ?></td>
-                        <td><?php echo htmlspecialchars($funder['tot_finanziamenti'] ?? 'N/A'); ?> €</td>
+                        <td colspan="3" class="text-muted text-center">Non ci sono finanziatori.</td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
