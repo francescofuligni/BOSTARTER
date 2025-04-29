@@ -95,7 +95,7 @@ class Project {
      * @param string $projectName Nome del progetto.
      * @return array Array contenente dettagli, immagini e commenti del progetto.
      */
-    function getProjectDetailData( $projectName) {
+    function getProjectDetailData($projectName) {
         $project = $this->getDetails($projectName);
         $photos = $this->getPhotos($projectName);
         $comments = $this->getComments($projectName);
