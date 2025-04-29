@@ -24,6 +24,7 @@ function checkAccess() {
 function handleAddCompetence() {
     $db = new Database();
     $conn = $db->getConnection();
+    $competenceModel = new Competence($conn);
     $userModel = new User($conn);
     
     if (!$userModel->isAdmin($_SESSION['user_id'])) {
@@ -38,7 +39,7 @@ function handleAddCompetence() {
 
     if ($newCompetence && $securityCode && $adminEmail) {
         $hashedSecurityCode = hash('sha256', $securityCode);
-        $result = $userModel->addCompetence($newCompetence, $adminEmail, $hashedSecurityCode);
+        $result = $competenceModel->addCompetence($newCompetence, $adminEmail, $hashedSecurityCode);
         if ($result['success'] === true) {
             $_SESSION['success'] = "Competenza aggiunta con successo!";
         } else {
@@ -52,20 +53,17 @@ function handleAddCompetence() {
     exit;
 }
 
-/**
- * Gestisce l'inserimento di un commento a un progetto.
- */
 function handleAddComment() {
     $db = new Database();
     $conn = $db->getConnection();
-    $userModel = new User($conn);
+    $projectModel = new Project($conn);
     
     $nomeProgetto = $_POST['nome_progetto'];
     $testoCommento = trim($_POST['testo_commento']);
     $emailUtente = $_SESSION['user_id'] ?? '';
 
     if ($nomeProgetto && $testoCommento && $emailUtente) {
-        $result = $userModel->addComment($nomeProgetto, $emailUtente, $testoCommento);
+        $result = $projectModel->addComment($nomeProgetto, $emailUtente, $testoCommento);
         if ($result['success'] === true) {
             $_SESSION['success'] = "Commento aggiunto con successo!";
         } else {
@@ -79,20 +77,17 @@ function handleAddComment() {
     exit;
 }
 
-/**
- * Gestisce l'inserimento di una risposta a un commento.
- */
 function handleAddReply() {
     $db = new Database();
     $conn = $db->getConnection();
-    $userModel = new User($conn);
+    $projectModel = new Project($conn);
     
     $idCommento = $_POST['id_commento'];
     $testoRisposta = trim($_POST['testo_risposta']);
     $emailCreatore = $_SESSION['user_id'] ?? '';
 
     if ($idCommento && $testoRisposta && $emailCreatore) {
-        $result = $userModel->addReply($idCommento, $testoRisposta, $emailCreatore);
+        $result = $projectModel->addReply($idCommento, $testoRisposta, $emailCreatore);
         if ($result['success'] === true) {
             $_SESSION['success'] = "Risposta aggiunta con successo!";
         } else {

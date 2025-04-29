@@ -34,7 +34,7 @@ class User {
             $result = $this->conn->query("SELECT @autenticato as autenticato")->fetch(PDO::FETCH_ASSOC);
             
             if ($result['autenticato']) {
-                $userData = $this->getUserData($email);
+                $userData = $this->getData($email);
                 return ['success' => true, 'data' => $userData['data']];
             }
             
