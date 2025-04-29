@@ -6,9 +6,11 @@
  */
 class Project {
     private $conn;
-
+    private $logger;
+    
     public function __construct($db) {
         $this->conn = $db;
+        $this->logger = new \MongoLogger();
     }
 
 
@@ -93,7 +95,7 @@ class Project {
      * @param string $projectName Nome del progetto.
      * @return array Array contenente dettagli, immagini e commenti del progetto.
      */
-    function getProjectDetailData($projectModel, $projectName) {
+    function getProjectDetailData( $projectName) {
         $project = $this->getDetails($projectName);
         $photos = $this->getPhotos($projectName);
         $comments = $this->getComments($projectName);
@@ -133,7 +135,7 @@ class Project {
      */
     public function getRewards($projectName) {
         try {
-            $stmt = $this->conn->prepare("SELECT descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
+            $stmt = $this->conn->prepare("SELECT codice, descrizione, immagine FROM REWARD WHERE nome_progetto = :nome");
             $stmt->bindParam(':nome', $projectName);
             $stmt->execute();
             return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
@@ -159,14 +161,16 @@ class Project {
      */
     public function create($name, $desc, $budget, $maxDate, $type, $creatorEmail, $rewards, $photos) {
         try {
-            if (empty($rewards) || empty($photos)) {
-                return ['success' => false];
+            if (empty($rewards)) {
+                return ['success' => false, 'error' => 'Nessuna reward inserita.'];
+            }
+            if (empty($photos)) {
+                return ['success' => false, 'error' => 'Nessuna foto inserita.'];
             }
             
-            // Inizio transazione
             $this->conn->beginTransaction();
 
-            // Inserimento progetto
+   
             $stmt = $this->conn->prepare("CALL crea_progetto(:nome, :descrizione, :budget, :data_limite, :tipo, :email_creatore, @esito)");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':descrizione', $desc);
@@ -174,35 +178,28 @@ class Project {
             $stmt->bindParam(':data_limite', $maxDate);
             $stmt->bindParam(':tipo', $type);
             $stmt->bindParam(':email_creatore', $creatorEmail);
-            $result = $stmt->execute();
+            $stmt->execute();
             $resultEsito = $this->conn->query("SELECT @esito as esito")->fetch(PDO::FETCH_ASSOC);
             if (!$resultEsito || !$resultEsito['esito']) {
                 $this->conn->rollBack();
-                return ['success' => false];
+                return ['success' => false, 'error' => 'La stored procedure crea_progetto ha fallito. Controlla che il nome sia unico, la data futura e che tu sia creatore.'];
             }
 
-            // Inserimento rewards
+
             foreach ($rewards as $reward) {
                 $resultReward = $this->addReward($reward['image'], $reward['desc'], $name, $creatorEmail);
                 if (!$resultReward['success']) {
-                    error_log('Errore reward, rollback...');
-                    $this->conn->rollBack();
-                    return ['success' => false];
+                    return ['success' => false, 'error' => 'Errore nell\'inserimento di una reward.'];
                 }
             }
 
-            // Inserimento foto
             foreach ($photos as $photo) {
-                $resultPhoto = $this->addPhoto($name, $photo);
+                $resultPhoto = $this->addPhoto($name, $photo, $creatorEmail);
                 if (!$resultPhoto['success']) {
-                    error_log('Errore foto, rollback...');
-                    $this->conn->rollBack();
-                    return ['success' => false];
+                    return ['success' => false, 'error' => 'Errore nell\'inserimento di una foto.'];
                 }
             }
 
-            // Tutto OK
-            $this->conn->commit();
             $this->logger->log("Nuovo progetto creato", [
                 'nome_progetto' => $name,
                 'descrizione' => $desc,
@@ -211,13 +208,14 @@ class Project {
                 'tipo' => $type,
                 'email_creatore' => $creatorEmail
             ]);
+            $this->conn->commit();
             return ['success' => true];
         } catch (PDOException $e) {
             error_log($e->getMessage());
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
             }
-            return ['success' => false];
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
 
@@ -376,14 +374,13 @@ class Project {
      * @param string $imgData Dati binari dell'immagine.
      * @return array ['success' => bool]
      */
-    public function addPhoto($projectName, $imgData) {
+    public function addPhoto($projectName, $imgData, $creatorEmail) {
         try {
-            // La procedura ora si aspetta: immagine, nome_progetto, in_email_creatore (NULL), OUT esito
-            $stmt = $this->conn->prepare("CALL inserisci_foto(:immagine, :nome_progetto, NULL, @esito)");
+            $stmt = $this->conn->prepare("CALL inserisci_foto(:immagine, :nome_progetto, :email_creatore, @esito)");
             $stmt->bindParam(':immagine', $imgData, PDO::PARAM_LOB);
             $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_creatore', $creatorEmail);
             $result = $stmt->execute();
-            // Recupero del parametro OUT
             $resultEsito = $this->conn->query("SELECT @esito as esito")->fetch(PDO::FETCH_ASSOC);
             if (!$resultEsito || !$resultEsito['esito']) {
                 return ['success' => false];

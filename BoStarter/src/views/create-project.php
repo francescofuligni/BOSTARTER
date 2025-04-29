@@ -63,10 +63,6 @@ require_once __DIR__ . '/components/navbar.php';
             <label><strong>Reward</strong></label>
             <div class="reward-group border rounded p-2 mb-2">
                 <div class="form-group">
-                    <label for="reward_code[]">Codice reward</label>
-                    <input type="text" class="form-control" name="reward_code[]" required>
-                </div>
-                <div class="form-group">
                     <label for="reward_description[]">Descrizione reward</label>
                     <input type="text" class="form-control" name="reward_description[]" required>
                 </div>
@@ -74,7 +70,7 @@ require_once __DIR__ . '/components/navbar.php';
                     <label for="reward_image[]">Immagine reward</label>
                     <input type="file" class="form-control-file" name="reward_image[]" accept="image/*" required>
                 </div>
-                <button type="button" class="btn btn-primary mb-3" onclick="insertReward()">Aggiungi reward</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="addReward()">Aggiungi reward</button>
             </div>
         </div>
 
