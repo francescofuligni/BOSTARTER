@@ -245,20 +245,31 @@ CREATE PROCEDURE inserisci_candidatura(
     OUT esito BOOLEAN
 )
 BEGIN
-    SELECT NOT EXISTS (
-        SELECT *
-        FROM SKILL_RICHIESTA sr
-        LEFT JOIN SKILL_POSSEDUTA sp 
-            ON sr.nome_competenza = sp.nome_competenza
-            AND sp.email_utente = in_email_utente
-            AND sp.livello >= sr.livello
-        WHERE sr.id_profilo = in_id_profilo
-        AND sp.email_utente IS NULL
-    ) INTO esito;
+    DECLARE nome_progetto VARCHAR(32);
 
-    IF esito THEN
-        INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
-        VALUES (in_email_utente, in_id_profilo, 'IN ATTESA');
+    -- Ricava il nome del progetto associato al profilo
+    SELECT nome_progetto INTO nome_progetto
+    FROM PROFILO
+    WHERE id = in_id_profilo;
+
+    CALL verifica_creatore_progetto(nome_progetto, in_email_utente, esito);
+
+    IF NOT esito THEN
+        SELECT NOT EXISTS (
+            SELECT *
+            FROM SKILL_RICHIESTA sr
+            LEFT JOIN SKILL_POSSEDUTA sp 
+                ON sr.nome_competenza = sp.nome_competenza
+                AND sp.email_utente = in_email_utente
+                AND sp.livello >= sr.livello
+            WHERE sr.id_profilo = in_id_profilo
+            AND sp.email_utente IS NULL
+        ) INTO esito;
+
+        IF esito THEN
+            INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
+            VALUES (in_email_utente, in_id_profilo);
+        END IF;
     END IF;
 END //
 DELIMITER ;
