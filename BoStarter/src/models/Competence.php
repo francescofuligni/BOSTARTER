@@ -12,7 +12,6 @@ class Competence {
         $this->conn = $db;
         $this->logger = new \MongoLogger();
     }
-
     
     /**
      * Recupera tutte le competenze dal database.
@@ -29,7 +28,6 @@ class Competence {
             return ['success' => false, 'data' => []];
         }
     }
-    
 
     /**
      * Aggiunge una nuova competenza al database (solo amministratori).

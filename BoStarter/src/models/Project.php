@@ -13,7 +13,6 @@ class Project {
         $this->logger = new \MongoLogger();
     }
 
-
     /**
      * Recupera tutti i progetti aperti dalla vista dedicata.
      *
@@ -29,7 +28,6 @@ class Project {
             return ['success' => false, 'data' => []];
         }
     }
-
 
     /**
      * Recupera tutte le immagini associate a un progetto.
@@ -49,7 +47,6 @@ class Project {
         }
     }
 
-
     /**
      * Recupera tutti i commenti relativi a un progetto.
      *
@@ -68,7 +65,6 @@ class Project {
         }
     }
 
-
     /**
      * Ottiene i dettagli di un progetto dalla vista progetti_con_foto.
      *
@@ -86,7 +82,6 @@ class Project {
             return ['success' => false, 'data' => null];
         }
     }
-
 
     /**
      * Restituisce dettagli, immagini e commenti di un progetto.
@@ -109,7 +104,6 @@ class Project {
         ];
     }
 
-
     /**
      * Recupera tutti i progetti con la prima foto associata.
      *
@@ -126,7 +120,6 @@ class Project {
         }
     }
     
-
     /**
      * Recupera tutte le ricompense associate a un progetto.
      *
@@ -144,7 +137,6 @@ class Project {
             return ['success' => false, 'data' => []];
         }
     }
-
 
     /**
      * Crea un nuovo progetto (solo creatori).
@@ -219,7 +211,6 @@ class Project {
         }
     }
 
-
     /**
      * Aggiunge un commento a un progetto.
      *
@@ -249,7 +240,6 @@ class Project {
             return ['success' => false];
         }
     }
-
 
     /**
      * Aggiunge una risposta a un commento (solo creatore del progetto).
@@ -284,7 +274,6 @@ class Project {
             return ['success' => false];
         }
     }
-
 
     /**
      * Aggiunge una ricompensa a un progetto (solo creatori).
@@ -322,7 +311,6 @@ class Project {
             return ['success' => false];
         }
     }
-
 
     /**
      * Esegue il finanziamento di un progetto e associa una ricompensa.
@@ -365,7 +353,6 @@ class Project {
             return ['success' => false];
         }
     }
-
 
     /**
      * Aggiunge una foto a un progetto nel database.
