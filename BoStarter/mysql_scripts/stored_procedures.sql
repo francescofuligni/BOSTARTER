@@ -444,8 +444,8 @@ BEGIN
         is_creatore_progetto);
 
     IF is_creatore_progetto THEN
-        INSERT INTO RISPOSTA (id_commento, testo)
-        VALUES (in_id_commento, in_testo);
+        INSERT INTO RISPOSTA (id_commento, email_creatore, testo)
+        VALUES (in_id_commento, in_email_creatore, in_testo);
     END IF;
 END //
 DELIMITER ;
