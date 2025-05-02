@@ -44,7 +44,7 @@ require_once __DIR__ . '/components/navbar.php';
                                 <div class="form-group col-md-6">
                                     <label for="type">Tipologia Utente</label>
                                     <select class="form-control" id="type" name="type" required>
-                                        <option value="UTENTE">Standard</option>
+                                        <option value="UTENTE">Normale</option>
                                         <option value="CREATORE">Creatore</option>
                                         <option value="AMMINISTRATORE">Amministratore</option>
                                     </select>

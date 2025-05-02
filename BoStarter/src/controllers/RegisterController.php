@@ -80,7 +80,11 @@ function handleRegistration() {
 
     if ($result['success']) {
         $_SESSION['success'] = 'Registrazione avvenuta con successo. Ora puoi accedere.';
-        header('Location: /login');
+        if ($data['type'] === 'AMMINISTRATORE') {
+            header('Location: /admin-login');
+        } else {
+            header('Location: /login');
+        }
         exit;
     } else {
         $_SESSION['error'] = 'Errore durante la registrazione. L\'email potrebbe essere già in uso.';

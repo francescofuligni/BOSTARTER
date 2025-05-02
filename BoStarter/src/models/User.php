@@ -15,14 +15,12 @@ class User {
         $this->logger = new \MongoLogger();
     }
 
-
     /**
      * Esegue il login di un utente.
      *
      * @param string $email Email dell'utente.
      * @param string $hashedPassword Password hashata.
      * @return array ['success' => bool, 'data' => array|null]
-     * @throws PDOException
      */
     public function login($email, $hashedPassword) {
         try {
@@ -44,14 +42,12 @@ class User {
             return ['success' => false, 'data' => null];
         }
     }
-    
 
     /**
      * Recupera i dati di un utente.
      *
      * @param string $email Email dell'utente.
      * @return array ['success' => bool, 'data' => array|null]
-     * @throws PDOException
      */
     public function getData($email) {
         try {
@@ -64,14 +60,12 @@ class User {
             return ['success' => false, 'data' => null];
         }
     }
-    
 
     /**
      * Verifica se un utente è un creatore.
      *
      * @param string $email Email dell'utente.
      * @return bool True se l'utente è creatore, false altrimenti.
-     * @throws PDOException
      */
     public function isCreator($email) {
         try {
@@ -86,13 +80,32 @@ class User {
         }
     }
 
+    /**
+     * Verifica se un utente è il creatore di un progetto specifico.
+     *
+     * @param string $email Email dell'utente.
+     * @param string $projectName Nome del progetto.
+     * @return bool True se è il creatore del progetto, false altrimenti.
+     */
+    public function isProjectCreator($email, $projectName) {
+        try {
+            $stmt = $this->conn->prepare("CALL verifica_creatore_progetto(:nome_progetto, :email_creatore, @esito)");
+            $stmt->bindParam(':nome_progetto', $projectName);
+            $stmt->bindParam(':email_creatore', $email);
+            $stmt->execute();
+            $result = $this->conn->query("SELECT @esito AS esito")->fetch(PDO::FETCH_ASSOC);
+            return ($result['esito'] == 1);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
 
     /**
      * Verifica se un utente è amministratore.
      *
      * @param string $email Email dell'utente.
      * @return bool True se l'utente è amministratore, false altrimenti.
-     * @throws PDOException
      */
     public function isAdmin($email) {
         try {
@@ -106,7 +119,6 @@ class User {
             return false;
         }
     }
-    
 
     /**
      * Esegue il login di un amministratore.
@@ -115,7 +127,6 @@ class User {
      * @param string $hashedPassword Password hashata.
      * @param string $hashedSecurityCode Codice di sicurezza hashato.
      * @return bool True se autenticato, false altrimenti.
-     * @throws PDOException
      */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
         try {
@@ -132,7 +143,6 @@ class User {
         }
     }
 
-
     /**
      * Registra un nuovo utente (anche come creatore o amministratore).
      *
@@ -146,7 +156,6 @@ class User {
      * @param string $type Tipo di utente ('CREATORE' o 'AMMINISTRATORE').
      * @param string $hashedSecurityCode
      * @return array ['success' => bool]
-     * @throws PDOException
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
         try {
@@ -205,7 +214,6 @@ class User {
         }
     }
 
-
     /**
      * Termina la sessione utente.
      *
@@ -229,14 +237,13 @@ class User {
         session_destroy();
     }
 
-
     /**
      * Verifica se l'utente ha già finanziato oggi un progetto.
      *
      * @param string $projectName Nome del progetto.
      * @param string $userEmail Email dell'utente.
      * @return bool True se ha finanziato oggi, false altrimenti.
-     * @throws PDOException
+
      */
     public function hasFundedToday($projectName, $userEmail) {
         try {
@@ -252,13 +259,11 @@ class User {
         }
     }
 
-
     /**
      * Recupera tutti i progetti creati da un utente.
      *
      * @param string $userEmail Email dell'utente.
      * @return array ['success' => bool, 'data' => array]
-     * @throws PDOException
      */
     public function getProjects($userEmail) {
         try {
@@ -272,13 +277,11 @@ class User {
         }
     }
 
-
     /**
      * Recupera tutte le competenze di un utente.
      *
      * @param string $userEmail Email dell'utente.
      * @return array ['success' => bool, 'data' => array]
-     * @throws PDOException
      */
     public function getSkills($userEmail) {
         try {
@@ -291,7 +294,6 @@ class User {
             return ['success' => false, 'data' => []];
         }
     }
-
     
     /**
      * Aggiunge una competenza a un utente.
@@ -300,7 +302,6 @@ class User {
      * @param string $name Nome della competenza.
      * @param int $level Livello di competenza.
      * @return array ['success' => bool]
-     * @throws PDOException
      */
     public function addSkill($userEmail, $name, $level) {
         try {
