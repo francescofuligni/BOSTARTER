@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
+require_once __DIR__ . '/../models/Component.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
@@ -99,6 +100,15 @@ function handleCreateProject() {
     $creationSuccess = $projectModel->create($name, $description, $budget, $deadline, $type, $creatorEmail, $rewards, $photos);
 
     if ($creationSuccess['success']) {
+        if ($type === 'HARDWARE' && !empty($_POST['component_name'])) {
+            $componentModel = new Component($conn);
+            foreach ($_POST['component_name'] as $idx => $componentName) {
+                $qty = intval($_POST['component_qty'][$idx]);
+                if ($componentName && $qty > 0) {
+                    $componentModel->addComponentToProject($componentName, $qty, $name, $creatorEmail);
+                }
+            }
+        }
         $_SESSION['success'] = "Progetto creato con successo!";
         header('Location: /dashboard');
         exit;
@@ -113,6 +123,26 @@ function handleCreateProject() {
 checkAccess();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Aggiunta nuova componente hardware
+    if (isset($_POST['add_component'])) {
+        // FIX: crea connessione qui!
+        $db = new Database();
+        $conn = $db->getConnection();
+        $componentModel = new Component($conn);
+
+        $name = trim($_POST['new_component_name']);
+        $desc = trim($_POST['new_component_desc']);
+        $price = floatval($_POST['new_component_price']);
+        $creatorEmail = $_SESSION['user_id'];
+        $result = $componentModel->addComponent($name, $desc, $price, $creatorEmail);
+        if ($result['success']) {
+            $_SESSION['success'] = "Componente aggiunta con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nell'aggiunta della componente.";
+        }
+        header('Location: /create-project');
+        exit;
+    }
     handleCreateProject();
 }
 ?>

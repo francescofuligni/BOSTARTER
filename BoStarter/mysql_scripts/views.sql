@@ -101,4 +101,21 @@ JOIN UTENTE u ON c.email_utente = u.email
 LEFT JOIN RISPOSTA r ON c.id = r.id_commento
 ORDER BY c.data DESC;
 
+-- Vista per tutti i componenti presenti nel sistema
+DROP VIEW IF EXISTS componenti;
+CREATE VIEW componenti AS
+SELECT * 
+FROM COMPONENTE;
+
+
+-- Vista per tutti i componenti di un progetto con annessa quantità
+DROP VIEW IF EXISTS componenti_progetto;
+CREATE VIEW componenti_progetto AS
+SELECT 
+    c.*,
+    cp.nome_progetto,
+    cp.quantita
+FROM COMPONENTE c
+JOIN COMPOSIZIONE cp ON c.nome = cp.nome_componente;
+
 

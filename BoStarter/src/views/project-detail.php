@@ -46,6 +46,20 @@ require_once __DIR__ . '/components/navbar.php';
                     ?>
                 </div>
             </div>
+
+            <?php if ($project['tipo'] === 'HARDWARE' && !empty($components)): ?>
+                <h4 class="mt-4">Componenti hardware del progetto</h4>
+                <ul class="list-group mb-4">
+                    <?php foreach ($components as $comp): ?>
+                        <li class="list-group-item">
+                            <strong><?php echo htmlspecialchars($comp['nome']); ?></strong>
+                            (<?php echo htmlspecialchars($comp['quantita']); ?> x €<?php echo number_format($comp['prezzo'], 2, ',', '.'); ?>)
+                            <br>
+                            <small><?php echo htmlspecialchars($comp['descrizione']); ?></small>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
         </div>
         <!-- Colonna destra: form finanziamento -->
         <div class="col-lg-4 mb-4">
