@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Project.php';
+require_once __DIR__ . '/../models/Component.php';
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
@@ -108,9 +109,10 @@ function loadProjectData() {
     $conn = $db->getConnection();
     $projectModel = new Project($conn);
     $userModel = new User($conn);
+    $componentModel = new Component($conn);
     
     $projectName = $_GET['nome'] ?? '';
-    $project = $photos = $comments = $rewards = [];
+    $project = $photos = $comments = $rewards = $components = [];
     $hasFundedToday = false;
 
     if ($projectName) {
@@ -133,9 +135,18 @@ function loadProjectData() {
                 $rewards = [];
             }
         }
+
+        if ($project['tipo'] === 'HARDWARE') {
+            $componentsResult = $componentModel->getProjectComponents($projectName);
+            if (isset($componentsResult['success']) && $componentsResult['success']) {
+                $components = $componentsResult['data'] ?? [];
+            } else {
+                $components = [];
+            }
+        }
     }
 
-    return [$project, $photos, $comments, $rewards, $hasFundedToday];
+    return [$project, $photos, $comments, $rewards, $components, $hasFundedToday];
 }
 
 
@@ -154,6 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if (isset($_GET['nome'])) {
-    [$project, $photos, $comments, $rewards, $hasFundedToday] = loadProjectData();
+    [$project, $photos, $comments, $rewards, $components, $hasFundedToday] = loadProjectData();
 }
 ?>
