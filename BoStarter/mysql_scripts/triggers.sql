@@ -147,19 +147,3 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-
-
--- Trigger per rifiutare le altre candidature all'accettazione di una candidatura --
-DROP TRIGGER IF EXISTS aggiorna_altre_candidature;
-
-DELIMITER //
-CREATE TRIGGER aggiorna_altre_candidature
-AFTER UPDATE ON PROFILO
-FOR EACH ROW
-BEGIN
-    IF NEW.stato = 'OCCUPATO' THEN
-        UPDATE CANDIDATURA
-        SET stato = 'RIFIUTATA'
-        WHERE id_profilo = NEW.id AND stato = 'ATTESA';
-    END IF;
-END //
