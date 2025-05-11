@@ -132,28 +132,11 @@ END //
 DELIMITER ;
 
 
--- Trigger per aggiornare il profilo all'accettazione di una candidatura --
-DROP TRIGGER IF EXISTS aggiorna_profilo_accettazione;
-
-DELIMITER //
-CREATE TRIGGER aggiorna_profilo_accettazione
-AFTER UPDATE ON CANDIDATURA
-FOR EACH ROW
-BEGIN
-    IF NEW.stato = 'ACCETTATA' THEN
-        UPDATE PROFILO
-        SET stato = 'OCCUPATO'
-        WHERE id = NEW.id_profilo;
-    END IF;
-END //
-DELIMITER ;
-
-
 -- Trigger per rifiutare le altre candidature all'accettazione di una candidatura --
-DROP TRIGGER IF EXISTS aggiorna_altre_candidature;
+DROP TRIGGER IF EXISTS rifiuta_candidature;
 
 DELIMITER //
-CREATE TRIGGER aggiorna_altre_candidature
+CREATE TRIGGER rifiuta_candidature
 AFTER UPDATE ON PROFILO
 FOR EACH ROW
 BEGIN
