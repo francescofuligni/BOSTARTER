@@ -534,6 +534,12 @@ BEGIN
             SET stato = in_stato
             WHERE email_utente = in_email_candidato
             AND id_profilo = in_id_profilo;
+
+            IF in_stato = 'ACCETTATA' THEN
+                UPDATE PROFILO
+                SET stato = 'OCCUPATO'
+                WHERE id = in_id_profilo;
+            END IF;
         END IF;
     END IF;
 END //
