@@ -144,11 +144,6 @@ BEGIN
         UPDATE PROFILO
         SET stato = 'OCCUPATO'
         WHERE id = NEW.id_profilo;
-
-        UPDATE CANDIDATURA
-        SET stato = 'RIFIUTATA'
-        WHERE id_profilo = NEW.id_profilo
-          AND email_utente != NEW.email_utente;
     END IF;
 END //
 DELIMITER ;

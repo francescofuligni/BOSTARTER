@@ -267,7 +267,7 @@ BEGIN
         ) INTO esito;
 
         IF esito THEN
-            INSERT INTO CANDIDATURA (email_utente, id_profilo, stato)
+            INSERT INTO CANDIDATURA (email_utente, id_profilo)
             VALUES (in_email_utente, in_id_profilo);
         END IF;
     END IF;
