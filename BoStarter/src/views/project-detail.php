@@ -177,8 +177,8 @@ require_once __DIR__ . '/components/navbar.php';
                                             </ul>
                                         <?php endif; ?>
                                         
+                                        <!-- Mostra candidature -->
                                         <?php if ($isCreator): ?>
-                                            <!-- Creator: Show applications -->
                                             <h6>Candidature:</h6>
                                             <?php if (empty($profile['applications'])): ?>
                                                 <p class="text-muted">Nessuna candidatura ricevuta.</p>
@@ -254,50 +254,8 @@ require_once __DIR__ . '/components/navbar.php';
                     </div>
                 <?php endif; ?>
                 
-                <!-- Form per inserire un profilo richiesto (se creatore del progetto) -->
                 <?php if ($isCreator): ?>
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Crea un nuovo profilo</h5>
-                        </div>
-                        <div class="card-body">
-                            <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
-                                <input type="hidden" name="project_name" value="<?php echo htmlspecialchars($project['nome']); ?>">
-                                <div class="form-group">
-                                    <label for="profile_name">Nome del profilo:</label>
-                                    <input type="text" class="form-control" id="profile_name" name="profile_name" required>
-                                </div>
-                                
-                                <div id="skills-container">
-                                    <h6>Competenze richieste:</h6>
-                                    <div class="skill-row mb-3">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <select class="form-control" name="skill_name[]">
-                                                    <option value="">Seleziona competenza</option>
-                                                    <?php foreach ($allCompetences as $competence): ?>
-                                                        <option value="<?php echo htmlspecialchars($competence['nome']); ?>">
-                                                            <?php echo htmlspecialchars($competence['nome']); ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <select class="form-control" name="skill_level[]">
-                                                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                                    <?php endfor; ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <button type="button" class="btn btn-outline-secondary" id="add-skill">Aggiungi altra competenza</button>
-                                <button type="submit" class="btn btn-primary">Crea profilo</button>
-                            </form>
-                        </div>
-                    </div>
+                    <button class="btn btn-outline-primary mb-4" data-toggle="modal" data-target="#createProfileModal">Crea un nuovo profilo</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -305,7 +263,6 @@ require_once __DIR__ . '/components/navbar.php';
 
 
         <!-- Sezione commenti e form commento -->
-
         <div class="row mt-4">
             <div class="col-12">
                 <div class="mb-3">
@@ -376,7 +333,7 @@ require_once __DIR__ . '/components/navbar.php';
             </div>
         </div>
 
-        <!-- Modal per zoom immagini -->
+        <!-- Modale per zoom immagini -->
         <div class="modal fade" id="imgZoomModal" tabindex="-1" role="dialog" aria-labelledby="imgZoomModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content bg-transparent border-0">
@@ -386,6 +343,57 @@ require_once __DIR__ . '/components/navbar.php';
                 </div>
             </div>
         </div>
+
+        <!-- Modale per creazione profilo -->
+        <?php if ($isCreator): ?>
+            <div class="modal fade" id="createProfileModal" tabindex="-1" role="dialog" aria-labelledby="createProfileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createProfileModalLabel">Crea un nuovo profilo</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
+                                <input type="hidden" name="project_name" value="<?php echo htmlspecialchars($project['nome']); ?>">
+                                <div class="form-group">
+                                    <label for="profile_name">Nome del profilo:</label>
+                                    <input type="text" class="form-control" id="profile_name" name="profile_name" required>
+                                </div>
+                                <div id="skills-container">
+                                    <h6>Competenze richieste:</h6>
+                                    <div class="skill-row mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <select class="form-control" name="skill_name[]">
+                                                    <option value="">Seleziona competenza</option>
+                                                    <?php foreach ($allCompetences as $competence): ?>
+                                                        <option value="<?php echo htmlspecialchars($competence['nome']); ?>">
+                                                            <?php echo htmlspecialchars($competence['nome']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select class="form-control" name="skill_level[]">
+                                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                                    <?php endfor; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary" id="add-skill">Aggiungi altra competenza</button>
+                                <button type="submit" class="btn btn-primary">Crea profilo</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
         <?php else: ?>
             <div class="alert alert-danger">Progetto non trovato</div>
