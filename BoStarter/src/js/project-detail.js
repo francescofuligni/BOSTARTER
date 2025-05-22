@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#imgZoomModal').on('hidden.bs.modal', function () {
         modalImg.src = '';
     });
+
+    document.getElementById('add-skill').addEventListener('click', function() {
+        const container = document.getElementById('skills-container');
+        const skillRow = document.querySelector('.skill-row').cloneNode(true);
+        container.appendChild(skillRow);
+    });
 });
 
 function showRewardImage() {
