@@ -258,40 +258,62 @@ require_once __DIR__ . '/components/navbar.php';
                 <div class="mb-3">
                     <h3>Commenti</h3>
                     <ul class="list-group">
-                        <?php
-                        if ($comments) {
-                            foreach ($comments as $comment) {
-                                echo '<li class="list-group-item">';
-                                echo '<strong>' . htmlspecialchars($comment['nickname']) . ':</strong> ' . htmlspecialchars($comment['testo']);
-                                echo '<br><small class="text-muted">' . htmlspecialchars($comment['data']) . '</small>';
-                                if (!empty($comment['risposta'])) {
-                                    echo '<div class="mt-2 ml-3 p-2 bg-light border rounded"><strong>Creatore:</strong> ' . htmlspecialchars($comment['risposta']) . '</div>';
-                                }
-                                if (
+                        <?php if ($comments): ?>
+                            <?php foreach ($comments as $comment): ?>
+                                <li class="list-group-item">
+                                    <strong><?= htmlspecialchars($comment['nickname']) ?>:</strong> <?= htmlspecialchars($comment['testo']) ?>
+                                    <br><small class="text-muted"><?= htmlspecialchars($comment['data']) ?></small>
+
+                                    <?php if (!empty($comment['risposta'])): ?>
+                                        <div class="mt-2 ml-3 p-2 bg-light border rounded">
+                                            <strong>Creatore:</strong> <?= htmlspecialchars($comment['risposta']) ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if (
+                                        isset($_SESSION['user_id']) &&
+                                        $_SESSION['user_id'] === $project['email_utente_creatore'] &&
+                                        empty($comment['risposta'])
+                                    ): ?>
+                                        <div class="mb-2"></div>
+                                        <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="modal" data-target="#replyModal<?= $comment['id'] ?>">Rispondi</button>
+                                    <?php endif; ?>
+                                </li>
+
+                                <?php if (
                                     isset($_SESSION['user_id']) &&
                                     $_SESSION['user_id'] === $project['email_utente_creatore'] &&
                                     empty($comment['risposta'])
-                                ) {
-                                    echo '<div class="mb-2"></div>
-                                    <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#replyForm' . $comment['id'] . '">Rispondi</button>
-                                    <div class="collapse mt-2" id="replyForm' . $comment['id'] . '">
-                                        <form action="/project-detail?nome=' . urlencode($project['nome']) . '" method="post">
-                                            <input type="hidden" name="id_commento" value="' . htmlspecialchars($comment['id']) . '">
-                                            <input type="hidden" name="nome_progetto" value="' . htmlspecialchars($project['nome']) . '">
-                                            <div class="form-group mb-1">
-                                                <textarea class="form-control form-control-sm" name="testo_risposta" rows="1" placeholder="Scrivi la tua risposta..." required></textarea>
+                                ): ?>
+                                    <div class="modal fade" id="replyModal<?= $comment['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel<?= $comment['id'] ?>" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <form action="/project-detail?nome=<?= urlencode($project['nome']) ?>" method="post">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="replyModalLabel<?= $comment['id'] ?>">Rispondi a <?= htmlspecialchars($comment['nickname']) ?></h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="id_commento" value="<?= htmlspecialchars($comment['id']) ?>">
+                                                        <input type="hidden" name="nome_progetto" value="<?= htmlspecialchars($project['nome']) ?>">
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" name="testo_risposta" rows="3" placeholder="Scrivi la tua risposta..." required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Invia risposta</button>
+                                                    </div>
+                                                </form>
                                             </div>
-                                            <button type="submit" class="btn btn-sm btn-primary">Invia risposta</button>
-                                        </form>
+                                        </div>
                                     </div>
-                                    ';
-                                }
-                                echo '</li>';
-                            }
-                        } else {
-                            echo '<li class="list-group-item text-muted">Nessun commento.</li>';
-                        }
-                        ?>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li class="list-group-item text-muted">Nessun commento.</li>
+                        <?php endif; ?>
                     </ul>
                 </div>
                 <?php if (isset($_SESSION['user_id'])): ?>
@@ -315,7 +337,7 @@ require_once __DIR__ . '/components/navbar.php';
                             <div class="form-group">
                                 <textarea class="form-control" placeholder="Scrivi il tuo commento..." id="testo_commento_<?php echo md5($project['nome']); ?>" name="testo_commento" rows="2" required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Commenta</button>
+                            <button type="submit" class="btn btn-primary">Invia commento</button>
                         </form>
                     </div>
                 </div>
