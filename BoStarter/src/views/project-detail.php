@@ -114,26 +114,14 @@ require_once __DIR__ . '/components/navbar.php';
                         </form>
                         <!-- Chip stato e raccolta -->
                         <div class="mt-4">
-                            <span class="badge badge-<?php echo (isset($project['stato']) && $project['stato'] === 'APERTO') ? 'success' : 'secondary'; ?>" style="font-size:1rem;">
-                                <?php
-                                if (isset($project['stato']) && $project['stato']) {
-                                    echo ucfirst(strtolower($project['stato']));
-                                } else {
-                                    echo 'Stato sconosciuto';
-                                }
-                                ?>
-                            </span>
-                            <span class="badge badge-info ml-2" style="font-size:1rem;">
-                                Raccolti: € 
-                                <?php
-                                if (isset($project['somma_raccolta'])) {
-                                    echo number_format($project['somma_raccolta'], 2, ',', '.');
-                                } else {
-                                    // Se non hai la colonna somma_raccolta, puoi calcolarla con una query/stored oppure mostrare 0,00
-                                    echo "0,00";
-                                }
-                                ?>
-                            </span>
+                            <?php
+                            $raccolti = isset($project['somma_raccolta']) ? $project['somma_raccolta'] : 0.00;
+                            $budget = isset($project['budget']) ? $project['budget'] : 0.00;
+                            $isComplete = $raccolti >= $budget;
+                            ?>
+                            <div class="mt-3 p-2 border rounded text-center <?php echo $isComplete ? 'bg-danger text-white' : 'bg-light'; ?>" style="font-size: 0.85rem;">
+                                <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?> raccolti su € <?php echo number_format($budget, 2, ',', '.'); ?></strong>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,8 +140,8 @@ require_once __DIR__ . '/components/navbar.php';
                 <?php else: ?>
                     <div class="row">
                         <?php foreach ($profiles as $profile): ?>
-                            <div class="col-md-6 mb-4">
-                                <div class="card h-100">
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 shadow-sm" style="font-size: 0.9rem;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0"><?php echo htmlspecialchars($profile['nome']); ?></h5>
                                         <span class="badge badge-<?php echo ($profile['stato'] === 'DISPONIBILE') ? 'success' : 'secondary'; ?>">
@@ -161,11 +149,11 @@ require_once __DIR__ . '/components/navbar.php';
                                         </span>
                                     </div>
                                     <div class="card-body">
-                                        <h6>Competenze richieste:</h6>
+                                        <h6>Competenze richieste</h6>
                                         <?php if (empty($profile['skills'])): ?>
                                             <p class="text-muted">Nessuna competenza specifica richiesta.</p>
                                         <?php else: ?>
-                                            <ul class="list-group mb-3">
+                                            <ul class="list-group mb-2">
                                                 <?php foreach ($profile['skills'] as $skill): ?>
                                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                                         <?php echo htmlspecialchars($skill['nome_competenza']); ?>
@@ -179,7 +167,7 @@ require_once __DIR__ . '/components/navbar.php';
                                         
                                         <!-- Mostra candidature -->
                                         <?php if ($isCreator): ?>
-                                            <h6>Candidature:</h6>
+                                            <h6 class="mt-3">Candidature</h6>
                                             <?php if (empty($profile['applications'])): ?>
                                                 <p class="text-muted">Nessuna candidatura ricevuta.</p>
                                             <?php else: ?>
@@ -187,7 +175,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                     <table class="table table-sm">
                                                         <thead>
                                                             <tr>
-                                                                <th>Utente</th>
+                                                                <th style="width: 50%;">Utente</th>
                                                                 <th>Stato</th>
                                                                 <th>Azioni</th>
                                                             </tr>
@@ -197,12 +185,12 @@ require_once __DIR__ . '/components/navbar.php';
                                                                 <tr>
                                                                     <td><?php echo htmlspecialchars($app['nickname']); ?></td>
                                                                     <td>
-                                                                        <span class="badge badge-<?php 
-                                                                            echo ($app['stato'] === 'ACCETTATA') ? 'success' : 
-                                                                                (($app['stato'] === 'RIFIUTATA') ? 'danger' : 'warning'); 
-                                                                        ?>">
-                                                                            <?php echo htmlspecialchars($app['stato']); ?>
-                                                                        </span>
+                                                                        <?php
+                                                                            $stato = $app['stato'];
+                                                                            $color = ($stato === 'ACCETTATA') ? 'green' : (($stato === 'RIFIUTATA') ? 'red' : 'gray');
+                                                                            $label = ucfirst(strtolower($stato));
+                                                                        ?>
+                                                                        <span style="width: 14px; height: 14px; border-radius: 50%; background-color: <?php echo $color; ?>; display: inline-block;"></span>
                                                                     </td>
                                                                     <td>
                                                                         <?php if ($app['stato'] === 'ATTESA'): ?>
@@ -220,6 +208,8 @@ require_once __DIR__ . '/components/navbar.php';
                                                                                 <input type="hidden" name="status" value="RIFIUTATA">
                                                                                 <button type="submit" class="btn btn-sm btn-danger">Rifiuta</button>
                                                                             </form>
+                                                                        <?php else: ?>
+                                                                            <span class="text-muted">-</span>
                                                                         <?php endif; ?>
                                                                     </td>
                                                                 </tr>
@@ -236,7 +226,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                 <?php if (!empty($profile['has_applied'])): ?>
                                                     <div class="alert alert-info mt-3">Hai già inviato una candidatura per questo profilo.</div>
                                                 <?php else: ?>
-                                                    <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
+                                                    <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post" class="mt-2">
                                                         <input type="hidden" name="profile_id" value="<?php echo htmlspecialchars($profile['id']); ?>">
                                                         <input type="hidden" name="project_name" value="<?php echo htmlspecialchars($project['nome']); ?>">
                                                         <input type="hidden" name="apply" value="1">
@@ -325,7 +315,7 @@ require_once __DIR__ . '/components/navbar.php';
                             <div class="form-group">
                                 <textarea class="form-control" placeholder="Scrivi il tuo commento..." id="testo_commento_<?php echo md5($project['nome']); ?>" name="testo_commento" rows="2" required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-outline-primary btn-block">Commenta</button>
+                            <button type="submit" class="btn btn-primary btn-block">Commenta</button>
                         </form>
                     </div>
                 </div>
@@ -363,7 +353,7 @@ require_once __DIR__ . '/components/navbar.php';
                                     <input type="text" class="form-control" id="profile_name" name="profile_name" required>
                                 </div>
                                 <div id="skills-container">
-                                    <h6>Competenze richieste:</h6>
+                                    <h6>Competenze richieste</h6>
                                     <div class="skill-row mb-3">
                                         <div class="row">
                                             <div class="col-md-8">
@@ -386,7 +376,7 @@ require_once __DIR__ . '/components/navbar.php';
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-outline-secondary" id="add-skill">Aggiungi altra competenza</button>
+                                <button type="button" class="btn btn-outline-secondary" id="add-skill">Aggiungi competenza</button>
                                 <button type="submit" class="btn btn-primary">Crea profilo</button>
                             </form>
                         </div>
