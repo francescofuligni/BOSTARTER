@@ -229,37 +229,7 @@ require_once __DIR__ . '/components/navbar.php';
                                             </div>
                                         <?php endif; ?>
                                         
-                                        <!-- Form to add required skills -->
-                                        <button class="btn btn-sm btn-outline-primary mt-3" type="button" data-toggle="collapse" 
-                                                data-target="#addSkillForm<?php echo $profile['id']; ?>">
-                                            Aggiungi competenza richiesta
-                                        </button>
-                                        <div class="collapse mt-2" id="addSkillForm<?php echo $profile['id']; ?>">
-                                            <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post" class="card card-body">
-                                                <input type="hidden" name="profile_id" value="<?php echo htmlspecialchars($profile['id']); ?>">
-                                                <input type="hidden" name="project_name" value="<?php echo htmlspecialchars($project['nome']); ?>">
-                                                <div class="form-group">
-                                                    <label for="skill_name_<?php echo $profile['id']; ?>">Competenza:</label>
-                                                    <select class="form-control form-control-sm" id="skill_name_<?php echo $profile['id']; ?>" name="skill_name" required>
-                                                        <option value="">Seleziona competenza...</option>
-                                                        <?php foreach ($allCompetences as $competence): ?>
-                                                            <option value="<?php echo htmlspecialchars($competence['nome']); ?>">
-                                                                <?php echo htmlspecialchars($competence['nome']); ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="skill_level_<?php echo $profile['id']; ?>">Livello richiesto:</label>
-                                                    <select class="form-control form-control-sm" id="skill_level_<?php echo $profile['id']; ?>" name="skill_level" required>
-                                                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                            <option value="<?php echo $i; ?>"><?php echo $i; ?>/5</option>
-                                                        <?php endfor; ?>
-                                                    </select>
-                                                </div>
-                                                <button type="submit" class="btn btn-sm btn-primary">Aggiungi</button>
-                                            </form>
-                                        </div>
+                                      
                                     <?php elseif (isset($_SESSION['user_id'])): ?>
                                         <!-- User: Show apply button -->
                                         <?php if ($profile['stato'] === 'DISPONIBILE'): ?>
