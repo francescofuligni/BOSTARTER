@@ -174,7 +174,7 @@ class Project {
             $resultEsito = $this->conn->query("SELECT @esito as esito")->fetch(PDO::FETCH_ASSOC);
             if (!$resultEsito || !$resultEsito['esito']) {
                 $this->conn->rollBack();
-                return ['success' => false, 'error' => 'La stored procedure crea_progetto ha fallito. Controlla che il nome sia unico, la data futura e che tu sia creatore.'];
+                return ['success' => false, 'error' => 'Progetto non creato, riprovare.'];
             }
 
 

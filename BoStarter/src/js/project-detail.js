@@ -1,3 +1,16 @@
+document.addEventListener('DOMContentLoaded', function() {
+    var zoomImgs = document.querySelectorAll('.img-thumbnail[data-toggle="modal"]');
+    var modalImg = document.getElementById('imgZoomModalImg');
+    zoomImgs.forEach(function(img) {
+        img.addEventListener('click', function() {
+            modalImg.src = this.getAttribute('data-img');
+        });
+    });
+    $('#imgZoomModal').on('hidden.bs.modal', function () {
+        modalImg.src = '';
+    });
+});
+
 function showRewardImage() {
     var select = document.getElementById('codice_reward');
     var idx = select.selectedIndex;

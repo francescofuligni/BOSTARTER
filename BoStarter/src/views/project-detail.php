@@ -10,14 +10,11 @@ require_once __DIR__ . '/components/navbar.php';
     <meta charset="UTF-8">
     <title>Dettaglio Progetto</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        @media (min-width: 992px) {
-            .project-main-info {
-                border-right: 1px solid #eee;
-            }
-        }
-    </style>
-    
+    <link rel="stylesheet" href="/style/project-detail.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/js/project-detail.js"></script>
 </head>
 <body>
 <div class="container mt-5">
@@ -382,7 +379,6 @@ require_once __DIR__ . '/components/navbar.php';
                 </div>
             </div>
             <?php endif; ?>
-            <a href="/dashboard" class="btn btn-secondary mt-3">Torna alla Dashboard</a>
         </div>
     </div>
 
@@ -402,24 +398,5 @@ require_once __DIR__ . '/components/navbar.php';
         <a href="/dashboard" class="btn btn-secondary">Torna alla Dashboard</a>
     <?php endif; ?>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var zoomImgs = document.querySelectorAll('.img-thumbnail[data-toggle="modal"]');
-    var modalImg = document.getElementById('imgZoomModalImg');
-    zoomImgs.forEach(function(img) {
-        img.addEventListener('click', function() {
-            modalImg.src = this.getAttribute('data-img');
-        });
-    });
-    $('#imgZoomModal').on('hidden.bs.modal', function () {
-        modalImg.src = '';
-    });
-});
-</script>
-<script src="/js/project-detail.js"></script>
 </body>
 </html>
