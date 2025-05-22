@@ -25,7 +25,9 @@ function showRewardImage() {
     var desc = option.getAttribute('data-desc');
     console.log({idx, img, desc, value: select.value});
     if (img && select.value) {
-        document.getElementById('reward-img').src = img;
+        const rewardImg = document.getElementById('reward-img');
+        rewardImg.src = img;
+        rewardImg.setAttribute('data-img', img);
         document.getElementById('reward-desc').innerText = desc;
         document.getElementById('reward-image-preview').style.display = 'block';
     } else {

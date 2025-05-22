@@ -101,7 +101,7 @@ require_once __DIR__ . '/components/navbar.php';
                                 </select>
                             </div>
                             <div id="reward-image-preview" class="mb-3" style="display:none;">
-                                <img id="reward-img" src="" alt="Reward" class="img-thumbnail" style="max-width:150px;max-height:150px;">
+                                <img id="reward-img" src="" alt="Reward" class="img-thumbnail" style="max-width:150px;max-height:150px; cursor: zoom-in;" data-toggle="modal" data-target="#imgZoomModal" data-img="">
                                 <div id="reward-desc" class="mt-2"></div>
                             </div>
 
