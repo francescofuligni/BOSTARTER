@@ -1,3 +1,22 @@
+document.addEventListener('DOMContentLoaded', function() {
+    var zoomImgs = document.querySelectorAll('.img-thumbnail[data-toggle="modal"]');
+    var modalImg = document.getElementById('imgZoomModalImg');
+    zoomImgs.forEach(function(img) {
+        img.addEventListener('click', function() {
+            modalImg.src = this.getAttribute('data-img');
+        });
+    });
+    $('#imgZoomModal').on('hidden.bs.modal', function () {
+        modalImg.src = '';
+    });
+
+    document.getElementById('add-skill').addEventListener('click', function() {
+        const container = document.getElementById('skills-container');
+        const skillRow = document.querySelector('.skill-row').cloneNode(true);
+        container.appendChild(skillRow);
+    });
+});
+
 function showRewardImage() {
     var select = document.getElementById('codice_reward');
     var idx = select.selectedIndex;
@@ -6,7 +25,9 @@ function showRewardImage() {
     var desc = option.getAttribute('data-desc');
     console.log({idx, img, desc, value: select.value});
     if (img && select.value) {
-        document.getElementById('reward-img').src = img;
+        const rewardImg = document.getElementById('reward-img');
+        rewardImg.src = img;
+        rewardImg.setAttribute('data-img', img);
         document.getElementById('reward-desc').innerText = desc;
         document.getElementById('reward-image-preview').style.display = 'block';
     } else {

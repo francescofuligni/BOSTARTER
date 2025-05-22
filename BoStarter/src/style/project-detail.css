@@ -1,0 +1,5 @@
+@media (min-width: 992px) {
+    .project-main-info {
+        border-right: 1px solid #eee;
+    }
+}
