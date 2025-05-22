@@ -119,7 +119,7 @@ require_once __DIR__ . '/components/navbar.php';
                             $budget = isset($project['budget']) ? $project['budget'] : 0.00;
                             $isComplete = $raccolti >= $budget;
                             ?>
-                            <div class="mt-3 p-2 border rounded text-center <?php echo $isComplete ? 'bg-danger text-white' : 'bg-light'; ?>" style="font-size: 0.85rem;">
+                            <div class="mt-3 p-2 border rounded text-center <?php echo $isComplete ? 'bg-success text-white' : 'bg-light'; ?>" style="font-size: 0.85rem;">
                                 <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?> raccolti su € <?php echo number_format($budget, 2, ',', '.'); ?></strong>
                             </div>
                         </div>
