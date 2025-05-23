@@ -48,7 +48,7 @@ require_once __DIR__ . '/components/navbar.php';
                         <?php
                         if ($photos) {
                             foreach ($photos as $img) {
-                                echo '<img src="data:image/jpeg;base64,' . base64_encode($img) . '" class="img-thumbnail m-1" style="max-width:120px;max-height:120px; cursor: zoom-in;" alt="Foto progetto" data-toggle="modal" data-target="#imgZoomModal" data-img="data:image/jpeg;base64,' . base64_encode($img) . '">';
+                                echo '<img src="data:image/jpeg;base64,' . base64_encode($img) . '" class="img-thumbnail m-1 gallery-img" alt="Foto progetto" data-toggle="modal" data-target="#imgZoomModal" data-img="data:image/jpeg;base64,' . base64_encode($img) . '">';
                             }
                         } else {
                             echo '<span class="text-muted">Nessuna foto disponibile.</span>';
@@ -80,7 +80,7 @@ require_once __DIR__ . '/components/navbar.php';
                 $budget = isset($project['budget']) ? $project['budget'] : 0.00;
                 $progress = ($budget > 0) ? min(100, ($raccolti / $budget) * 100) : 0;
                 ?>
-                <svg width="120" height="120" viewBox="0 0 36 36" class="circular-chart">
+                <svg width="100%" height="180" viewBox="0 0 36 36" class="circular-chart">
                     <path class="circle-bg"
                         d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
@@ -97,54 +97,15 @@ require_once __DIR__ . '/components/navbar.php';
                         stroke="#28a745"
                         stroke-width="2"
                         stroke-linecap="round"/>
-                    <text x="18.75" y="18.75" class="percentage" text-anchor="middle" font-size="4.5"><?php echo number_format($progress, 0); ?>%</text>
+                    <text x="18.75" y="18.75" class="percentage" text-anchor="middle"><?php echo number_format($progress, 0); ?>%</text>
                 </svg>
-                <div class="mb-3" style="font-size: 0.9rem;">
+                <div class="mb-3 ring-label">
                     <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?></strong> raccolti
                     su € <?php echo number_format($budget, 2, ',', '.'); ?>
                 </div>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Finanzia il progetto</h5>
-                        <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
-                            <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
-                            <div class="form-group">
-                                <label for="importo">Importo (€)</label>
-                                <input type="number" min="1" step="0.05" class="form-control" name="importo" id="importo" required <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
-                            </div>
-                            <?php if (!empty($rewards)): ?>
-                            <div class="form-group">
-                                <label for="codice_reward">Reward</label>
-                                <select id="codice_reward" class="form-control" name="codice_reward" required onchange="showRewardImage()">
-                                    <option value="">Scegli una reward</option>
-                                    <?php foreach ($rewards as $idx => $reward): ?>
-                                        <option 
-                                            value="<?php echo htmlspecialchars($reward['codice']); ?>"
-                                            data-img="<?php echo 'data:image/jpeg;base64,' . base64_encode($reward['immagine']); ?>"
-                                            data-desc="<?php echo htmlspecialchars($reward['descrizione']); ?>"
-                                        >
-                                            <?php echo htmlspecialchars($reward['descrizione']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div id="reward-image-preview" class="mb-3" style="display:none;">
-                                <img id="reward-img" src="" alt="Reward" class="img-thumbnail" style="max-width:150px;max-height:150px; cursor: zoom-in;" data-toggle="modal" data-target="#imgZoomModal" data-img="">
-                                <div id="reward-desc" class="mt-2"></div>
-                            </div>
-
-                            <?php else: ?>
-                                <div class="alert alert-warning">Nessuna reward disponibile per questo progetto.</div>
-                            <?php endif; ?>
-                            <button type="submit" class="btn btn-success btn-block" <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
-                                <?php echo $hasFundedToday ? 'Hai già finanziato oggi' : 'Finanzia'; ?>
-                            </button>
-                        </form>
-                        </div>
-                    </div>
-                </div>
+                    <button class="btn btn-success btn-block" data-toggle="modal" data-target="#fundModal">Finanzia il progetto</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -176,7 +137,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                 <?php foreach ($profile['skills'] as $skill): ?>
                                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                                         <?php echo htmlspecialchars($skill['nome_competenza']); ?>
-                                                        <span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.85rem;">
+                                                        <span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center skill-badge">
                                                             <?php echo htmlspecialchars($skill['livello']); ?>
                                                         </span>
                                                     </li>
@@ -209,7 +170,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                                             $color = ($stato === 'ACCETTATA') ? 'green' : (($stato === 'RIFIUTATA') ? 'red' : 'gray');
                                                                             $label = ucfirst(strtolower($stato));
                                                                         ?>
-                                                                        <span style="width: 14px; height: 14px; border-radius: 50%; background-color: <?php echo $color; ?>; display: inline-block;"></span>
+                                                                        <span class="application-status-dot" style="background-color: <?php echo $color; ?>;"></span>
                                                                     </td>
                                                                     <td>
                                                                         <?php if ($app['stato'] === 'ATTESA'): ?>
@@ -374,6 +335,60 @@ require_once __DIR__ . '/components/navbar.php';
                 </div>
             </div>
         </div>
+
+        <!-- Modale finanziamento progetto -->
+        <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="modal fade" id="fundModal" tabindex="-1" role="dialog" aria-labelledby="fundModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="fundModalLabel">Finanzia il progetto</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
+                            <div class="form-group">
+                                <label for="importo">Importo (€)</label>
+                                <input type="number" min="1" step="0.05" class="form-control" name="importo" id="importo" required <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
+                            </div>
+                            <?php if (!empty($rewards)): ?>
+                            <div class="form-group">
+                                <label for="codice_reward">Reward</label>
+                                <select id="codice_reward" class="form-control" name="codice_reward" required onchange="showRewardImage()">
+                                    <option value="">Scegli una reward</option>
+                                    <?php foreach ($rewards as $idx => $reward): ?>
+                                        <option 
+                                            value="<?php echo htmlspecialchars($reward['codice']); ?>"
+                                            data-img="<?php echo 'data:image/jpeg;base64,' . base64_encode($reward['immagine']); ?>"
+                                            data-desc="<?php echo htmlspecialchars($reward['descrizione']); ?>"
+                                        >
+                                            <?php echo htmlspecialchars($reward['descrizione']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div id="reward-image-preview" class="mb-3" style="display:none;">
+                                <img id="reward-img" src="" alt="Reward" class="img-thumbnail reward-img" data-toggle="modal" data-target="#imgZoomModal" data-img="">
+                                <div id="reward-desc" class="mt-2"></div>
+                            </div>
+                            <?php else: ?>
+                            <div class="alert alert-warning">Nessuna reward disponibile per questo progetto.</div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+                            <button type="submit" class="btn btn-success" <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
+                                <?php echo $hasFundedToday ? 'Hai già finanziato oggi' : 'Conferma finanziamento'; ?>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <!-- Modale per creazione profilo -->
         <?php if ($isCreator): ?>

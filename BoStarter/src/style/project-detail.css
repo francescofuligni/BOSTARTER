@@ -1,7 +1,9 @@
 .circular-chart {
     display: block;
     margin: 10px auto;
-    max-width: 80%;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
 }
 .circle-bg {
     stroke: #eee;
@@ -13,7 +15,38 @@
 }
 .percentage {
     dominant-baseline: middle;
+    font-size: 4.5px;
 }
+
+.ring-label {
+    font-size: 0.9rem;
+}
+
+.gallery-img {
+    max-width: 120px;
+    max-height: 120px;
+    cursor: zoom-in;
+}
+
+.reward-img {
+    max-width: 150px;
+    max-height: 150px;
+    cursor: zoom-in;
+}
+
+.skill-badge {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+}
+
+.application-status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 @media (min-width: 992px) {
     .project-main-info {
         border-right: 1px solid #eee;
