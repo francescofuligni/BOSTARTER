@@ -35,7 +35,7 @@ require_once __DIR__ . '/components/navbar.php';
             
             <!-- Colonna sinistra: info progetto e gallery -->
             <div class="col-lg-8 project-main-info mb-4">
-                <h2><?php echo htmlspecialchars($project['nome']); ?></h2>
+                <h1 class="display-4 font-weight-bold text-dark mb-4"><?php echo htmlspecialchars($project['nome']); ?></h1>
                 <p><strong>Descrizione:</strong> <?php echo nl2br(htmlspecialchars($project['descrizione'])); ?></p>
                 <p><strong>Budget:</strong> € <?php echo number_format($project['budget'], 2, ',', '.'); ?></p>
                 <p><strong>Tipo:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
@@ -74,6 +74,36 @@ require_once __DIR__ . '/components/navbar.php';
 
             <!-- Colonna destra: form finanziamento -->
             <div class="col-lg-4 mb-4">
+                <div class="text-center">
+                <?php
+                $raccolti = isset($project['somma_raccolta']) ? $project['somma_raccolta'] : 0.00;
+                $budget = isset($project['budget']) ? $project['budget'] : 0.00;
+                $progress = ($budget > 0) ? min(100, ($raccolti / $budget) * 100) : 0;
+                ?>
+                <svg width="120" height="120" viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#eee"
+                        stroke-width="2"/>
+                    <path class="circle"
+                        stroke-dasharray="<?php echo $progress; ?>, 100"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#28a745"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+                    <text x="18.75" y="18.75" class="percentage" text-anchor="middle" font-size="4.5"><?php echo number_format($progress, 0); ?>%</text>
+                </svg>
+                <div class="mb-3" style="font-size: 0.9rem;">
+                    <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?></strong> raccolti
+                    su € <?php echo number_format($budget, 2, ',', '.'); ?>
+                </div>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -112,16 +142,6 @@ require_once __DIR__ . '/components/navbar.php';
                                 <?php echo $hasFundedToday ? 'Hai già finanziato oggi' : 'Finanzia'; ?>
                             </button>
                         </form>
-                        <!-- Chip stato e raccolta -->
-                        <div class="mt-4">
-                            <?php
-                            $raccolti = isset($project['somma_raccolta']) ? $project['somma_raccolta'] : 0.00;
-                            $budget = isset($project['budget']) ? $project['budget'] : 0.00;
-                            $isComplete = $raccolti >= $budget;
-                            ?>
-                            <div class="mt-3 p-2 border rounded text-center <?php echo $isComplete ? 'bg-success text-white' : 'bg-light'; ?>" style="font-size: 0.85rem;">
-                                <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?> raccolti su € <?php echo number_format($budget, 2, ',', '.'); ?></strong>
-                            </div>
                         </div>
                     </div>
                 </div>
