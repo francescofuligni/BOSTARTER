@@ -158,9 +158,9 @@ require_once __DIR__ . '/components/navbar.php';
                         if ($userSkills && count($userSkills) > 0) {
                             echo '<ul class="list-group">';
                             foreach ($userSkills as $skill) {
-                                echo '<li class="list-group-item d-flex align-items-center">';
-                                echo '<span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px;">' . htmlspecialchars($skill['livello']) . '</span>';
+                                echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
                                 echo htmlspecialchars($skill['nome_competenza']);
+                                echo '<span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.85rem;">' . htmlspecialchars($skill['livello']) . '</span>';
                                 echo '</li>';
                             }
                             echo '</ul>';

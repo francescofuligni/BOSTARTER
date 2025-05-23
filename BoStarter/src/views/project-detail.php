@@ -18,6 +18,18 @@ require_once __DIR__ . '/components/navbar.php';
 </head>
 <body>
     <div class="container mt-5">
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($_SESSION['error']); ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo htmlspecialchars($_SESSION['success']); ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
         <?php if ($project): ?>
         <div class="row">
             
@@ -65,18 +77,6 @@ require_once __DIR__ . '/components/navbar.php';
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-danger" role="alert">
-                                <?php echo htmlspecialchars($_SESSION['error']); ?>
-                            </div>
-                            <?php unset($_SESSION['error']); ?>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['success'])): ?>
-                            <div class="alert alert-success" role="alert">
-                                <?php echo htmlspecialchars($_SESSION['success']); ?>
-                            </div>
-                            <?php unset($_SESSION['success']); ?>
-                        <?php endif; ?>
                         <h5 class="card-title">Finanzia il progetto</h5>
                         <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
                             <input type="hidden" name="nome_progetto" value="<?php echo htmlspecialchars($project['nome']); ?>">
@@ -149,7 +149,6 @@ require_once __DIR__ . '/components/navbar.php';
                                         </span>
                                     </div>
                                     <div class="card-body">
-                                        <h6>Competenze richieste</h6>
                                         <?php if (empty($profile['skills'])): ?>
                                             <p class="text-muted">Nessuna competenza specifica richiesta.</p>
                                         <?php else: ?>
@@ -157,8 +156,8 @@ require_once __DIR__ . '/components/navbar.php';
                                                 <?php foreach ($profile['skills'] as $skill): ?>
                                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                                         <?php echo htmlspecialchars($skill['nome_competenza']); ?>
-                                                        <span class="badge badge-primary badge-pill">
-                                                            Livello <?php echo htmlspecialchars($skill['livello']); ?>/5
+                                                        <span class="badge badge-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.85rem;">
+                                                            <?php echo htmlspecialchars($skill['livello']); ?>
                                                         </span>
                                                     </li>
                                                 <?php endforeach; ?>
@@ -371,14 +370,14 @@ require_once __DIR__ . '/components/navbar.php';
                             <form action="/project-detail?nome=<?php echo urlencode($project['nome']); ?>" method="post">
                                 <input type="hidden" name="project_name" value="<?php echo htmlspecialchars($project['nome']); ?>">
                                 <div class="form-group">
-                                    <label for="profile_name">Nome del profilo:</label>
+                                    <label for="profile_name">Nome del profilo</label>
                                     <input type="text" class="form-control" id="profile_name" name="profile_name" required>
                                 </div>
                                 <div id="skills-container">
-                                    <h6>Competenze richieste</h6>
                                     <div class="skill-row mb-3">
                                         <div class="row">
                                             <div class="col-md-8">
+                                                <label>Competenza richiesta</label>
                                                 <select class="form-control" name="skill_name[]">
                                                     <option value="">Seleziona competenza</option>
                                                     <?php foreach ($allCompetences as $competence): ?>
@@ -389,6 +388,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                 </select>
                                             </div>
                                             <div class="col-md-4">
+                                                <label>Livello (0-5)</label>
                                                 <select class="form-control" name="skill_level[]">
                                                     <?php for ($i = 1; $i <= 5; $i++): ?>
                                                         <option value="<?php echo $i; ?>"><?php echo $i; ?></option>

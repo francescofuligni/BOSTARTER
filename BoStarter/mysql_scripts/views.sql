@@ -40,7 +40,7 @@ DROP VIEW IF EXISTS progetti_in_scadenza;
 
 CREATE VIEW progetti_in_scadenza AS
 SELECT 
-    p.nome, p.immagine,
+    p.nome, p.immagine, p.budget, p.somma_raccolta,
     (p.budget - COALESCE(SUM(f.importo), 0)) as differenza_budget
 FROM progetti_con_foto p
 JOIN FINANZIAMENTO f ON p.nome = f.nome_progetto
