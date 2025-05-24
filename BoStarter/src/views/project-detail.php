@@ -11,6 +11,8 @@ require_once __DIR__ . '/components/navbar.php';
     <title>Dettaglio Progetto</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/style/project-detail.css">
+    <style>
+    </style>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -30,18 +32,16 @@ require_once __DIR__ . '/components/navbar.php';
             </div>
             <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
+
         <?php if ($project): ?>
+        <h1 class="display-4 font-weight-bold text-dark mb-4"><?php echo htmlspecialchars($project['nome']); ?></h1>
         <div class="row">
-            
+
             <!-- Colonna sinistra: info progetto e gallery -->
             <div class="col-lg-8 project-main-info mb-4">
-                <h1 class="display-4 font-weight-bold text-dark mb-4"><?php echo htmlspecialchars($project['nome']); ?></h1>
+                <p><strong>Creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
                 <p><strong>Descrizione:</strong> <?php echo nl2br(htmlspecialchars($project['descrizione'])); ?></p>
-                <p><strong>Budget:</strong> € <?php echo number_format($project['budget'], 2, ',', '.'); ?></p>
-                <p><strong>Tipo:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
-                <p><strong>Email creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
-
-                
+                <p><strong>Tipo progetto:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
                 <div class="mb-3">
                     <strong>Galleria del progetto:</strong>
                     <div class="d-flex flex-wrap">
@@ -56,23 +56,9 @@ require_once __DIR__ . '/components/navbar.php';
                         ?>
                     </div>
                 </div>
-
-                <?php if ($project['tipo'] === 'HARDWARE' && !empty($components)): ?>
-                    <h4 class="mt-4">Componenti hardware</h4>
-                    <ul class="list-group mb-4">
-                        <?php foreach ($components as $comp): ?>
-                            <li class="list-group-item">
-                                <strong><?php echo htmlspecialchars($comp['nome']); ?></strong>
-                                (<?php echo htmlspecialchars($comp['quantita']); ?> x €<?php echo number_format($comp['prezzo'], 2, ',', '.'); ?>)
-                                <br>
-                                <small><?php echo htmlspecialchars($comp['descrizione']); ?></small>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
             </div>
 
-            <!-- Colonna destra: form finanziamento -->
+            <!-- Colonna destra: budget e finanziamento -->
             <div class="col-lg-4 mb-4">
                 <div class="text-center">
                 <?php
@@ -100,22 +86,42 @@ require_once __DIR__ . '/components/navbar.php';
                     <text x="18.75" y="18.75" class="percentage" text-anchor="middle"><?php echo number_format($progress, 0); ?>%</text>
                 </svg>
                 <div class="mb-3 ring-label">
-                    <strong>€ <?php echo number_format($raccolti, 2, ',', '.'); ?></strong> raccolti
-                    su € <?php echo number_format($budget, 2, ',', '.'); ?>
+                    € <?php echo number_format($raccolti, 2, ',', '.'); ?> raccolti
+                    su <strong>€ <?php echo number_format($budget, 2, ',', '.'); ?></strong>
                 </div>
-
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <button class="btn btn-success btn-block" data-toggle="modal" data-target="#fundModal">Finanzia il progetto</button>
                 <?php endif; ?>
             </div>
         </div>
+        </div>
+
+        <div class="container mt-5">
+
+        <!-- Sezione componenti hardware -->
+        <?php if ($project['tipo'] === 'HARDWARE' && !empty($components)): ?>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="mt-4">Componenti hardware</h4>
+                    <ul class="list-group mb-4">
+                        <?php foreach ($components as $comp): ?>
+                            <li class="list-group-item">
+                                <strong><?php echo htmlspecialchars($comp['nome']); ?></strong>
+                                (<?php echo htmlspecialchars($comp['quantita']); ?> x €<?php echo number_format($comp['prezzo'], 2, ',', '.'); ?>)
+                                <br>
+                                <small><?php echo htmlspecialchars($comp['descrizione']); ?></small>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <!-- Sezione profili richiesti -->
         <?php if ($project['tipo'] === 'SOFTWARE'): ?>
         <div class="row mt-4">
             <div class="col-12">
-                <h3>Profili</h3>
-                
+                <h4>Profili</h4>
                 <?php if (empty($profiles)): ?>
                     <div class="alert alert-info">Nessun profilo richiesto per questo progetto.</div>
                 <?php else: ?>
@@ -144,7 +150,7 @@ require_once __DIR__ . '/components/navbar.php';
                                                 <?php endforeach; ?>
                                             </ul>
                                         <?php endif; ?>
-                                        
+
                                         <!-- Mostra candidature -->
                                         <?php if ($isCreator): ?>
                                             <h6 class="mt-3">Candidature</h6>
@@ -198,10 +204,9 @@ require_once __DIR__ . '/components/navbar.php';
                                                     </table>
                                                 </div>
                                             <?php endif; ?>
-                                            
-                                        
                                         <?php elseif (isset($_SESSION['user_id'])): ?>
-                                            <!-- User: Show apply button -->
+
+                                            <!-- Mostra bottone per candidarsi -->
                                             <?php if ($profile['stato'] === 'DISPONIBILE'): ?>
                                                 <?php if (!empty($profile['has_applied'])): ?>
                                                     <div class="alert alert-info mt-3">Hai già inviato una candidatura per questo profilo.</div>
@@ -223,7 +228,6 @@ require_once __DIR__ . '/components/navbar.php';
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                
                 <?php if ($isCreator): ?>
                     <button class="btn btn-outline-primary mb-4" data-toggle="modal" data-target="#createProfileModal">Crea un nuovo profilo</button>
                 <?php endif; ?>
@@ -231,25 +235,22 @@ require_once __DIR__ . '/components/navbar.php';
         </div>
         <?php endif; ?>
 
-
         <!-- Sezione commenti e form commento -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="mb-3">
-                    <h3>Commenti</h3>
+                    <h4>Commenti</h4>
                     <ul class="list-group">
                         <?php if ($comments): ?>
                             <?php foreach ($comments as $comment): ?>
                                 <li class="list-group-item">
                                     <strong><?= htmlspecialchars($comment['nickname']) ?>:</strong> <?= htmlspecialchars($comment['testo']) ?>
                                     <br><small class="text-muted"><?= htmlspecialchars($comment['data']) ?></small>
-
                                     <?php if (!empty($comment['risposta'])): ?>
                                         <div class="mt-2 ml-3 p-2 bg-light border rounded">
                                             <strong>Creatore:</strong> <?= htmlspecialchars($comment['risposta']) ?>
                                         </div>
                                     <?php endif; ?>
-
                                     <?php if (
                                         isset($_SESSION['user_id']) &&
                                         $_SESSION['user_id'] === $project['email_utente_creatore'] &&
@@ -259,7 +260,6 @@ require_once __DIR__ . '/components/navbar.php';
                                         <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="modal" data-target="#replyModal<?= $comment['id'] ?>">Rispondi</button>
                                     <?php endif; ?>
                                 </li>
-
                                 <?php if (
                                     isset($_SESSION['user_id']) &&
                                     $_SESSION['user_id'] === $project['email_utente_creatore'] &&
@@ -326,11 +326,11 @@ require_once __DIR__ . '/components/navbar.php';
         </div>
 
         <!-- Modale per zoom immagini -->
-        <div class="modal fade" id="imgZoomModal" tabindex="-1" role="dialog" aria-labelledby="imgZoomModalLabel" aria-hidden="true">
+        <div class="modal fade" id="imgZoomModal" tabindex="-1" role="dialog" aria-labelledby="imgZoomModalLabel" aria-hidden="true" style="z-index: 1060;">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content bg-transparent border-0">
                     <div class="modal-body text-center p-0">
-                        <img src="" id="imgZoomModalImg" class="img-fluid rounded" alt="Zoom immagine">
+                        <img src="" id="imgZoomModalImg" class="img-fluid rounded border border-light shadow-lg p-2 bg-white" alt="Zoom immagine">
                     </div>
                 </div>
             </div>
