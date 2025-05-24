@@ -102,7 +102,7 @@ require_once __DIR__ . '/components/navbar.php';
         <?php if ($project['tipo'] === 'HARDWARE' && !empty($components)): ?>
             <div class="row mt-4">
                 <div class="col-12">
-                    <h4 class="mt-4">Componenti hardware</h4>
+                    <h3 class="mt-4">Componenti hardware</h3>
                     <ul class="list-group mb-4">
                         <?php foreach ($components as $comp): ?>
                             <li class="list-group-item">
@@ -121,7 +121,7 @@ require_once __DIR__ . '/components/navbar.php';
         <?php if ($project['tipo'] === 'SOFTWARE'): ?>
         <div class="row mt-4">
             <div class="col-12">
-                <h4>Profili</h4>
+                <h3>Profili</h3>
                 <?php if (empty($profiles)): ?>
                     <div class="alert alert-info">Nessun profilo richiesto per questo progetto.</div>
                 <?php else: ?>
@@ -239,7 +239,7 @@ require_once __DIR__ . '/components/navbar.php';
         <div class="row mt-4">
             <div class="col-12">
                 <div class="mb-3">
-                    <h4>Commenti</h4>
+                    <h3>Commenti</h3>
                     <ul class="list-group">
                         <?php if ($comments): ?>
                             <?php foreach ($comments as $comment): ?>
