@@ -52,7 +52,16 @@ require_once __DIR__ . '/../controllers/HomeController.php';
                     }
                     echo '<div class="card-body">';
                     echo '<h5 class="card-title">' . htmlspecialchars($project['nome']) . '</h5>';
-                    echo '<p class="card-text">Budget mancante: ' . htmlspecialchars($project['differenza_budget']) . ' €</p>';
+                    // Barra avanzamento raccolta fondi
+                    $budget = isset($project['budget']) ? $project['budget'] : 0.00;
+                    $raccolti = isset($project['somma_raccolta']) ? $project['somma_raccolta'] : 0.00;
+                    $progress = $budget > 0 ? min(100, ($raccolti / $budget) * 100) : 0;
+                    echo '<div class="mb-2">';
+                    echo '<div class="progress" style="height: 6px;">';
+                    echo '<div class="progress-bar bg-success" role="progressbar" style="width: ' . $progress . '%;" aria-valuenow="' . $progress . '" aria-valuemin="0" aria-valuemax="100"></div>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '<small class="text-muted">Budget mancante: € ' . number_format($budget - $raccolti, 2, ',', '.') . '</small>';
                     if (!empty($project['data_scadenza'])) {
                         echo '<p class="card-text"><small class="text-muted">Scade il: ' . htmlspecialchars(date('d/m/Y', strtotime($project['data_scadenza']))) . '</small></p>';
                     }
@@ -94,8 +103,8 @@ require_once __DIR__ . '/../controllers/HomeController.php';
         </table>
 
         <!-- Top Funders -->
-        <h3 class="mt-4">Classifica dei finanziatori</h3>
-        <table class="table table-striped">
+        <h3 class="mt-5">Classifica dei finanziatori</h3>
+        <table class="table table-striped mb-5">
             <thead>
                 <tr>
                     <th class="text-center" style="width: 10%;">#</th>
@@ -109,7 +118,7 @@ require_once __DIR__ . '/../controllers/HomeController.php';
                         <tr>
                             <td class="text-center" style="width: 10%;"><?php echo $i + 1; ?></td>
                             <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($funder['nickname'] ?? ''); ?></td>
-                            <td class="text-center" style="width: 45%;"><?php echo htmlspecialchars($funder['tot_finanziamenti'] ?? ''); ?> €</td>
+                            <td class="text-center" style="width: 45%;"><?php echo number_format($funder['tot_finanziamenti'] ?? 0, 2, ',', '.') . ' €'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

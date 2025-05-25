@@ -148,6 +148,51 @@ $allComponents = $componentModel->getAllComponents()['data'];
                     </form>
                 </div>
             </div>
+
+        <!-- Modal per aggiungere componenti hardware -->
+        <div class="modal fade" id="addComponentsModal" tabindex="-1" role="dialog" aria-labelledby="addComponentsModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addComponentsModalLabel">Aggiungi componenti hardware</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-row mb-2">
+                  <div class="col-md-6"><strong>Componente</strong></div>
+                  <div class="col-md-4"><strong>Quantità</strong></div>
+                  <div class="col-md-2"></div>
+                </div>
+                <div id="modal-components-list">
+                  <div class="form-row align-items-end mb-2 component-row">
+                    <div class="col-md-6">
+                      <select class="form-control" name="component_name[]">
+                        <option value="">Seleziona componente</option>
+                        <?php foreach ($allComponents as $component): ?>
+                          <option value="<?php echo htmlspecialchars($component['nome']); ?>" data-price="<?php echo $component['prezzo']; ?>">
+                            <?php echo htmlspecialchars($component['nome']) . " (€" . number_format($component['prezzo'],2,',','.') . ")"; ?>
+                          </option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <input type="number" class="form-control" name="component_qty[]" min="1" value="1">
+                    </div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-danger remove-modal-component" onclick="removeModalComponentRow(this)">-</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-primary mb-2" onclick="addModalComponentRow()">Aggiungi riga</button>
+                <button type="button" class="btn btn-secondary mb-2" data-toggle="modal" data-target="#addComponentModal">Nuova componente</button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="confirmComponentsBtn">Conferma</button>
+              </div>
+            </div>
+          </div>
         </div>
     </form>
 </div>
