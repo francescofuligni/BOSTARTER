@@ -315,6 +315,33 @@ function handleApplyForProfile() {
     exit;
 }
 
+/**
+ * Rimuove un commento.
+ */
+function handleRemoveComment() {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $projectModel = new Project($conn);
+    
+    $commentId = intval($_POST['id_commento'] ?? 0);
+    $userEmail = $_SESSION['user_id'] ?? '';
+    $projectName = $_POST['nome_progetto'] ?? '';
+
+    if ($commentId && $userEmail) {
+        $result = $projectModel->removeComment($commentId, $userEmail);
+        if (isset($result['success']) && $result['success']) {
+            $_SESSION['success'] = "Commento rimosso con successo!";
+        } else {
+            $_SESSION['error'] = "Errore nella rimozione del commento o permessi insufficienti.";
+        }
+    } else {
+        $_SESSION['error'] = "Dati mancanti per la rimozione del commento.";
+    }
+
+    header('Location: /project-detail?nome=' . urlencode($projectName));
+    exit;
+}
+
 checkAccess();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -323,6 +350,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['id_commento'], $_POST['testo_risposta'])) {
         handleAddReply();
+    }
+    if (isset($_POST['id_commento'], $_POST['rimuovi_commento'])) {
+        handleRemoveComment();
     }
     if (isset($_POST['nome_progetto'], $_POST['importo'], $_POST['codice_reward'])) {
         handleFundProject();

@@ -146,6 +146,7 @@ BEGIN
     INSERT INTO UTENTE_CREATORE (email_utente)
     VALUES (in_email);
 END //
+DELIMITER ;
 
 
 -- Procedura per l'inserimento di un amministratore
@@ -567,6 +568,7 @@ BEGIN
         END IF;
     END IF;
 END //
+DELIMITER ;
 
 
 -- Procedura per l'inserimento di una nuova componente (solo creatori)
@@ -590,6 +592,42 @@ BEGIN
         SET esito = TRUE;
     ELSE
         SET esito = FALSE;
+    END IF;
+END //
+DELIMITER ;
+
+
+-- Procedura per la rimozione di un commento (solo creatore del progetto o proprietario del commento)
+DROP PROCEDURE IF EXISTS rimuovi_commento;
+
+DELIMITER //
+CREATE PROCEDURE rimuovi_commento(
+    IN in_id_commento INT,
+    IN in_email_utente VARCHAR(32),
+    OUT esito BOOLEAN
+)
+BEGIN
+    DECLARE nome_progetto VARCHAR(32);
+    DECLARE email_proprietario_commento VARCHAR(32);
+    DECLARE is_creatore_progetto BOOLEAN DEFAULT FALSE;
+    DECLARE is_proprietario_commento BOOLEAN DEFAULT FALSE;
+    
+    SELECT c.nome_progetto, c.email_utente 
+    INTO nome_progetto, email_proprietario_commento
+    FROM COMMENTO c 
+    WHERE c.id = in_id_commento;
+    
+    IF nome_progetto IS NOT NULL THEN
+        CALL verifica_creatore_progetto(nome_progetto, in_email_utente, is_creatore_progetto);
+    END IF;
+    
+    SET is_proprietario_commento = (email_proprietario_commento = in_email_utente);
+    
+    SET esito = (is_creatore_progetto OR is_proprietario_commento);
+    
+    IF esito THEN
+        
+        DELETE FROM COMMENTO WHERE id = in_id_commento;
     END IF;
 END //
 DELIMITER ;
