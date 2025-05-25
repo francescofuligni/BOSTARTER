@@ -103,38 +103,38 @@ $allComponents = $componentModel->getAllComponents()['data'];
         <a href="/dashboard" class="btn btn-danger">Annulla</a>
 
         <!-- Modal aggiunta componente -->
-        <div class="modal fade" id="addComponentModal" tabindex="-1" role="dialog" aria-labelledby="addComponentModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <form id="addComponentForm" method="POST" action="/create-project">
-                        <input type="hidden" name="add_component" value="1">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="addComponentModalLabel">Aggiungi nuova componente</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+        <div class="modal fade" id="addComponentModal" data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="addComponentModalLabel" aria-hidden="true" style="z-index:2000;">
+            <div class="modal-dialog" role="document">
+                <form id="addComponentForm" method="POST" action="/create-project">
+                    <input type="hidden" name="add_component" value="1">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addComponentModalLabel">Aggiungi nuova componente</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="new_component_name">Nome</label>
+                                <input type="text" class="form-control" id="new_component_name" name="new_component_name" required>
                             </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="new_component_name">Nome</label>
-                                    <input type="text" class="form-control" id="new_component_name" name="new_component_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="new_component_desc">Descrizione</label>
-                                    <textarea class="form-control" id="new_component_desc" name="new_component_desc" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="new_component_price">Prezzo (€)</label>
-                                    <input type="number" class="form-control" id="new_component_price" name="new_component_price" min="0.01" step="0.01" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="new_component_desc">Descrizione</label>
+                                <textarea class="form-control" id="new_component_desc" name="new_component_desc" required></textarea>
                             </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-success">Aggiungi</button>
+                            <div class="form-group">
+                                <label for="new_component_price">Prezzo (€)</label>
+                                <input type="number" class="form-control" id="new_component_price" name="new_component_price" min="0.01" step="0.01" required>
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Aggiungi</button>
+                        </div>
+                    </div>
+                </form>
             </div>
+        </div>
 
         <!-- Modal per aggiungere componenti hardware -->
         <div class="modal fade" id="addComponentsModal" tabindex="-1" role="dialog" aria-labelledby="addComponentsModalLabel" aria-hidden="true">
@@ -168,12 +168,14 @@ $allComponents = $componentModel->getAllComponents()['data'];
                       <input type="number" class="form-control" name="component_qty[]" min="1" value="1">
                     </div>
                     <div class="col-md-2">
-                      <button type="button" class="btn btn-danger remove-modal-component" onclick="removeModalComponentRow(this)">-</button>
+                      <button type="button" class="btn btn-danger remove-modal-component" onclick="removeModalComponentRow(this)">Rimuovi</button>
                     </div>
                   </div>
                 </div>
                 <button type="button" class="btn btn-primary mb-2" onclick="addModalComponentRow()">Aggiungi riga</button>
-                <button type="button" class="btn btn-secondary mb-2" data-toggle="modal" data-target="#addComponentModal">Nuova componente</button>
+                <button type="button" class="btn btn-secondary mb-2" onclick="$('#addComponentModal').modal('show')">
+                  Nuova componente
+                </button>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="confirmComponentsBtn">Conferma</button>
