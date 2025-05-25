@@ -92,6 +92,7 @@ CREATE VIEW commenti_progetto AS
 SELECT 
     c.id,
     c.nome_progetto,
+    c.email_utente,
     c.testo,
     u.nickname,
     c.data,

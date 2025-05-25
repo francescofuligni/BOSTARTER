@@ -55,7 +55,7 @@ class Project {
      */
     public function getComments($projectName) {
         try {
-            $stmt = $this->conn->prepare("SELECT id, testo, nickname, data, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
+            $stmt = $this->conn->prepare("SELECT id, testo, nickname, data,email_utente, risposta FROM commenti_progetto WHERE nome_progetto = :nome_progetto ORDER BY data DESC");
             $stmt->bindParam(':nome_progetto', $projectName);
             $stmt->execute();
             return ['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
@@ -232,6 +232,40 @@ class Project {
                     'nome_progetto' => $projectName,
                     'email_utente' => $userEmail,
                     'testo' => $text
+                ]);
+            }
+            return ['success' => $result];
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return ['success' => false];
+        }
+    }
+    /**
+     * Rimuove il commento a un progetto e, se presente, 
+     * rimuove risposta annessa (solo utente che ha commentato
+     * o creatore progetto).
+     *
+     * @param int $commentId ID del commento.
+     * @param string $userEmail Email dell'utente che richiede la rimozione.
+     * @return array ['success' => bool]
+     *               Dove 'success' indica l'esito della rimozione.
+     */
+    public function removeComment($commentId, $userEmail) {
+        try {
+            $stmt = $this->conn->prepare("CALL rimuovi_commento(:id_commento, :email_utente, @esito)");
+            $stmt->bindParam(':id_commento', $commentId);
+            $stmt->bindParam(':email_utente', $userEmail);
+            $result = $stmt->execute();
+            
+            $resultEsito = $this->conn->query("SELECT @esito as esito")->fetch(PDO::FETCH_ASSOC);
+            if (!$resultEsito || !$resultEsito['esito']) {
+                return ['success' => false];
+            }
+            
+            if ($result) {
+                $this->logger->log("Commento rimosso", [
+                    'id_commento' => $commentId,
+                    'email_utente' => $userEmail
                 ]);
             }
             return ['success' => $result];
