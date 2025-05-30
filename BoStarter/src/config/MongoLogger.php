@@ -1,5 +1,5 @@
 <?php
-require_once '/app/vendor/autoload.php'; // Corretto: risale alla root del progetto
+require_once '/app/vendor/autoload.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
@@ -12,9 +12,15 @@ class MongoLogger {
     private $collection;
 
     public function __construct() {
-        // Connessione al servizio MongoDB definito in docker-compose (host: mongodb, porta: 27017)
-        $client = new Client('mongodb://admin_username:admin_password@mongodb:27017/?authSource=admin');
-        $db = $client->selectDatabase('bostarter_log'); // Puoi scegliere il nome che preferisci
+        $host = $_ENV['MONGO_HOST'];
+        $username = $_ENV['MONGO_USERNAME'];
+        $password = $_ENV['MONGO_PASSWORD'];
+        $database = $_ENV['MONGO_DATABASE'];
+        
+        $connectionString = "mongodb://{$username}:{$password}@{$host}:27017/?authSource=admin";
+        
+        $client = new Client($connectionString);
+        $db = $client->selectDatabase($database);
         $this->collection = $db->selectCollection('event_log');
     }
 
@@ -34,7 +40,6 @@ class MongoLogger {
         try {
             $this->collection->insertOne($doc);
         } catch (Exception $e) {
-            // Non bloccare il flusso dell'applicazione in caso di errore di logging
             error_log('MongoLogger error: ' . $e->getMessage());
         }
     }

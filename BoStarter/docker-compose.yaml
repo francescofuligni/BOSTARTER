@@ -1,13 +1,12 @@
 services:
-
   mysql:
     image: mariadb:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_USER: username
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: mariadb_test_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
     networks:
@@ -24,8 +23,8 @@ services:
      environment:
        PMA_HOST: mysql
        PMA_PORT: 3306
-       PMA_USER: root
-       PMA_PASSWORD: root_password
+       PMA_USER: ${PMA_USER}
+       PMA_PASSWORD: ${PMA_PASSWORD}
      ports:
        - "8090:80"
      networks:
@@ -35,8 +34,8 @@ services:
     image: mongo:latest
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin_username
-      MONGO_INITDB_ROOT_PASSWORD: admin_password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     networks:
@@ -51,8 +50,8 @@ services:
         - mongodb
     environment:
         ME_CONFIG_MONGODB_SERVER: mongodb
-        ME_CONFIG_MONGODB_ADMINUSERNAME: admin_username
-        ME_CONFIG_MONGODB_ADMINPASSWORD: admin_password
+        ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
         ME_CONFIG_BASICAUTH: false
     ports:
         - "8091:8081"
@@ -71,6 +70,15 @@ services:
       - mysql
     networks:
       - databases
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
     command: >
       sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
              echo '<Directory /var/www/html>
