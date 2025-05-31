@@ -1,0 +1,10 @@
+.zoom-img {
+    max-width: 150px;
+    max-height: 150px;
+    cursor: zoom-in;
+}
+
+#imgZoomModalImg {
+    max-width: 90vw;
+    max-height: 90vh;
+}
