@@ -51,7 +51,7 @@ function validateProjectForm($post) {
 /**
  * Gestisce le ricompense associate al progetto.
  */
-/*
+
 function handleRewards($projectName, $creatorEmail) {
     $db = new Database();
     $conn = $db->getConnection();
@@ -65,7 +65,7 @@ function handleRewards($projectName, $creatorEmail) {
         }
     }
 }
-*/
+
 
 function handleCreateProject() {
     $db = new Database();

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 1) Controllo di validità HTML5
         if (!nameInput.value || !descInput.value || imageInput.files.length === 0) {
-            form.reportValidity();
+            window.alert('Compila tutti i campi obbligatori.');
             return;
         }
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Chiudo il modal e resetto i campi
             $('#rewardModal').modal('hide');
-            form.reset();
+
         };
         reader.readAsDataURL(imageInput.files[0]);
     });
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 1) Controllo di validità HTML5
         if (!compSelect.value || !qtyInput.value) {
-            form.reportValidity();
+            window.alert('Compila tutti i campi obbligatori.');
             return;
         }
 
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Chiudo modal e resetto i campi
         $('#componentModal').modal('hide');
-        form.reset();
+
     });
 
     // Click su “Rimuovi” dentro la lista Componenti

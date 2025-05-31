@@ -114,20 +114,20 @@ $allComponents = $componentModel->getAllComponents()['data'];
                 </button>
               </div>
               <div class="modal-body">
-                <div id="rewardForm">
+                <form id="rewardForm">
                   <div class="form-group">
                     <label for="rewardName" class="font-weight-bold">Nome reward</label>
-                    <input type="text" class="form-control" id="rewardName" name="rewardNameModal" placeholder="Inserisci nome reward" required>
+                    <input type="text" class="form-control" id="rewardName" name="rewardNameModal" placeholder="Inserisci nome reward">
                   </div>
                   <div class="form-group">
                     <label for="rewardDescription" class="font-weight-bold">Descrizione</label>
-                    <textarea class="form-control" id="rewardDescription" name="rewardDescriptionModal" rows="3" placeholder="Inserisci descrizione reward" required></textarea>
+                    <textarea class="form-control" id="rewardDescription" name="rewardDescriptionModal" rows="3" placeholder="Inserisci descrizione reward"></textarea>
                   </div>
                   <div class="form-group">
                     <label for="rewardImage" class="font-weight-bold">Immagine</label>
-                    <input type="file" class="form-control-file" id="rewardImage" name="rewardImageModal" accept="image/*" required>
+                    <input type="file" class="form-control-file" id="rewardImage" name="rewardImageModal" accept="image/*">
                   </div>
-                </div>
+                </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
