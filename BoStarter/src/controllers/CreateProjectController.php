@@ -33,9 +33,13 @@ function checkAccess() {
  */
 function validateProjectForm($post) {
     if (
-        empty($post['name']) || empty($post['description']) ||
+        empty($post['name']) ||
+        empty($post['description']) ||
         empty($post['budget']) || floatval($post['budget']) <= 0 ||
-        empty($post['deadline']) || empty($post['type'])
+        empty($post['deadline']) ||
+        empty($post['type']) ||
+        empty($_POST['reward_description']) ||
+        empty($_FILES['reward_image']['tmp_name'][0])
     ) {
         return false;
     }
@@ -47,6 +51,7 @@ function validateProjectForm($post) {
 /**
  * Gestisce le ricompense associate al progetto.
  */
+/*
 function handleRewards($projectName, $creatorEmail) {
     $db = new Database();
     $conn = $db->getConnection();
@@ -60,6 +65,7 @@ function handleRewards($projectName, $creatorEmail) {
         }
     }
 }
+*/
 
 function handleCreateProject() {
     $db = new Database();
@@ -89,9 +95,9 @@ function handleCreateProject() {
         }
     }
     $photos = [];
-    if (!empty($_FILES['immagini']['name'][0])) {
-        foreach ($_FILES['immagini']['tmp_name'] as $idx => $tmpName) {
-            if ($_FILES['immagini']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
+    if (!empty($_FILES['images']['name'][0])) {
+        foreach ($_FILES['images']['tmp_name'] as $idx => $tmpName) {
+            if ($_FILES['images']['error'][$idx] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
                 $photos[] = file_get_contents($tmpName);
             }
         }
