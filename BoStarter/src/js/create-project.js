@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (rewardImg) {
                 rewardImg.style.cursor = 'pointer';
                 rewardImg.addEventListener('click', function () {
-                    let modalImg = document.getElementById('previewImageModal');
+                    let modalImg = document.getElementById('imgZoomModalImg');
                     modalImg.src = rewardImg.src;
-                    $('#imagePreviewModal').modal('show');
+                    $('#imgZoomModal').modal('show');
                 });
             }
 
@@ -215,9 +215,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 img.style.cursor = 'pointer';
                 // Al click su anteprima, mostro il modal con immagine ingrandita
                 img.addEventListener('click', function () {
-                    let modalImg = document.getElementById('previewImageModal');
+                    let modalImg = document.getElementById('imgZoomModalImg');
                     modalImg.src = ev.target.result;
-                    $('#imagePreviewModal').modal('show');
+                    $('#imgZoomModal').modal('show');
                 });
                 previewContainer.appendChild(img);
             };

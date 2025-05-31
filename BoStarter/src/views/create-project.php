@@ -19,6 +19,7 @@ $allComponents = $componentModel->getAllComponents()['data'];
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/create-project.js"></script>
+    <link rel="stylesheet" href="/style/create-project.css">
 </head>
 <body>
 <div class="container mt-5">
@@ -65,20 +66,6 @@ $allComponents = $componentModel->getAllComponents()['data'];
             <input type="file" class="form-control-file" id="images" name="images[]" accept="image/*" multiple required>
         </div>
         <div id="galleryPreview" class="mt-3 d-flex flex-wrap"></div>
-    
-    <!-- Modal per anteprima immagine -->
-    <div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body p-0">
-            <img id="previewImageModal" src="" class="img-fluid w-100">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
-          </div>
-        </div>
-      </div>
-    </div>
     
         <div class="form-group mb-4">
             <label for="type" class="font-weight-bold">Tipo</label>
@@ -222,6 +209,17 @@ $allComponents = $componentModel->getAllComponents()['data'];
               <button type="submit" class="btn btn-primary">Crea componente</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale per zoom immagini -->
+    <div class="modal fade" id="imgZoomModal" tabindex="-1" role="dialog" aria-labelledby="imgZoomModalLabel" aria-hidden="true" style="z-index: 1060;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-transparent border-0">
+          <div class="modal-body text-center p-0">
+            <img src="" id="imgZoomModalImg" class="img-fluid rounded border border-light shadow-lg p-2 bg-white" alt="Zoom immagine">
+          </div>
         </div>
       </div>
     </div>
