@@ -1,0 +1,25 @@
+# MySQL/MariaDB Configuration
+MYSQL_ROOT_PASSWORD=root_password
+MYSQL_USER=username
+MYSQL_PASSWORD=password
+MYSQL_DATABASE=mariadb_test_db
+
+# MongoDB Configuration
+MONGO_INITDB_ROOT_USERNAME=admin_username
+MONGO_INITDB_ROOT_PASSWORD=admin_password
+
+# PhpMyAdmin Configuration
+PMA_USER=root
+PMA_PASSWORD=root_password
+
+# Application Database Configuration
+DB_HOST=mysql
+DB_NAME=bostarter_db
+DB_USERNAME=root
+DB_PASSWORD=root_password
+
+# MongoDB Connection
+MONGO_HOST=mongodb
+MONGO_USERNAME=admin_username
+MONGO_PASSWORD=admin_password
+MONGO_DATABASE=bostarter_log
