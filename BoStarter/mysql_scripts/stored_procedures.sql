@@ -360,14 +360,16 @@ CREATE PROCEDURE crea_progetto(
     OUT esito BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore BOOLEAN;
-    CALL verifica_creatore(in_email_creatore, is_creatore);
-
-    SET esito = is_creatore AND in_data_limite > CURDATE();
+    CALL verifica_creatore(in_email_creatore, esito);
     
     IF esito THEN
-        INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
-        VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'APERTO', in_tipo, in_email_creatore);
+        IF CURDATE() > in_data_limite THEN
+            INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
+            VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'CHIUSO', in_tipo, in_email_creatore);
+        ELSE
+            INSERT INTO PROGETTO (nome, descrizione, budget, data_inserimento, data_limite, stato, tipo, email_utente_creatore)
+            VALUES (in_nome, in_descrizione, in_budget, CURDATE(), in_data_limite, 'APERTO', in_tipo, in_email_creatore);
+        END IF;
     END IF;
 END //
 DELIMITER ;
@@ -384,13 +386,8 @@ CREATE PROCEDURE inserisci_foto(
     OUT esito BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore_progetto BOOLEAN;
-    DECLARE is_progetto_aperto BOOLEAN;
     
-    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, is_creatore_progetto);
-    CALL verifica_progetto_aperto(in_nome_progetto, is_progetto_aperto);
-
-    SET esito = is_creatore_progetto AND is_progetto_aperto;
+    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, esito);
 
     IF esito THEN
         INSERT INTO FOTO (immagine, nome_progetto)
@@ -412,13 +409,7 @@ CREATE PROCEDURE inserisci_reward(
     OUT esito BOOLEAN
 )
 BEGIN
-    DECLARE is_creatore_progetto BOOLEAN;
-    DECLARE is_progetto_aperto BOOLEAN;
-    
-    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, is_creatore_progetto);
-    CALL verifica_progetto_aperto(in_nome_progetto, is_progetto_aperto);
-
-    SET esito = is_creatore_progetto AND is_progetto_aperto;
+    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, esito);
     
     IF esito THEN
         INSERT INTO REWARD (immagine, descrizione, nome_progetto)
@@ -622,11 +613,9 @@ BEGIN
     END IF;
     
     SET is_proprietario_commento = (email_proprietario_commento = in_email_utente);
-    
     SET esito = (is_creatore_progetto OR is_proprietario_commento);
     
     IF esito THEN
-        
         DELETE FROM COMMENTO WHERE id = in_id_commento;
     END IF;
 END //
