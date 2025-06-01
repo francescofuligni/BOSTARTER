@@ -40,6 +40,13 @@ require_once __DIR__ . '/components/navbar.php';
                 <p><strong>Creatore:</strong> <?php echo htmlspecialchars($project['email_utente_creatore']); ?></p>
                 <p><strong>Descrizione:</strong> <?php echo nl2br(htmlspecialchars($project['descrizione'])); ?></p>
                 <p><strong>Tipo progetto:</strong> <?php echo htmlspecialchars($project['tipo']); ?></p>
+                <p><strong>Stato:</strong> 
+                    <span class="badge badge-<?php echo ($project['stato'] === 'APERTO' ? 'success' : 'secondary'); ?>" style="font-size:1rem;">
+                        <?php echo ucfirst(strtolower($project['stato'])); ?>
+                    </span>
+                </p>
+                <p><strong>Data creazione:</strong> <?php echo isset($project['data_inserimento']) ? date('d/m/Y', strtotime($project['data_inserimento'])) : ''; ?></p>
+                <p><strong>Data limite:</strong> <?php echo date('d/m/Y', strtotime($project['data_limite'])); ?></p>
                 <div class="mb-3">
                     <strong>Galleria del progetto:</strong>
                     <div class="d-flex flex-wrap">
@@ -88,7 +95,27 @@ require_once __DIR__ . '/components/navbar.php';
                     su <strong>€ <?php echo number_format($budget, 2, ',', '.'); ?></strong>
                 </div>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <button class="btn btn-success btn-block" data-toggle="modal" data-target="#fundModal">Finanzia il progetto</button>
+                    <?php 
+                        // Disabilita il bottone se utente ha già finanziato oggi o progetto chiuso
+                        $isClosed = isset($project['stato']) && $project['stato'] === 'CHIUSO';
+                        $disableFundButton = $hasFundedToday || $isClosed;
+                    ?>
+                    <button 
+                        class="btn btn-success btn-block" 
+                        data-toggle="modal" 
+                        data-target="#fundModal" 
+                        <?php echo $disableFundButton ? 'disabled' : ''; ?>
+                    >
+                        <?php 
+                            if ($isClosed) {
+                                echo 'Progetto chiuso';
+                            } elseif ($hasFundedToday) {
+                                echo 'Hai già finanziato il progetto oggi';
+                            } else {
+                                echo 'Finanzia il progetto';
+                            }
+                        ?>
+                    </button>
                 <?php endif; ?>
             </div>
         </div>
@@ -432,8 +459,23 @@ require_once __DIR__ . '/components/navbar.php';
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
-                            <button type="submit" class="btn btn-success" <?php echo ($hasFundedToday ? 'disabled' : ''); ?>>
-                                <?php echo $hasFundedToday ? 'Hai già finanziato oggi' : 'Conferma finanziamento'; ?>
+                            <?php 
+                                $isClosed = isset($project['stato']) && $project['stato'] === 'CHIUSO';
+                            ?>
+                            <button 
+                                type="submit" 
+                                class="btn btn-success" 
+                                <?php echo ($hasFundedToday || $isClosed) ? 'disabled' : ''; ?>
+                            >
+                                <?php 
+                                    if ($isClosed) {
+                                        echo 'Progetto chiuso';
+                                    } elseif ($hasFundedToday) {
+                                        echo 'Hai già finanziato oggi';
+                                    } else {
+                                        echo 'Conferma finanziamento';
+                                    }
+                                ?>
                             </button>
                         </div>
                     </form>
