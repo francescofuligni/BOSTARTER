@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/components/navbar.php';
 require_once __DIR__ . '/../controllers/HomeController.php';
-// Le variabili $expiringProjects, $topCreators, $topFunders sono ora disponibili dal controller
 ?>
 
 <!DOCTYPE html>

@@ -67,7 +67,6 @@ function handleCreateProject() {
         exit;
     }
 
-    // For project creation, collect rewards and photos arrays
     $rewards = [];
     if (isset($_POST['reward_description']) && is_array($_POST['reward_description'])) {
         foreach ($_POST['reward_description'] as $idx => $rewardDescription) {
@@ -120,7 +119,6 @@ $allComponents = $componentModel->getAllComponents()['data'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Aggiunta nuova componente hardware
     if (isset($_POST['add_component'])) {
-        // FIX: crea connessione qui!
         $db = new Database();
         $conn = $db->getConnection();
         $componentModel = new Component($conn);
