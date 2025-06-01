@@ -25,7 +25,7 @@ class User {
     public function login($email, $hashedPassword) {
         try {
             $stmt = $this->conn->prepare("CALL autenticazione_utente(:email, :password, @autenticato)");
-            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':email', $email->toLowerCase());
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->execute();
             

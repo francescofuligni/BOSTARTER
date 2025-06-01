@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // ====================== REWARD MODAL LOGIC ======================
+    // Modale rewards
     let rewards = [];
 
     document.getElementById('addRewardButton').addEventListener('click', function () {
@@ -8,20 +8,18 @@ document.addEventListener('DOMContentLoaded', function () {
         let descInput = document.getElementById('rewardDescription');
         let imageInput = document.getElementById('rewardImage');
 
-        // 1) Controllo di validità HTML5
         if (!nameInput.value || !descInput.value || imageInput.files.length === 0) {
             window.alert('Compila tutti i campi obbligatori.');
             return;
         }
 
-        // 2) Evito duplicati (case-insensitive)
+        // Controllo duplicati
         let nomeLower = nameInput.value.trim().toLowerCase();
         if (rewards.some(r => r.name.toLowerCase() === nomeLower)) {
             alert('Una reward con questo nome esiste già.');
             return;
         }
 
-        // 3) Preparo la Preview (senza yet inviare al server)
         let reader = new FileReader();
         reader.onload = function (e) {
             let imgSrc = e.target.result;
@@ -32,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 file: imageInput.files[0]
             });
 
-            // Creo il <li> di preview
             let li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
             li.innerHTML = ''
@@ -41,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 + '<button type="button" class="btn btn-danger btn-sm remove-reward" data-index="' + idx + '">Rimuovi</button>';
             document.getElementById('rewardList').appendChild(li);
 
-            // Attach click listener to reward image for modal preview
             let rewardLi = document.getElementById('rewardList').lastElementChild;
             let rewardImg = rewardLi.querySelector('img');
             if (rewardImg) {
@@ -60,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.readAsDataURL(imageInput.files[0]);
     });
 
-    // Click su “Rimuovi” dentro la lista Reward
+    // Rimuovi dalla lista di reward
     document.getElementById('rewardList').addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-reward')) {
             let idx = parseInt(e.target.getAttribute('data-index'), 10);
@@ -70,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ====================== COMPONENT MODAL LOGIC ======================
+    // Modale componenti
     let components = [];
 
     document.getElementById('addComponentButton').addEventListener('click', function () {
@@ -78,20 +74,18 @@ document.addEventListener('DOMContentLoaded', function () {
         let compSelect = document.getElementById('componentSelect');
         let qtyInput = document.getElementById('componentQuantity');
 
-        // 1) Controllo di validità HTML5
         if (!compSelect.value || !qtyInput.value) {
             window.alert('Compila tutti i campi obbligatori.');
             return;
         }
 
-        // 2) Evito duplicati (stesso ID o stesso nome)
+        // Controllo duplicati
         let compId = compSelect.value;
         if (components.some(c => c.id === compId)) {
             alert('La componente è già stata aggiunta.');
             return;
         }
 
-        // 3) Preparo la preview in elenco
         let compName = compSelect.options[compSelect.selectedIndex].text;
         let qty = parseInt(qtyInput.value, 10);
         let idx = components.length;
@@ -109,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    // Click su “Rimuovi” dentro la lista Componenti
+    // Rimuovi dalla lista componenti
     document.getElementById('componentList').addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-component')) {
             let idx = parseInt(e.target.getAttribute('data-index'), 10);
@@ -123,16 +117,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ====================== HANDLER DEL SUBMIT DEL PROGETTO ======================
+    // Crea progetto
     document.querySelector('form[action="/create-project"]').addEventListener('submit', function (e) {
-        // 1) Controllo almeno 1 Reward
+        // Controllo almeno 1 Reward
         if (rewards.length === 0) {
             alert('Devi aggiungere almeno una reward.');
             e.preventDefault();
             return;
         }
 
-        // 2) Clono i file delle reward dentro il form principale
+        // Clono i file delle reward dentro il form principale
         rewards.forEach(function (r, i) {
             let clonedFileInput = document.createElement('input');
             clonedFileInput.type = 'file';
@@ -150,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.target.appendChild(hiddenDesc);
         });
 
-        // 3) Clono le componenti
+        // Clono le componenti
         components.forEach(function (c, i) {
             let hiddenName = document.createElement('input');
             hiddenName.type = 'hidden';
@@ -167,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ====================== VISIBILITÀ “Componenti” vs “Profili” ======================
+    // Visibilità sezione componenti/profili
     function updateComponentSection() {
         let val = document.getElementById('type').value;
         let section = document.getElementById('componentSection');
@@ -184,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('type').addEventListener('change', updateComponentSection);
 
 
-    // ====================== RESET AUTOMATICO DEI MODALI ======================
+    // Pulizia dei modali
     $('#rewardModal').on('hidden.bs.modal', function () {
         $('#rewardName').val('');
         $('#rewardDescription').val('');
@@ -197,9 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('newComponentForm').reset();
     });
 
-    // ====================== VALIDAZIONE “Nuova Componente” ======================
-
-    // ====================== GALLERY PREVIEW LOGIC ======================
+    // Galleria foto
     document.getElementById('images').addEventListener('change', function (e) {
         let previewContainer = document.getElementById('galleryPreview');
         previewContainer.innerHTML = ''; // Pulisci anteprime precedenti
@@ -213,7 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 img.className = 'img-thumbnail m-1';
                 img.style.maxWidth = '150px';
                 img.style.cursor = 'pointer';
-                // Al click su anteprima, mostro il modal con immagine ingrandita
+
+                // Al click mostro il modal con immagine ingrandita
                 img.addEventListener('click', function () {
                     let modalImg = document.getElementById('imgZoomModalImg');
                     modalImg.src = ev.target.result;
