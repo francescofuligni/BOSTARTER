@@ -175,7 +175,13 @@ function loadProjectData() {
                 }
                 
                 if (isset($_SESSION['user_id']) && !$isCreator) {
-                    $profile['has_applied'] = $profileModel->hasUserApplied($_SESSION['user_id'], $profile['id']);
+                    $hasApplied = $profileModel->hasUserApplied($_SESSION['user_id'], $profile['id']);
+                    $profile['has_applied'] = $hasApplied;
+                    if ($hasApplied) {
+                        $profile['application_status'] = $profileModel->getUserApplicationStatus($_SESSION['user_id'], $profile['id']);
+                    } else {
+                        $profile['application_status'] = null;
+                    }
                 }
             }
         }
@@ -190,7 +196,7 @@ function loadProjectData() {
 }
 
 /**
- * Creates a new profile.
+ * Crea un profilo per un progetto.
  */
 function handleCreateProfile() {
     $db = new Database();
@@ -227,7 +233,7 @@ function handleCreateProfile() {
 }
 
 /**
- * Adds a required skill to a profile.
+ * Aggiunge una competenza richiesta a un profilo.
  */
 function handleAddRequiredSkill() {
     $db = new Database();
@@ -256,7 +262,7 @@ function handleAddRequiredSkill() {
 }
 
 /**
- * Manages an application (accept or reject).
+ * Gestisce l'accettazione o il rifiuto di una candidatura per un profilo.
  */
 function handleManageApplication() {
     $db = new Database();
@@ -285,7 +291,7 @@ function handleManageApplication() {
 }
 
 /**
- * Submits an application for a profile.
+ * Gestisce la candidatura di un utente a un profilo.
  */
 function handleApplyForProfile() {
     $db = new Database();

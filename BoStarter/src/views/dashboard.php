@@ -38,7 +38,7 @@ require_once __DIR__ . '/components/navbar.php';
             <p class="lead">Scopri i progetti e inizia a finanziare quelli che ti interessano.</p>
             
             <div class="mb-4">
-                <button class="btn btn-primary mr-4 mb-4" data-toggle="modal" data-target="#userSkillsModal">
+                <button class="btn btn-outline-primary mr-4 mb-4" data-toggle="modal" data-target="#userSkillsModal">
                     Le tue skills
                 </button>
 

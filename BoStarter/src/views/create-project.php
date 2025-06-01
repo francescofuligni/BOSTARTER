@@ -160,7 +160,7 @@ require_once __DIR__ . '/components/navbar.php';
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#newComponentModal">
+            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#newComponentModal">
               Crea componente
             </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>

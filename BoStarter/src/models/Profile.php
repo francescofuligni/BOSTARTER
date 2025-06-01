@@ -1,7 +1,7 @@
 <?php
 /**
- * Class for profile and application management.
- * Provides methods to create and manage profiles, skills and applications.
+ * Classe per la gestione dei profili e delle candidature.
+ * Fornisce metodi per creare e gestire profili, competenze e candidature.
  */
 class Profile {
     private $conn;
@@ -13,9 +13,9 @@ class Profile {
     }
     
     /**
-     * Gets all profiles for a specific project.
+     * Ottiene tutti i profili per un progetto specifico.
      *
-     * @param string $projectName Project name.
+     * @param string $projectName Nome del progetto.
      * @return array ['success' => bool, 'data' => array]
      */
     public function getProjectProfiles($projectName) {
@@ -31,9 +31,9 @@ class Profile {
     }
     
     /**
-     * Gets required skills for a specific profile.
+     * Ottiene le competenze richieste per un profilo specifico.
      *
-     * @param int $profileId Profile ID.
+     * @param int $profileId ID del profilo.
      * @return array ['success' => bool, 'data' => array]
      */
     public function getRequiredSkills($profileId) {
@@ -52,9 +52,9 @@ class Profile {
     }
     
     /**
-     * Gets applications for a specific profile.
+     * Ottiene le candidature per un profilo specifico.
      *
-     * @param int $profileId Profile ID.
+     * @param int $profileId ID del profilo.
      * @return array ['success' => bool, 'data' => array]
      */
     public function getProfileApplications($profileId) {
@@ -73,11 +73,11 @@ class Profile {
     }
     
     /**
-     * Creates a new profile (only for SOFTWARE projects).
+     * Crea un nuovo profilo (solo per progetti SOFTWARE).
      *
-     * @param string $name Profile name.
-     * @param string $projectName Project name.
-     * @param string $creatorEmail Creator's email.
+     * @param string $name Nome del profilo.
+     * @param string $projectName Nome del progetto.
+     * @param string $creatorEmail Email del creatore.
      * @return array ['success' => bool, 'profileId' => int|null]
      */
     public function createProfile($name, $projectName, $creatorEmail) {
@@ -93,7 +93,7 @@ class Profile {
                 return ['success' => false, 'profileId' => null];
             }
             
-            // Get the newly created profile ID
+            // Ottiene l'ID del profilo appena creato
             $stmt = $this->conn->prepare("SELECT id FROM PROFILO WHERE nome = :nome AND nome_progetto = :nome_progetto ORDER BY id DESC LIMIT 1");
             $stmt->bindParam(':nome', $name);
             $stmt->bindParam(':nome_progetto', $projectName);
@@ -116,12 +116,12 @@ class Profile {
     }
     
     /**
-     * Adds a required skill to a profile.
+     * Aggiunge una competenza richiesta a un profilo.
      *
-     * @param int $profileId Profile ID.
-     * @param string $competence Competence name.
-     * @param int $level Skill level.
-     * @param string $creatorEmail Creator's email.
+     * @param int $profileId ID del profilo.
+     * @param string $competence Nome della competenza.
+     * @param int $level Livello di competenza.
+     * @param string $creatorEmail Email del creatore.
      * @return array ['success' => bool]
      */
     public function addRequiredSkill($profileId, $competence, $level, $creatorEmail) {
@@ -152,10 +152,10 @@ class Profile {
     }
     
     /**
-     * Submits an application for a profile.
+     * Invia una candidatura per un profilo.
      *
-     * @param string $userEmail User's email.
-     * @param int $profileId Profile ID.
+     * @param string $userEmail Email dell'utente.
+     * @param int $profileId ID del profilo.
      * @return array ['success' => bool]
      */
     public function applyForProfile($userEmail, $profileId) {
@@ -167,7 +167,7 @@ class Profile {
 
             $resultEsito = $this->conn->query("SELECT @esito as esito")->fetch(PDO::FETCH_ASSOC);
             if (!$resultEsito || !$resultEsito['esito']) {
-                // Optional: debug info
+                // Opzionale: informazioni di debug
                 error_log("Candidatura fallita per $userEmail su profilo $profileId");
                 return ['success' => false];
             }
@@ -183,12 +183,12 @@ class Profile {
     }
     
     /**
-     * Manages an application (accept or reject).
+     * Gestisce una candidatura (accetta o rifiuta).
      *
-     * @param string $applicantEmail Applicant's email.
-     * @param int $profileId Profile ID.
-     * @param string $creatorEmail Creator's email.
-     * @param string $status New status ('ACCETTATA' or 'RIFIUTATA').
+     * @param string $applicantEmail Email del candidato.
+     * @param int $profileId ID del profilo.
+     * @param string $creatorEmail Email del creatore.
+     * @param string $status Nuovo stato ('ACCETTATA' o 'RIFIUTATA').
      * @return array ['success' => bool]
      */
     public function manageApplication($applicantEmail, $profileId, $creatorEmail, $status) {
@@ -219,11 +219,11 @@ class Profile {
     }
     
     /**
-     * Checks if a user has already applied for a profile.
+     * Verifica se un utente ha già fatto candidatura per un profilo.
      *
-     * @param string $userEmail User's email.
-     * @param int $profileId Profile ID.
-     * @return bool True if already applied, false otherwise.
+     * @param string $userEmail Email dell'utente.
+     * @param int $profileId ID del profilo.
+     * @return bool True se ha già fatto candidatura, false altrimenti.
      */
     public function hasUserApplied($userEmail, $profileId) {
         try {
@@ -239,6 +239,29 @@ class Profile {
             error_log($e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Restituisce lo stato della candidatura di un utente per un determinato profilo.
+     * 
+     * @param string $userEmail L'email dell'utente.
+     * @param int $profileId L'ID del profilo.
+     * @return string|null Lo stato della candidatura ('ACCETTATA', 'ATTESA', 'RIFIUTATA') o null se non esiste.
+     */
+    public function getUserApplicationStatus($userEmail, $profileId) {
+        try {
+            $stmt = $this->conn->prepare("SELECT stato FROM CANDIDATURA WHERE email_utente = :email_utente AND id_profilo = :id_profilo");
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->bindParam(':id_profilo', $profileId);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result) {
+                return $result['stato'];
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+        }
+        return null;
     }
 }
 ?>

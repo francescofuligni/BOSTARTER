@@ -62,8 +62,7 @@ class Router {
                 return;
             }
         }
-
-        // Redirect to home if no route matches
+        // Se nessuna rotta corrisponde, reindirizza alla home
         header('Location: /');
         exit;
     }
