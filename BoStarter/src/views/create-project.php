@@ -1,12 +1,6 @@
 <?php
 require_once __DIR__ . '/../controllers/CreateProjectController.php';
-require_once __DIR__ . '/../models/Component.php';
 require_once __DIR__ . '/components/navbar.php';
-
-$db = new Database();
-$conn = $db->getConnection();
-$componentModel = new Component($conn);
-$allComponents = $componentModel->getAllComponents()['data'];
 ?>
 
 

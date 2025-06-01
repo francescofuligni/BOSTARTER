@@ -128,6 +128,11 @@ function handleCreateProject() {
 
 checkAccess();
 
+$db = new Database();
+$conn = $db->getConnection();
+$componentModel = new Component($conn);
+$allComponents = $componentModel->getAllComponents()['data'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Aggiunta nuova componente hardware
     if (isset($_POST['add_component'])) {
