@@ -451,14 +451,14 @@ CREATE PROCEDURE inserisci_profilo(
     IN in_nome VARCHAR(32),
     IN in_nome_progetto VARCHAR(32),
     IN in_email_creatore VARCHAR(32),
-    OUT is_creatore_progetto BOOLEAN
+    OUT esito BOOLEAN
 )
 BEGIN
-    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, is_creatore_progetto);
+    CALL verifica_creatore_progetto(in_nome_progetto, in_email_creatore, esito);
 
-    IF is_creatore_progetto THEN
-        CALL verifica_tipo_progetto(in_nome_progetto, 'SOFTWARE', is_creatore_progetto);
-        IF is_creatore_progetto THEN
+    IF esito THEN
+        CALL verifica_tipo_progetto(in_nome_progetto, 'SOFTWARE', esito);
+        IF esito THEN
             INSERT INTO PROFILO (nome, nome_progetto)
             VALUES (in_nome, in_nome_progetto);
         END IF;
