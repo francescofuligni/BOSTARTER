@@ -4,19 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('addRewardButton').addEventListener('click', function () {
         let form = document.getElementById('rewardForm');
-        let nameInput = document.getElementById('rewardName');
         let descInput = document.getElementById('rewardDescription');
         let imageInput = document.getElementById('rewardImage');
 
-        if (!nameInput.value || !descInput.value || imageInput.files.length === 0) {
+        if ( !descInput.value || imageInput.files.length === 0) {
             window.alert('Compila tutti i campi obbligatori.');
-            return;
-        }
-
-        // Controllo duplicati
-        let nomeLower = nameInput.value.trim().toLowerCase();
-        if (rewards.some(r => r.name.toLowerCase() === nomeLower)) {
-            alert('Una reward con questo nome esiste già.');
             return;
         }
 
@@ -25,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
             let imgSrc = e.target.result;
             let idx = rewards.length;
             rewards.push({
-                name: nameInput.value.trim(),
                 description: descInput.value.trim(),
                 file: imageInput.files[0]
             });
@@ -33,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
             li.innerHTML = ''
-                + '<div><strong>' + nameInput.value.trim() + '</strong><p class="mb-1">' + descInput.value.trim() + '</p></div>'
-                + '<img src="' + imgSrc + '" alt="' + nameInput.value.trim() + '" class="img-thumbnail" style="max-width: 100px;">'
+                + '<div><strong>' + descInput.value.trim() + '</strong></div>'
+                + '<img src="' + imgSrc + '" alt="' + descInput.value.trim() + '" class="img-thumbnail" style="max-width: 100px;">'
                 + '<button type="button" class="btn btn-danger btn-sm remove-reward" data-index="' + idx + '">Rimuovi</button>';
             document.getElementById('rewardList').appendChild(li);
 
@@ -180,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Pulizia dei modali
     $('#rewardModal').on('hidden.bs.modal', function () {
-        $('#rewardName').val('');
         $('#rewardDescription').val('');
         $('#rewardImage').val('');
     });

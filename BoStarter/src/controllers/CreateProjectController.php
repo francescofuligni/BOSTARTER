@@ -48,24 +48,6 @@ function validateProjectForm($post) {
 
 
 
-/**
- * Gestisce le ricompense associate al progetto.
- */
-
-function handleRewards($projectName, $creatorEmail) {
-    $db = new Database();
-    $conn = $db->getConnection();
-    $projectModel = new Project($conn);
-    foreach ($_POST['reward_coreward_name'] as $idx => $code) {
-        $description = $_POST['reward_description'][$idx] ?? '';
-        $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
-        if ($code && $description && $imageTmp && is_uploaded_file($imageTmp)) {
-            $imageData = file_get_contents($imageTmp);
-            $projectModel->addReward($imageData, $description, $projectName, $creatorEmail);
-        }
-    }
-}
-
 
 function handleCreateProject() {
     $db = new Database();
@@ -87,11 +69,13 @@ function handleCreateProject() {
 
     // For project creation, collect rewards and photos arrays
     $rewards = [];
-    foreach ($_POST['reward_description'] as $idx => $description) {
-        $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
-        if ($description && $imageTmp && is_uploaded_file($imageTmp)) {
-            $imageData = file_get_contents($imageTmp);
-            $rewards[] = ['image' => $imageData, 'desc' => $description];
+    if (isset($_POST['reward_description']) && is_array($_POST['reward_description'])) {
+        foreach ($_POST['reward_description'] as $idx => $rewardDescription) {
+            $imageTmp = $_FILES['reward_image']['tmp_name'][$idx] ?? '';
+            if ($rewardDescription && $imageTmp && is_uploaded_file($imageTmp)) {
+                $imageData = file_get_contents($imageTmp);
+                $rewards[] = ['image' => $imageData, 'desc' => $rewardDescription];
+            }
         }
     }
     $photos = [];

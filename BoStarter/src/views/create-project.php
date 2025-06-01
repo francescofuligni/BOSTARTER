@@ -110,10 +110,6 @@ require_once __DIR__ . '/components/navbar.php';
               <div class="modal-body">
                 <form id="rewardForm">
                   <div class="form-group">
-                    <label for="rewardName" class="font-weight-bold">Nome reward</label>
-                    <input type="text" class="form-control" id="rewardName" name="rewardNameModal" placeholder="Inserisci nome reward">
-                  </div>
-                  <div class="form-group">
                     <label for="rewardDescription" class="font-weight-bold">Descrizione</label>
                     <textarea class="form-control" id="rewardDescription" name="rewardDescriptionModal" rows="3" placeholder="Inserisci descrizione reward"></textarea>
                   </div>
