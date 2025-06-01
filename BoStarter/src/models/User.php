@@ -23,9 +23,10 @@ class User {
      * @return array ['success' => bool, 'data' => array|null]
      */
     public function login($email, $hashedPassword) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("CALL autenticazione_utente(:email, :password, @autenticato)");
-            $stmt->bindParam(':email', $email->toLowerCase());
+            $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->execute();
             
@@ -50,6 +51,7 @@ class User {
      * @return array ['success' => bool, 'data' => array|null]
      */
     public function getData($email) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("SELECT * FROM UTENTE WHERE email = :email");
             $stmt->bindParam(':email', $email);
@@ -68,6 +70,7 @@ class User {
      * @return bool True se l'utente è creatore, false altrimenti.
      */
     public function isCreator($email) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("CALL verifica_creatore(:email, @esito)");
             $stmt->bindParam(':email', $email);
@@ -88,6 +91,7 @@ class User {
      * @return bool True se è il creatore del progetto, false altrimenti.
      */
     public function isProjectCreator($email, $projectName) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("CALL verifica_creatore_progetto(:nome_progetto, :email_creatore, @esito)");
             $stmt->bindParam(':nome_progetto', $projectName);
@@ -108,6 +112,7 @@ class User {
      * @return bool True se l'utente è amministratore, false altrimenti.
      */
     public function isAdmin($email) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("CALL verifica_amministratore(:email, @esito)");
             $stmt->bindParam(':email', $email);
@@ -129,6 +134,7 @@ class User {
      * @return bool True se autenticato, false altrimenti.
      */
     public function adminLogin($email, $hashedPassword, $hashedSecurityCode) {
+        $email = strtolower($email);
         try {
             $stmt = $this->conn->prepare("CALL autenticazione_amministratore(:email, :password, :security_code, @autenticato)");
             $stmt->bindParam(':email', $email);
@@ -158,6 +164,7 @@ class User {
      * @return array ['success' => bool]
      */
     public function register($email, $hashedPassword, $name, $lastName, $nickname, $birthPlace, $birthYear, $type, $hashedSecurityCode) {
+        $email = strtolower($email);
         try {
             $this->conn->beginTransaction();
 
@@ -246,6 +253,7 @@ class User {
 
      */
     public function hasFundedToday($projectName, $userEmail) {
+        $userEmail = strtolower($userEmail);
         try {
             $stmt = $this->conn->prepare("CALL ha_finanziato_oggi(:nome_progetto, :email_utente, @esito)");
             $stmt->bindParam(':nome_progetto', $projectName);
@@ -266,6 +274,7 @@ class User {
      * @return array ['success' => bool, 'data' => array]
      */
     public function getProjects($userEmail) {
+        $userEmail = strtolower($userEmail);
         try {
             $stmt = $this->conn->prepare("SELECT * FROM progetti_con_foto WHERE email_utente_creatore = :email_utente");
             $stmt->bindParam(':email_utente', $userEmail);
@@ -284,6 +293,7 @@ class User {
      * @return array ['success' => bool, 'data' => array]
      */
     public function getSkills($userEmail) {
+        $userEmail = strtolower($userEmail);
         try {
             $stmt = $this->conn->prepare("SELECT * FROM SKILL_POSSEDUTA WHERE email_utente = :email_utente");
             $stmt->bindParam(':email_utente', $userEmail);
@@ -304,6 +314,7 @@ class User {
      * @return array ['success' => bool]
      */
     public function addSkill($userEmail, $name, $level) {
+        $userEmail = strtolower($userEmail);
         try {
             $stmt = $this->conn->prepare("CALL aggiungi_skill(:email, :nome, :livello)");
             $stmt->bindParam(':nome', $name);
