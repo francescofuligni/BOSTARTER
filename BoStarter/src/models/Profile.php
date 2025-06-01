@@ -240,5 +240,28 @@ class Profile {
             return false;
         }
     }
+
+    /**
+     * Restituisce lo stato della candidatura di un utente per un determinato profilo.
+     * 
+     * @param string $userEmail L'email dell'utente.
+     * @param int $profileId L'ID del profilo.
+     * @return string|null Lo stato della candidatura ('ACCETTATA', 'ATTESA', 'RIFIUTATA') o null se non esiste.
+     */
+    public function getUserApplicationStatus($userEmail, $profileId) {
+        try {
+            $stmt = $this->conn->prepare("SELECT stato FROM CANDIDATURA WHERE email_utente = :email_utente AND id_profilo = :id_profilo");
+            $stmt->bindParam(':email_utente', $userEmail);
+            $stmt->bindParam(':id_profilo', $profileId);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result) {
+                return $result['stato'];
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+        }
+        return null;
+    }
 }
 ?>

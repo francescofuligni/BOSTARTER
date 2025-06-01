@@ -153,6 +153,12 @@ require_once __DIR__ . '/components/navbar.php';
                     <div class="row">
                         <?php foreach ($profiles as $profile): ?>
                             <div class="col-md-4 mb-4">
+                                <?php
+                                    $isAcceptedCandidate = ($profile['stato'] === 'OCCUPATO'
+                                        && isset($_SESSION['user_id'])
+                                        && isset($profile['application_status'])
+                                        && $profile['application_status'] === 'ACCETTATA');
+                                ?>
                                 <div class="card h-100 shadow-sm" style="font-size: 0.9rem;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0"><?php echo htmlspecialchars($profile['nome']); ?></h5>
@@ -244,7 +250,15 @@ require_once __DIR__ . '/components/navbar.php';
                                                     </form>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <div class="alert alert-secondary mt-3">Questo profilo non è più disponibile.</div>
+                                                <?php if ($isAcceptedCandidate): ?>
+                                                    <div class="alert alert-warning mt-3">
+                                                        <strong>La tua candidatura è stata accettata! Contatta il creatore: 
+                                                            <?php echo htmlspecialchars($project['email_utente_creatore']); ?>
+                                                        </strong>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="alert alert-secondary mt-3">Questo profilo non è più disponibile.</div>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                     </div>

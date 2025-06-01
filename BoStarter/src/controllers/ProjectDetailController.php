@@ -175,7 +175,15 @@ function loadProjectData() {
                 }
                 
                 if (isset($_SESSION['user_id']) && !$isCreator) {
-                    $profile['has_applied'] = $profileModel->hasUserApplied($_SESSION['user_id'], $profile['id']);
+                    // Check if the user has applied and retrieve the application status
+                    $hasApplied = $profileModel->hasUserApplied($_SESSION['user_id'], $profile['id']);
+                    $profile['has_applied'] = $hasApplied;
+                    if ($hasApplied) {
+                        // Assumes Profile model has a method getUserApplicationStatus that returns 'ACCETTATA', 'ATTESA', or 'RIFIUTATA'
+                        $profile['application_status'] = $profileModel->getUserApplicationStatus($_SESSION['user_id'], $profile['id']);
+                    } else {
+                        $profile['application_status'] = null;
+                    }
                 }
             }
         }
