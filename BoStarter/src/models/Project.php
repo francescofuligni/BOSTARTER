@@ -178,7 +178,8 @@ class Project {
             }
 
 
-            foreach ($rewards as $reward) {                $resultReward = $this->addReward($reward['image'], $reward['desc'], $name, $creatorEmail);
+            foreach ($rewards as $reward) {                
+                $resultReward = $this->addReward($reward['image'], $reward['desc'], $name, $creatorEmail);
                 if (!$resultReward['success']) {
                     return ['success' => false, 'error' => 'Errore nell\'inserimento di una reward.'];
                 }
